@@ -27,7 +27,7 @@ LOG_ENABLED = True
 LOG_LEVEL = 'ERROR'
 
 # config for mongodb
-MONGODB_URI = 'mongodb://172.17.0.3:27017/'
+MONGODB_URI = 'mongodb://127.0.0.1:27017/'
 MONGODB_DB_NAME = 'articles'
 MONGODB_ARTICLE_COLLECTION_NAME = 'article'
 MONGODB_FEED_COLLECTION_NAME = 'feed'
@@ -36,11 +36,11 @@ MONGODB_USER = 'scrapy'
 MONGODB_PWD = 'scrapy'
 
 # config for celery
-BROKER_URL = 'redis://172.17.0.4:6379/0'
+BROKER_URL = 'redis://127.0.0.1:6379/0'
 # config for etag
-ETAG_URL = 'redis://172.17.0.4:6379/1'
+ETAG_URL = 'redis://127.0.0.1:6379/1'
 # config for spider task
-TEMP_SPIDER_STATS_URL = 'redis://172.17.0.4:6379/2'
+TEMP_SPIDER_STATS_URL = 'redis://127.0.0.1:6379/2'
 
 # config for if-modify-since
 MODIFY_DELTA = 1

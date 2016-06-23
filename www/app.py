@@ -8,14 +8,14 @@ from error import NotFound, BadRequest
 # DEBUG = True
 
 # config for mongodb
-MONGODB_URI = 'mongodb://172.17.0.3:27017/'
+MONGODB_URI = 'mongodb://127.0.0.1:27017/'
 MONGODB_STOREDB_NAME = 'articles'
 MONGODB_SCOREDB_NAME = 'score'
 MONGODB_USER = 'flask'
 MONGODB_PWD = 'flask'
 
 # scrapy
-FEED_SUBMIT_URL = 'http://172.17.0.5:8001/feed'
+FEED_SUBMIT_URL = 'http://127.0.0.1:8001/feed'
 
 # log
 LOG_FILE = '/var/log/www.log'
