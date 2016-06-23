@@ -31,6 +31,9 @@ def show_entries(day):
     day_begin = get_begin_day()
     day_end = get_end_day()
 
+    if day_begin is None or day_entry is None:
+        raise NotFound('no articles now')
+
     if day_entry < day_begin or day_entry > date.today():
         raise NotFound('no articles for day {}'.format(day))
 
