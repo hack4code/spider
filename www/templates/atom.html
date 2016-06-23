@@ -1,0 +1,70 @@
+{% extends "main.html" %}
+{% block title %}添加feed{% endblock %}
+
+{% block main %}
+
+<div class="feedpage">
+
+<div>
+<h1 class="title">添加订阅源(rss|atom)</h1>
+<hr class="ehr"></hr>
+</div>
+
+<div class="feed">
+<script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+$("form").submit(function(e){
+e.preventDefault();
+$("span").text("正在提交 .....").show();
+
+var url = $("#url").val();
+var category = $("#category").val();
+var content = $("#content").val();
+
+$.ajax({
+       type: "post",
+       url: "/api/feed/atom",
+       data: {
+         url: url,
+         category: category,
+         content: content
+       },
+       success: function (r) {
+	       if (r['err'] == 0) {
+		 $("span").text("成功").show().fadeOut(1500);
+		 $("input").each(function() {
+		   if ($(this).attr("type") != "submit") {
+		     $(this).val("");
+		   }
+		 });
+	       }
+	       else {
+		$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
+	       }
+       }
+});})});
+</script>
+
+<div class="errmsg"><span></span></div>
+
+<form><fieldset>
+<label for="nameField">网址</label>
+<input id="url" class="edit" type="url" name="url">
+
+<label for="nameField">类别</label>
+<select id="category" class="edit">
+{% for category in categories %}
+<option>{{ category }}</option>
+{% endfor %}
+</select>
+
+<label for="nameField">selector[用于非全文输出的feed]</label>
+<input id="content" class="edit" name="content">
+
+<input class='button' type='submit' value='提交'>
+</fieldset></form>
+
+</div>
+</div>
+{% endblock %}

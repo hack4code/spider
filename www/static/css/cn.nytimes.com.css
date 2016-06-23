@@ -1,0 +1,72 @@
+.photoWrapper {
+ display: block;
+}
+
+.photoWrapper img {
+ display: block;
+ max-width: 98% !important;
+ margin-left: auto;
+ margin-right: auto;
+ padding: 6px 0;
+}
+
+.photoCredit,
+.photoCaption {
+ font-size: x-small;
+ font-family: Heiti;
+ padding: 0;
+ margin: 0;
+ line-height: 1.6em;
+}
+
+.photoCredit p,
+.photoWrapper p {
+ margin: 0 6em;
+ padding: 0;
+ color: #909090;
+}
+
+
+.articleByside {
+ float: left;
+ font-size: x-small;
+ text-align: left;
+ font-family: Songti;
+ padding-right: 3em;
+}
+
+.articleByside .articleThumbnail {
+ width: 190px;
+}
+
+.articleByside .articleThumbnail .thumbnailList {
+ list-style: none;
+ list-style-type: none;
+ margin: 0;
+ padding: 0;
+ display: block;
+ line-height: 1.2em;
+}
+
+.thumbnailList li p {
+ margin-bottom: 2px;
+ padding: 0;
+ color: #909090;
+}
+
+.articleByside .articleRefer ul {
+ list-style-type: none;
+ margin: 0;
+ padding: 0;
+ display: block;
+ line-height: 1.6em;
+}
+
+.articleRefer h4 {
+ margin: 0;
+ padding: 0;
+}
+
+.articleRefer a {
+color: #909090 !important;
+}

@@ -1,0 +1,25 @@
+{% extends "main.html" %}
+{% block title %}所有订阅网站{% endblock %}
+
+{% block main %}
+<div class="spspage">
+
+<div>
+<h1 class="title">所有订阅网站</h1>
+<hr class="ehr"></hr>
+</div>
+
+<ul id="clist">
+{% for k, v in spiders.items() %}
+<li><a href="/p/{{ k }}">{{ v }}</a></li>
+{% endfor %}
+</ul>
+
+<div>
+{%- for i in range(36) -%}
+<br />
+{% endfor %}
+</div>
+
+</div>
+{% endblock %}
