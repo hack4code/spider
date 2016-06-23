@@ -1,7 +1,11 @@
 #! /bin/bash
 
 function init() {
-	pip install --proxy http://103.55.27.122:8888 -r requirements.txt
+	[ -z "$PROXY" ] && {
+		pip install -r requirements.txt
+	} || {
+		pip install --proxy http://${PROXY}:8888 -r requirements.txt
+	}
 	adduser --disabled-password --gecos '' www
 	touch /var/log/www.log && chown www:www /var/log/www.log
 }

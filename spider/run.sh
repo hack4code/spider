@@ -1,7 +1,11 @@
 #! /bin/bash
 
 function init() {
-	pip install --proxy http://103.55.27.122:8888 -r requirements.txt
+	[ -z "$PROXY" ] && {
+		pip install -r requirements.txt
+	} || {
+		pip install --proxy http://${PROXY}:8888 -r requirements.txt
+	}
 	adduser --disabled-password --gecos '' spider
 	touch /var/log/spider.log && chown spider:spider /var/log/spider.log
 }
@@ -14,7 +18,7 @@ function start_spider() {
 
 function stop_spider() {
 	ps -ef | grep [c]elery | awk '{print $2}' | xargs kill
-	[[ -f spider.pid ]] && kill -INT $(cat uwsgi.pid) && rm *.pid
+	[ -f spider.pid ] && kill -INT $(cat uwsgi.pid) && rm *.pid
 }
 
 case "$1" in
