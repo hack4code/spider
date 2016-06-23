@@ -33,21 +33,8 @@ stop:
 	# @sudo rc-service mongodb stop
 	# @sudo rc-service redis stop
 	
-	
-
 clean:
 	find . -name '*.pyc' -exec rm -f {} \;
 	rm *.pid
 
-# docker
-
-docker-run:
-	su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=spider.pid --logfile=/run/spider.log --loglevel=INFO"
-	su -m spider -c "uwsgi --ini-paste uwsgi.ini"
-
-docker-stop:
-	ps -ef | grep [c]elery | awk '{print $$2}' | xargs kill
-	kill -INT $$(cat uwsgi.pid) 
-	rm *.pid
-
-.PHONY: clean update run stop redis mongodb docker-run docker-stop
+.PHONY: clean update run stop redis mongodb
