@@ -4,7 +4,7 @@ function init() {
 	[ -z "$PROXY" ] && {
 		pip install -r requirements.txt
 	} || {
-		pip install --proxy http://${PROXY}:8888 -r requirements.txt
+		pip install --proxy http://${PROXY} -r requirements.txt
 	}
 	adduser --disabled-password --gecos '' spider
 	touch /var/log/spider.log && chown spider:spider /var/log/spider.log
