@@ -10,8 +10,6 @@
 ### spider
  * cd spider/
  * docker-compose build
- * docker-compose exec mongodb mongo /script/init_admin.js
- * docker-compose exec mongodb mongo /script/init_db.js
 
 ### www
  * cd www/
@@ -26,3 +24,7 @@
  * cd www/
  * docker-compose up
 
+## mongodb
+First time, should create users of mongodb
+ * docker-compose exec mongodb mongo /script/init_admin.js
+ * docker-compose exec mongodb mongo /script/init_db.js
