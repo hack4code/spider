@@ -11,12 +11,12 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 5
 
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
-    # 'mydm.pipelines.ImagesDlownloadPipeline': 300,
+    'mydm.pipelines.ImagesDlownloadPipeline': 300,
     'mydm.pipelines.StorePipeline': 999
 }
 
 DOWNLOADER_MIDDLEWARES = {
-    # 'mydm.middlewares.ETagMiddleware': 300
+    'mydm.middlewares.ETagMiddleware': 300
 }
 
 WEBSERVICE_ENABLED = False
