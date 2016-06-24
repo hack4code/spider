@@ -17,22 +17,20 @@ class MongoSpiderLoader(object):
     def __init__(self):
         self._spiders = None
 
-    def _load_spiders(self):
-        spiders = {}
-        for sp_setting in get_spider_settings():
-            spid = str(sp_setting['_id'])
-            try:
-                spcls = mk_spider_cls(sp_setting)
-            except SpiderFactoryException:
-                logger.error('spider({}) class create error'.format(spid))
-            else:
-                spiders[spid] = spcls
-        self._spiders = spiders
-
     @property
     def spiders(self):
         if self._spiders is None:
-            self._load_spiders()
+            spiders = {}
+            for sp_setting in get_spider_settings():
+                spid = str(sp_setting['_id'])
+                try:
+                    spcls = mk_spider_cls(sp_setting)
+                except SpiderFactoryException:
+                    logger.error('spider({}) class create error'.format(
+                        spid))
+                else:
+                    spiders[spid] = spcls
+            self._spiders = spiders
         return self._spiders
 
     @classmethod
