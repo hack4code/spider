@@ -1,13 +1,12 @@
 # Blog Spider
 
-## docker images
+## IMAGES
 * mongo
 * redis
 * python
 * nginx
 
-## init
-
+## INIT
 ### spider
  * cd spider/
  * docker-compose build
@@ -18,8 +17,7 @@
  * cd www/
  * docker-compose build
 
-## run
-
+## RUN
 ### spider
  * cd spider/
  * docker-compose up
