@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
         www:
                 build: .
@@ -10,6 +10,8 @@ services:
                 external_links:
                         - spider
                         - mongodb
+                volumes:
+                        - ./:/www/
                 command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
 
         nginx:
@@ -18,8 +20,8 @@ services:
                 depends_on:
                         - www
                 volumes:
-                        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-                        - ./nginx/www.conf:/etc/nginx/www.conf
+                        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+                        - ./nginx/www.conf:/etc/nginx/www.conf:ro
                         - ./static/:/www/static/:ro
                         - ./fonts/:/www/fonts:ro
                 networks:

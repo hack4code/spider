@@ -35,6 +35,5 @@ stop:
 	
 clean:
 	find . -name '*.pyc' -exec rm -f {} \;
-	rm *.pid
 
 .PHONY: clean update run stop redis mongodb

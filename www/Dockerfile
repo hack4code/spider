@@ -3,7 +3,7 @@ FROM python:3.5
 ADD . /www/
 WORKDIR /www
 
-RUN pip install -r requirements.txt
+RUN pip install --proxy http://103.55.27.122:8888 -r requirements.txt
 RUN adduser --disabled-password --gecos '' www
 RUN mkdir /var/log/www/
 RUN chown www:www /var/log/www

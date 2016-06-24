@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
         redis:
                 image: redis
@@ -14,7 +14,8 @@ services:
                 expose:
                         - "27017"
                 volumes:
-                        - ./mongodb:/script
+                        - ./script:/script:ro
+                        - ./mongodb/:/data/db
                 networks:
                         - blogspider
 
@@ -31,6 +32,8 @@ services:
                 links:
                         - redis
                         - mongodb
+                volumes:
+                        - ./:/spider/
                 command:  bash -c 'su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=/var/run/spider/spider.pid --logfile=/var/log/spider/spider.log --loglevel=INFO" && su -m spider -c "uwsgi --ini-paste uwsgi.ini"'
 
 networks:
