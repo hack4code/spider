@@ -1,0 +1,38 @@
+version: '2'
+services:
+        redis:
+                image: redis
+                container_name: redis
+                expose:
+                        - "6379"
+                networks:
+                        - blogspider
+
+        mongodb:
+                image: mongo
+                container_name: mongodb
+                expose:
+                        - "27017"
+                volumes:
+                        - ./mongodb:/script
+                networks:
+                        - blogspider
+
+        spider:
+                build: .
+                container_name: spider
+                expose:
+                        - "8001"
+                depends_on:
+                        - redis
+                        - mongodb
+                networks:
+                        - blogspider
+                links:
+                        - redis
+                        - mongodb
+                command:  bash -c 'su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=/var/run/spider/spider.pid --logfile=/var/log/spider/spider.log --loglevel=INFO" && su -m spider -c "uwsgi --ini-paste uwsgi.ini"'
+
+networks:
+        blogspider:
+                driver: bridge

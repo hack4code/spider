@@ -7,8 +7,14 @@ from ..model import get_category_tags
 class CategoryAI():
 
     def __init__(self):
-        tags = get_category_tags()
-        self.tags = {c: [t.lower() for t in a] for c, a in tags.items()}
+        self._tags = None
+
+    @property
+    def tags(self):
+        if self._tags is None:
+            tags = get_category_tags()
+            self._tags = {c: [t.lower() for t in a] for c, a in tags.items()}
+        return self._tags
 
     def category(self, item):
         if 'tag' not in item:

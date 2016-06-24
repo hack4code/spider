@@ -1,0 +1,29 @@
+version: '2'
+services:
+        www:
+                build: .
+                container_name: www
+                networks:
+                        - spider_blogspider
+                expose:
+                        - "8000"
+                external_links:
+                        - spider
+                        - mongodb
+                command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
+
+        nginx:
+                image: nginx
+                container_name: nginx
+                depends_on:
+                        - www
+                volumes:
+                        - ./nginx/:/etc/nginx/conf.d/
+                networks:
+                        - spider_blogspider
+                ports:
+                        - "80:8000"
+
+networks:
+        spider_blogspider:
+                external: true

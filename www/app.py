@@ -18,7 +18,7 @@ MONGODB_PWD = 'flask'
 FEED_SUBMIT_URL = 'http://127.0.0.1:8001/feed'
 
 # log
-LOG_FILE = '/var/log/www.log'
+LOG_FILE = '/var/log/www/www.log'
 
 # app init
 app = Flask(__name__)
