@@ -18,11 +18,11 @@
 ## RUN
 ### spider
  * cd spider/
- * docker-compose up
+ * docker-compose up -d
 
 ## www
  * cd www/
- * docker-compose up
+ * docker-compose up -d
 
 ## mongodb
 First time, should create users of mongodb
