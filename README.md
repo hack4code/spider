@@ -17,3 +17,14 @@
 ### www
  * cd www/
  * docker-compose build
+
+## run
+
+### spider
+ * cd spider/
+ * docker-compose up
+
+## www
+ * cd www/
+ * docker-compose up
+
