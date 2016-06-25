@@ -4,7 +4,9 @@ services:
                 build: .
                 container_name: www
                 networks:
-                        - spider_blogspider
+                        - spider_mongodb
+                        - spider_spider
+                        - www
                 expose:
                         - "8000"
                 external_links:
@@ -25,11 +27,15 @@ services:
                         - ./static/:/www/static/:ro
                         - ./fonts/:/www/fonts:ro
                 networks:
-                        - spider_blogspider
+                        - www
                 ports:
                         - "80:80"
                         - "443:443"
 
 networks:
-        spider_blogspider:
+        spider_spider:
                 external: true
+        spider_mongodb:
+                external: true
+        www:
+                driver: bridge

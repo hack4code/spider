@@ -102,12 +102,14 @@ def _gen_lxmlspider(url, args):
     if check_spider(sp_setting):
         save_spider_settings(sp_setting)
         return True
+    logger.error('gen_lxmlspider error for {}'.format(url))
     return False
 
 
 @app.task
 def gen_lxmlspider(spargs):
     url = spargs['url']
+    logger.info('gen_lxmlspider for {}'.format(url))
     parser = urlparse(url)
     if parser.scheme == '' or parser.netloc == '':
         logger.error('{} invalid url'.format(url))

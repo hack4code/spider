@@ -9,5 +9,5 @@ RUN mkdir /var/log/spider
 RUN chown spider:spider /var/log/spider
 RUN mkdir /var/run/spider
 RUN chown spider:spider /var/run/spider
-RUN sed -i "s;mongodb://[0-9.]\+;mongodb://mongodb;;" mydm/settings.py
-RUN sed -i "s;redis://[0-9.]\+;redis://redis;;" mydm/settings.py
+# RUN sed -i "s;mongodb://[0-9.]\+;mongodb://mongodb;;" mydm/settings.py
+# RUN sed -i "s;redis://[0-9.]\+;redis://redis;;" mydm/settings.py

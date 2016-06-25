@@ -6,7 +6,7 @@ services:
                 expose:
                         - "6379"
                 networks:
-                        - blogspider
+                        - redis
 
         mongodb:
                 image: mongo
@@ -17,18 +17,20 @@ services:
                         - ./script:/script:ro
                         - ./mongodb/:/data/db
                 networks:
-                        - blogspider
+                        - mongodb
 
         spider:
                 build: .
                 container_name: spider
-                expose:
-                        - "8001"
+                ports:
+                        - "8001:8001"
                 depends_on:
                         - redis
                         - mongodb
                 networks:
-                        - blogspider
+                        - spider
+                        - redis
+                        - mongodb
                 links:
                         - redis
                         - mongodb
@@ -37,5 +39,9 @@ services:
                 command:  bash -c 'su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=/var/run/spider/spider.pid --logfile=/var/log/spider/spider.log --loglevel=INFO" && su -m spider -c "uwsgi --ini-paste uwsgi.ini"'
 
 networks:
-        blogspider:
+        spider:
+                driver: bridge
+        redis:
+                driver: bridge
+        mongodb:
                 driver: bridge
