@@ -26,6 +26,7 @@ services:
                         - ./nginx/www.conf:/etc/nginx/www.conf:ro
                         - ./static/:/www/static/:ro
                         - ./fonts/:/www/fonts:ro
+                        - /etc/letsencrypt/archive/wartalker.me:/cert/:ro
                 networks:
                         - www
                 ports:
