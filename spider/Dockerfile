@@ -3,7 +3,7 @@ FROM python:2.7
 ADD . /spider
 WORKDIR /spider
 
-RUN pip install --proxy http://103.55.27.122:8888 -r requirements.txt
+RUN pip install -r requirements.txt
 RUN adduser --disabled-password --gecos '' spider
 RUN mkdir /var/log/spider
 RUN chown spider:spider /var/log/spider
