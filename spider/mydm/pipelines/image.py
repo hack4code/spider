@@ -79,7 +79,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 for (url, e) in urls if not url.startswith('data')]
 
     def media_failed(self, failure, request, info):
-        logger.warn('spider {} image download failed : {}'.format(
+        logger.error('spider {} image download failed : {}'.format(
             self.spiderinfo.spider.name, request.url))
 
     def media_downloaded(self, response, request, info):
