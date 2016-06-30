@@ -36,7 +36,7 @@ services:
                         - mongodb
                 volumes:
                         - ./:/spider/
-                command:  bash -c 'su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=/var/run/spider/spider.pid --logfile=/var/log/spider/spider.log --loglevel=INFO" && su -m spider -c "uwsgi --ini-paste uwsgi.ini"'
+                command:  bash -c '([ -f /var/run/spider/spider.pid ] && rm /var/run/spider/spider.pid || echo "no pid file found") && su -m spider -c "celery multi start spiderjob -A task.spider --pidfile=/var/run/spider/spider.pid --logfile=/var/log/spider/spider.log --loglevel=INFO" && su -m spider -c "uwsgi --ini-paste uwsgi.ini"'
 
 networks:
         spider:
