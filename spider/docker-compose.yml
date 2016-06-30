@@ -16,6 +16,7 @@ services:
                 volumes:
                         - ./script:/script:ro
                         - ./mongodb/:/data/db
+                        - ~/db/:/back/
                 networks:
                         - mongodb
 

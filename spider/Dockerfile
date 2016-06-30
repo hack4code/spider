@@ -7,7 +7,9 @@ ADD ./requirements.txt /spider/requirements.txt
 WORKDIR /spider
 
 RUN apt-get update
-RUN apt-get install -y libffi-dev libxml2-dev libxslt1-dev libtiff5 libjpeg62-turbo-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev
+RUN apt-get install -y python-dev python-setuptools
+RUN apt-get install -y libffi-dev libxml2-dev libxslt1-dev libtiff5 libjpeg62-turbo-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
+RUN apt-get install -y python-imaging
 RUN pip install -r requirements.txt
 RUN adduser --disabled-password --gecos '' spider
 RUN mkdir /var/log/spider
