@@ -24,7 +24,7 @@ TELNETCONSOLE_ENABLED = False
 
 LOG_STDOUT = False
 LOG_ENABLED = True
-LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'INFO'
 
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
@@ -33,7 +33,7 @@ MONGODB_ARTICLE_COLLECTION_NAME = 'article'
 MONGODB_FEED_COLLECTION_NAME = 'feed'
 MONGODB_SPIDER_COLLECTION_NAME = 'spider'
 MONGODB_USER = 'scrapy'
-MONGODB_PWD = 'scrapy'
+MONGODB_PWD = 'hbsc=JK48=ts'
 
 # config for celery
 BROKER_URL = 'redis://redis:6379/0'
