@@ -13,7 +13,6 @@ from PIL import Image as ImageLib
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
-from scrapy.utils.log import failure_to_exc_info
 
 logger = logging.getLogger(__name__)
 
@@ -105,19 +104,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
             w, _ = image.size()
             if w < 400:
                 img.set('float', 'right')
-        except ImgException:
-            logger.error('spider {} image download failed: {}'.format(
-                self.spiderinfo.spider.name, src), exec_info=1)
+        except:
+            logger.exception('spider {} image download failed: {}'.format(
+                self.spiderinfo.spider.name, src))
 
     def item_completed(self, results, item, info):
-        for ok, value in results:
-            if not ok:
-                logger.error(
-                    '%(class)s found errors processing %(item)s',
-                    {'class': self.__class__.__name__, 'item': item},
-                    exc_info=failure_to_exc_info(value),
-                    extra={'spider': info.spider}
-                )
         item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
         del item._doc
         return item
