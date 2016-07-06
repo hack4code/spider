@@ -34,8 +34,9 @@ class Image():
         self.image = self.image.resize((w, h), ImageLib.ANTIALIAS)
 
     def compress(self, quality):
+        ext = self.image.format
         buf = BytesIO()
-        self.image.save(buf, optimize=True, quality=quality)
+        self.image.save(buf, format=ext, optimize=True, quality=quality)
         return buf.getvalue()
 
     @property
