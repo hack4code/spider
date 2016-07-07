@@ -36,7 +36,7 @@ class Image():
     def compress(self, quality):
         ext = self.image.format
         buf = BytesIO()
-        self.image.save(buf, format=ext, optimize=True, quality=quality)
+        self.image.save(buf, format=ext)
         return buf.getvalue()
 
     @property
