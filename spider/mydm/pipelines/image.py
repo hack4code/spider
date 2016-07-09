@@ -5,10 +5,8 @@ import logging
 import base64
 
 from lxml.html import fromstring, tostring, HTMLParser
-try:
-    from cStringIO import StringIO as BytesIO
-except ImportError:
-    from io import BytesIO
+
+import StringIO
 from PIL import Image as ImageLib
 
 from scrapy.http import Request
@@ -25,7 +23,7 @@ class Image():
     IMAGE_MAX_WIDTH = 800
 
     def __init__(self, data):
-        self.image = ImageLib.open(BytesIO(data))
+        self.image = ImageLib.open(StringIO.StringIO(data))
 
     def size(self):
         return self.image.size
@@ -35,7 +33,7 @@ class Image():
 
     def compress(self, quality):
         ext = self.image.format
-        buf = BytesIO()
+        buf = StringIO.StringIO()
         self.image.save(buf, format=ext)
         return buf.getvalue()
 
@@ -106,6 +104,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if w < 400:
                 img.set('float', 'right')
         except:
+            img.set('src', src)
             logger.exception('spider {} image download failed: {}'.format(
                 self.spiderinfo.spider.name, src))
 
