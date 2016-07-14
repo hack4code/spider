@@ -84,14 +84,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def media_downloaded(self, response, request, info):
         img = response.meta['img']
         src = request.url
+        if response.status != 200:
+            raise ImgException(
+                'image status is {}'.format(response.status))
+        if not response.body:
+            raise ImgException('image size is 0')
+        data = response.body
+        imglen = len(data)
         try:
-            if response.status != 200:
-                raise ImgException(
-                    'image status is {}'.format(response.status))
-            if not response.body:
-                raise ImgException('image size is 0')
-            data = response.body
-            imglen = len(data)
             image = Image(data)
             if imglen > self.IMAGE_MAX_SIZE:
                 data = image.optimize(int(self.IMAGE_MAX_SIZE/imglen))
@@ -104,9 +104,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if w < 400:
                 img.set('style', 'float: right')
         except:
-            img.set('src', src)
-            logger.exception('spider {} image download failed: {}'.format(
+            logger.exception('spider {} PIL optimize image failed: {}'.format(
                 self.spiderinfo.spider.name, src))
+            if 'Content-Type' in response.headers:
+                ext = response.headers['Content-Type']
+                data = base64.b64encode(data)
+                img.set('src',
+                        'data:{};base64,{}'.format(ext, data))
 
     def item_completed(self, results, item, info):
         item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
