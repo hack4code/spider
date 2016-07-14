@@ -102,7 +102,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     'data:image/{};base64,{}'.format(imgtype, data))
             w, _ = image.size()
             if w < 400:
-                img.set('float', 'right')
+                img.set('style', 'float: right')
         except:
             img.set('src', src)
             logger.exception('spider {} image download failed: {}'.format(
