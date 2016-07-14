@@ -89,13 +89,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
         img.set('src', src)
         try:
             image = Image(data)
-            if imglen > self.IMAGE_MAX_SIZE:
-                data = image.optimize()
-            img.set('source', src)
-            imgtype = image.type
-            data = base64.b64encode(data)
-            img.set('src',
-                    'data:image/{};base64,{}'.format(imgtype, data))
             w, _ = image.size
             if w < 400:
                 style = img.get('style').strip()
@@ -103,18 +96,23 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     style = ''
                 style += 'float: right;'
                 img.set('style', style)
+            if imglen > self.IMAGE_MAX_SIZE:
+                data = image.optimize()
+            imgtype = image.type
         except:
             # logger.exception('spider {} PIL open image failed: {}'.format(
             #     self.spiderinfo.spider.name, src))
             try:
-                ext = response.headers['Content-Type']
-                data = base64.b64encode(data)
-                img.set('src',
-                        'data:{};base64,{}'.format(ext, data))
+                imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
                 logger.warning(
                     'spider {} not found Content-Type: {}'.format(
                         self.spiderinfo.spider.name, src))
+                return
+        img.set('source', src)
+        data = base64.b64encode(data)
+        img.set('src',
+                'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
         item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
