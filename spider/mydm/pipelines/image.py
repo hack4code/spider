@@ -98,7 +98,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     'data:image/{};base64,{}'.format(imgtype, data))
             w, _ = image.size
             if w < 400:
-                img.set('style', 'float: right')
+                style = img.get('style').strip()
+                if style is None:
+                    style = ''
+                style += 'float: right;'
+                img.set('style', style)
         except:
             # logger.exception('spider {} PIL open image failed: {}'.format(
             #     self.spiderinfo.spider.name, src))
