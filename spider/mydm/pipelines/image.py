@@ -77,15 +77,16 @@ class ImagesDlownloadPipeline(MediaPipeline):
             self.spiderinfo.spider.name, request.url))
 
     def media_downloaded(self, response, request, info):
-        img = response.meta['img']
-        src = request.url
         if response.status != 200:
             raise ImgException(
                 'image status is {}'.format(response.status))
         if not response.body:
             raise ImgException('image size is 0')
+        img = response.meta['img']
+        src = response.url
         data = response.body
         imglen = len(data)
+        img.set('src', src)
         try:
             image = Image(data)
             if imglen > self.IMAGE_MAX_SIZE:
