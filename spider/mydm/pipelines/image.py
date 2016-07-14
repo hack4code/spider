@@ -23,31 +23,26 @@ class Image():
     IMAGE_MAX_WIDTH = 800
 
     def __init__(self, data):
-        self.image = ImageLib.open(StringIO.StringIO(data))
+        self._image = ImageLib.open(StringIO.StringIO(data))
 
+    @property
     def size(self):
-        return self.image.size
-
-    def resize(self, w, h):
-        self.image = self.image.resize((w, h), ImageLib.ANTIALIAS)
-
-    def compress(self, quality):
-        ext = self.image.format
-        buf = StringIO.StringIO()
-        self.image.save(buf, format=ext)
-        return buf.getvalue()
+        return self._image.size
 
     @property
     def type(self):
-        return self.image.format
+        return self._image.format
 
-    def optimize(self, quality):
-        w, h = self.size()
+    def optimize(self, quality=75):
+        image = self._image
+        w, h = self._image.size
         if w > self.IMAGE_MAX_WIDTH:
             h = int(float(h)/w*self.IMAGE_MAX_WIDTH)
             w = self.IMAGE_MAX_WIDTH
-            self.resize(w, h)
-        return self.compress(quality)
+            image = self._image.resize((w, h), ImageLib.ANTIALIAS)
+        buf = StringIO.StringIO()
+        image.save(buf, format=self._image.format)
+        return buf.getvalue()
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
@@ -94,23 +89,27 @@ class ImagesDlownloadPipeline(MediaPipeline):
         try:
             image = Image(data)
             if imglen > self.IMAGE_MAX_SIZE:
-                data = image.optimize(int(self.IMAGE_MAX_SIZE/imglen))
+                data = image.optimize()
             img.set('source', src)
             imgtype = image.type
             data = base64.b64encode(data)
             img.set('src',
                     'data:image/{};base64,{}'.format(imgtype, data))
-            w, _ = image.size()
+            w, _ = image.size
             if w < 400:
                 img.set('style', 'float: right')
         except:
-            logger.exception('spider {} PIL optimize image failed: {}'.format(
-                self.spiderinfo.spider.name, src))
-            if 'Content-Type' in response.headers:
+            # logger.exception('spider {} PIL open image failed: {}'.format(
+            #     self.spiderinfo.spider.name, src))
+            try:
                 ext = response.headers['Content-Type']
                 data = base64.b64encode(data)
                 img.set('src',
                         'data:{};base64,{}'.format(ext, data))
+            except KeyError:
+                logger.warning(
+                    'spider {} not found Content-Type: {}'.format(
+                        self.spiderinfo.spider.name, src))
 
     def item_completed(self, results, item, info):
         item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
