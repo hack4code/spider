@@ -33,7 +33,7 @@ class Image():
     def type(self):
         return self._image.format
 
-    def optimize(self, quality=75):
+    def optimize(self, q=75):
         image = self._image
         w, h = self._image.size
         if w > self.IMAGE_MAX_WIDTH:
@@ -41,14 +41,14 @@ class Image():
             w = self.IMAGE_MAX_WIDTH
             image = self._image.resize((w, h), ImageLib.ANTIALIAS)
         buf = StringIO.StringIO()
-        image.save(buf, format=self._image.format)
+        image.save(buf, format=self._image.format, quality=q)
         return buf.getvalue()
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
     MEDIA_NAME = 'image'
     DEFAULT_ITEM_CONTENT_FIELD = 'content'
-    IMAGE_MAX_SIZE = 1024*128
+    IMAGE_MAX_SIZE = 1024*256
 
     @classmethod
     def from_settings(cls, settings):
@@ -75,6 +75,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def media_failed(self, failure, request, info):
         logger.error('spider {} image download failed : {}'.format(
             self.spiderinfo.spider.name, request.url))
+        try:
+            attr = self.spiderinfo.spider.image_url_attr
+            img = request.meta['img']
+            src = img.get(attr)
+            img.set('src', src)
+        except AttributeError:
+            pass
 
     def media_downloaded(self, response, request, info):
         if response.status != 200:
@@ -111,8 +118,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 return
         img.set('source', src)
         data = base64.b64encode(data)
-        img.set('src',
-                'data:image/{};base64,{}'.format(imgtype, data))
+        img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
         item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
