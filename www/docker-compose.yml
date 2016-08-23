@@ -5,7 +5,7 @@ services:
                 container_name: www
                 networks:
                         - spider_mongodb
-                        - spider_spider
+                        - spider_gw
                         - www
                 expose:
                         - "8000"
@@ -34,7 +34,7 @@ services:
                         - "443:443"
 
 networks:
-        spider_spider:
+        spider_gw:
                 external: true
         spider_mongodb:
                 external: true
