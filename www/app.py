@@ -15,7 +15,7 @@ MONGODB_USER = 'flask'
 MONGODB_PWD = 'flask'
 
 # scrapy
-FEED_SUBMIT_URL = 'http://spider:8001/feed'
+FEED_SUBMIT_URL = 'http://gw:8001/feed'
 
 # log
 LOG_FILE = '/var/log/www/www.log'
