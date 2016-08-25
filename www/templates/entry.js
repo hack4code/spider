@@ -21,4 +21,3 @@ $('.domain a').on('click', function(e) {
 });
 
 });
-
