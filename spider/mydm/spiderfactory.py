@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+
 from .xml import mk_lxmlspider_cls
 from .html import mk_blogspider_cls
 
@@ -8,6 +10,7 @@ from .html import mk_blogspider_cls
 class SpiderFactoryException(Exception):
     pass
 
+logger = logging.getLogger(__name__)
 
 spider_factory = {
     'xml': mk_lxmlspider_cls,
@@ -16,6 +19,8 @@ spider_factory = {
 
 
 def mk_spider_cls(sp_setting):
+    logger.info('create spider: {}'.format(sp_setting['name']))
+
     try:
         sptype = sp_setting['type']
     except KeyError:

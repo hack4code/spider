@@ -69,7 +69,8 @@ class LXMLSpider(Spider):
 class LXMLSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
         ATTRS = ['start_urls',
-                 'category']
+                 'category',
+                 'name']
         if all(attr in attrs for attr in ATTRS):
             return super(LXMLSpiderMeta, cls).__new__(cls, name, bases, attrs)
         else:

@@ -31,6 +31,7 @@ class MongoSpiderLoader(object):
                 else:
                     spiders[spid] = spcls
             self._spiders = spiders
+            logger.info('spiders count: {}'.format(len(spiders)))
         return self._spiders
 
     @classmethod
