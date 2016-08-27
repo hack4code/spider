@@ -32,7 +32,7 @@ var DomainLink = React.createClass({
 	render: function() {
 		return (
 			<span className="domain">
-				(<a href={this.props.url}>{this.props.domain}</a>)
+				(<a href="#">{this.props.domain}</a>)
 			</span>
 		)
 	}
@@ -41,11 +41,10 @@ var DomainLink = React.createClass({
 var EntryTitle = React.createClass({
 	render: function() {
 		return (
-			<div><p>
-				<Rank rank={} />
-				<ArticleLink aid={} title={} />
-				<OrginalLink url={} />
-				<DomainLink url={} domain={} />
+			<div><p className="title">
+				<ArticleLink aid={this.props.aid} title={this.props.title} />
+				<OrginalLink url={this.props.url} />
+				<DomainLink domain={this.props.domain} />
 			</p></div>
 		)
 	}
@@ -54,7 +53,7 @@ var EntryTitle = React.createClass({
 var SpiderName = React.createClass({
 	render: function() {
 		return (
-			<li>
+			<li className="spider">
 				<a href={this.props.spid}>[{this.props.spname}]</a>
 			</li>
 		)
@@ -64,7 +63,7 @@ var SpiderName = React.createClass({
 var ArticleTag = React.createClass({
 	render: function() {
 		return (
-			<li>
+			<li className="tag">
 				{this.props.tag}
 			</li>
 	  )
@@ -76,12 +75,28 @@ var EntryTags = React.createClass({
 		var spider= {}
 	  var tags = {}
 		return (
-			<div><ul>
+			<div className="bottom"><ul>
 				<SpiderName spid={spider.id} spname={spider.name} />
 				{tags.map(function(tag) {
 					return <ArticleTag tag={tag} />;
 				})}
 			</ul></div>
+		)
+	}
+});
+
+
+var Entry = React.createClass({
+	var index = 0
+	var entry = {}
+	render: function() {
+		return (
+			<div className="entry">
+				<Rank rank={index} />
+				<EntryTitle aid={entry.aid} title={entry.title} url={entry.url} domain={entry.domain} />
+				<EntryTags spider={entry.spider} tags={entry.tags} />
+				<div className="clearleft"></div>
+			</div>
 		)
 	}
 });
