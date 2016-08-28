@@ -126,3 +126,18 @@ var CategoryEntry = React.createClass({
 		)
 	}
 });
+
+var CagegoryDiv = React.createClass({
+	render: function() {
+		var categories = this.props.categoris;
+		return (
+			<div>
+				<ul className="category">
+					{categories.map(function(category, index) {
+						<CategoryEntry category={category}, id={index} />
+					})};
+				</ul>
+			</div>
+		)
+	}
+});
