@@ -1,3 +1,4 @@
+
 var Rank = React.createClass({
 	render: function() {
 		return (
@@ -87,9 +88,9 @@ var EntryTags = React.createClass({
 
 
 var Entry = React.createClass({
-	var index = 0
-	var entry = {}
 	render: function() {
+		var index = this.props.index;
+		var entry = this.props.entry;
 		return (
 			<div className="entry">
 				<Rank rank={index} />
@@ -97,6 +98,31 @@ var Entry = React.createClass({
 				<EntryTags spider={entry.spider} tags={entry.tags} />
 				<div className="clearleft"></div>
 			</div>
+		)
+	}
+});
+
+var CategoryDiv = React.createClass({
+	render: function() {
+		var divid = this.props.divid;
+		var entries = this.props.entries;
+		return (
+			<div id={divid}>
+				{entries.map(function(entry, index) {
+					return <Entry index={index}, entry={entry} />
+				})}
+			</div>
+		)
+	}
+});
+
+var CategoryEntry = React.createClass({
+	render: function() {
+		var link = "tab" + this.props.id;
+		return (
+			<li className="link">
+				<a href={link}>{this.props.category}</a>
+			</li>
 		)
 	}
 });
