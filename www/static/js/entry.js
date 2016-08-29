@@ -1,4 +1,3 @@
-
 var Rank = React.createClass({
 	render: function() {
 		return (
@@ -102,41 +101,65 @@ var Entry = React.createClass({
 	}
 });
 
-var CategoryDiv = React.createClass({
+var Entries = React.createClass({
 	render: function() {
-		var divid = this.props.divid;
 		var entries = this.props.entries;
 		return (
-			<div id={divid}>
-				{entries.map(function(entry, index) {
-					return <Entry index={index}, entry={entry} />
+			<div>
+				{entries.map(function(entry) {
+					return <Entry entry={entry} />
 				})}
 			</div>
 		)
 	}
 });
 
-var CategoryEntry = React.createClass({
+var Category = React.createClass({
+	onClick: function(category) {
+		this.props.onCategoryClick(category);
+	},
+
 	render: function() {
-		var link = "tab" + this.props.id;
 		return (
 			<li className="link">
-				<a href={link}>{this.props.category}</a>
+				<a>{this.props.category}</a>
 			</li>
 		)
 	}
 });
 
-var CagegoryDiv = React.createClass({
+var CategoryDiv = React.createClass({
 	render: function() {
 		var categories = this.props.categoris;
+		var onCategoryClick = this.props.onCategoryClick;
 		return (
 			<div>
 				<ul className="category">
-					{categories.map(function(category, index) {
-						<CategoryEntry category={category}, id={index} />
+					{categories.map(function(category) {
+						<CategoryEntry category={category} onCategoryClick={onCategoryClick} />
 					})};
 				</ul>
+			</div>
+		)
+	}
+});
+
+var ContentDiv = React.createClass({
+	getInitialState: function() {
+		return {category: "null"};
+	},
+
+	onCategoryClick: function(category) {
+		this.setState({category: category});
+	},
+
+	render: function() {
+		return (
+			<div>
+				<CategoryDiv categories={this.props.categories}, onCategoryClick={this.onCategoryClick} />
+				<hr />
+				<Entries entries={this.props.data[this.state.category]} />
+				<hr />
 			</div>
 		)
 	}

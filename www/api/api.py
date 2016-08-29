@@ -3,10 +3,14 @@
 
 import logging
 import requests
+from datetime import date
 from flask import Blueprint, jsonify, request, session
 
 from app import app
 from model import format_aid, get_article, vote_article
+from model import get_begin_day, get_end_day, \
+    get_entries, get_before_day, get_after_day
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,3 +60,40 @@ def vote():
         return jsonify(err=4, msg='no article')
     vote_article(a)
     return jsonify(err=0, aid=str(aid))
+
+
+def get_day(day):
+    y, m, d = [int(i) for i in day.split('-')]
+    return date(y, m, d)
+
+
+@api_page.route('/entry', methods=['POST'])
+def entry():
+    if 'day' not in requests.form:
+        return jsonify(err=1, msg='no day')
+    try:
+        day_entry = get_day(request.form['day'])
+    except:
+        return jsonify(err=2, msg='invalid day')
+
+    day_begin = get_begin_day()
+
+    if day_begin is None or day_entry is None:
+        return jsonify(err=3, msg='no articles')
+
+    if day_entry < day_begin or day_entry > date.today():
+        return jsonify(err=3, msg='no articles')
+
+    entries = get_entries(day_entry)
+    if (len(entries) == 0):
+        if day_entry != date.today():
+            return jsonify(err=3, msg='no articles')
+        else:
+            day_entry = get_end_day()
+            entries = get_entries(day_entry)
+    day_before = get_before_day(day_entry)
+    day_after = get_after_day(day_entry)
+    return jsonify(err=0,
+                   before=day_before,
+                   after=day_after,
+                   entries=entries)
