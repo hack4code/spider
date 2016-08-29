@@ -67,12 +67,13 @@ def get_day(day):
     return date(y, m, d)
 
 
-@api_page.route('/entry', methods=['POST'])
-def entry():
-    if 'day' not in requests.form:
+@api_page.route('/day', methods=['GET'])
+def day_entries():
+    day = request.args.get('day', None)
+    if day is None:
         return jsonify(err=1, msg='no day')
     try:
-        day_entry = get_day(request.form['day'])
+        day_entry = get_day(day)
     except:
         return jsonify(err=2, msg='invalid day')
 

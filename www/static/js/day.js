@@ -4,14 +4,14 @@ var Rank = React.createClass({
 			<span className="rank">
 				{this.props.rank}
 			</span>
-		);
+		)
 	}
 });
 
 var ArticleLink = React.createClass({
 	render: function() {
 		return (
-			<a href=/a/{this.props.aid} target="_blank">{this.props.title}</a>
+			<a target="_blank">{this.props.title}</a>
 		)
 	}
 });
@@ -20,7 +20,7 @@ var OrginalLink = React.createClass({
 	render: function() {
 		return (
 			<span className="orglink">
-				<a href={this.props.url} target="_blank">
+				<a target="_blank">
 				<i className="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
 			</span>
@@ -72,11 +72,9 @@ var ArticleTag = React.createClass({
 
 var EntryTags = React.createClass({
 	render: function() {
-		var spider= {}
-	  var tags = {}
+	  var tags = this.props.tags;
 		return (
 			<div className="bottom"><ul>
-				<SpiderName spid={spider.id} spname={spider.name} />
 				{tags.map(function(tag) {
 					return <ArticleTag tag={tag} />;
 				})}
@@ -93,8 +91,7 @@ var Entry = React.createClass({
 		return (
 			<div className="entry">
 				<Rank rank={index} />
-				<EntryTitle aid={entry.aid} title={entry.title} url={entry.url} domain={entry.domain} />
-				<EntryTags spider={entry.spider} tags={entry.tags} />
+				<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
 				<div className="clearleft"></div>
 			</div>
 		)
@@ -106,8 +103,8 @@ var Entries = React.createClass({
 		var entries = this.props.entries;
 		return (
 			<div>
-				{entries.map(function(entry) {
-					return <Entry entry={entry} />
+				{entries.map(function(entry, index) {
+					return <Entry index={index} entry={entry} />
 				})}
 			</div>
 		)
@@ -122,7 +119,7 @@ var Category = React.createClass({
 	render: function() {
 		return (
 			<li className="link">
-				<a>{this.props.category}</a>
+				<a href="#" onClick={this.onClick.bind(this, this.props.category)}>{this.props.category}</a>
 			</li>
 		)
 	}
@@ -130,14 +127,14 @@ var Category = React.createClass({
 
 var CategoryDiv = React.createClass({
 	render: function() {
-		var categories = this.props.categoris;
+		var categories = this.props.categories;
 		var onCategoryClick = this.props.onCategoryClick;
 		return (
 			<div>
 				<ul className="category">
 					{categories.map(function(category) {
-						<CategoryEntry category={category} onCategoryClick={onCategoryClick} />
-					})};
+						return <Category category={category} onCategoryClick={onCategoryClick} />;
+					})}
 				</ul>
 			</div>
 		)
@@ -145,22 +142,51 @@ var CategoryDiv = React.createClass({
 });
 
 var ContentDiv = React.createClass({
+	loadFromServer: function() {
+		console.log("loadFromServer");
+		$.getJSON("/api/day", {day: "2016-06-24"}).done(function(data) {
+			var categories = [];
+			var entries = data["entries"];
+			$.each(entries, function(key, val) {
+				categories.push(key);
+			});
+			this.setState({category: categories[0], data: entries});
+		}.bind(this));
+	},
+
 	getInitialState: function() {
-		return {category: "null"};
+		return {category: "init", data: {init: []}};
+	},
+
+	componentDidMount: function() {
+		this.loadFromServer();
 	},
 
 	onCategoryClick: function(category) {
+		console.log(category);
 		this.setState({category: category});
 	},
 
 	render: function() {
+		var categories = [];
+		$.each(this.state.data, function(key, val) {
+			categories.push(key);
+		});
+
+		var entries = this.state.data[this.state.category];
+
 		return (
 			<div>
-				<CategoryDiv categories={this.props.categories}, onCategoryClick={this.onCategoryClick} />
+				<CategoryDiv categories={categories} onCategoryClick={this.onCategoryClick} />
 				<hr />
-				<Entries entries={this.props.data[this.state.category]} />
+				<Entries entries={entries} />
 				<hr />
 			</div>
 		)
 	}
 });
+
+ReactDOM.render(
+  <ContentDiv />,
+  document.getElementById('content')
+);

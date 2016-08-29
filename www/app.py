@@ -69,3 +69,6 @@ from f import feed_page
 app.register_blueprint(feed_page, url_prefix='/f')
 from api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
+
+from j import day_page
+app.register_blueprint(day_page, url_prefix='/j')

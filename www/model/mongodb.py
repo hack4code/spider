@@ -129,7 +129,7 @@ def get_entries(day):
             'link': 1,
         }
     )
-    el = [Entry_Day(r['_id'],
+    el = [Entry_Day(str(r['_id']),
                     r['title'],
                     r['category'],
                     r['source'],

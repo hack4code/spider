@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+
+{% block title %}{{ day_entry }}{% endblock %}
+
+{%block main %}
+<div class="epage">
+
+<script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
+<script src="https://npmcdn.com/react@15.3.1/dist/react.js"></script>
+<script src="https://npmcdn.com/react-dom@15.3.1/dist/react-dom.js"></script>
+<script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+<script src="https://npmcdn.com/remarkable@1.6.2/dist/remarkable.min.js"></script>
+<script type="text/babel" src="{{ url_for('static', filename='js/day.js') }}"></script>
+
+<!-- title -->
+<div class="header">
+  <img src=/static/image/main.png width=48 height=48>
+</div>
+
+<div id="content">
+</div>
+
+{% endblock %}
