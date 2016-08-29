@@ -74,26 +74,33 @@ var ArticleTag = React.createClass({
 
 var EntryTags = React.createClass({
 	render: function() {
+		var spider = this.props.spider;
+		var tags = this.props.tags;
 		return (
 			<div className="bottom"><ul>
-				<SpiderTag spider={this.props.spider} />
+				<SpiderTag spider={spider} />
+				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
 			</ul></div>
 		)
 	}
 });
-
 
 var Entry = React.createClass({
 	render: function() {
 		var index = this.props.index;
 		var entry = this.props.entry;
 		var spider = {spid: entry[5], spname: entry[3]};
-		console.log(entry);
+		var tags = entry[4];
+		if (!tags) {
+			tags = [];
+		}
+		console.log(tags);
+
 		return (
 			<div className="entry">
 				<Rank rank={index} />
 				<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
-				<EntryTags spider={spider} />
+				<EntryTags spider={spider} tags={tags} />
 				<div className="clearleft"></div>
 			</div>
 		)
