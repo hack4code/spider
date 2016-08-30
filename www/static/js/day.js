@@ -96,7 +96,6 @@ var Entry = React.createClass({
 		if (!tags) {
 			tags = [];
 		}
-		console.log(tags);
 
 		return (
 			<div className="entry">
@@ -141,6 +140,10 @@ var Category = React.createClass({
 			textDecoration: "none"
 		};
 
+		if (this.props.focus == this.props.category) {
+			astyle["color"] = "#222222";
+		}
+
 		return (
 			<li style={listyle}>
 				<a style={astyle} href="#" onClick={this.onClick.bind(this, this.props.category)}>{this.props.category}</a>
@@ -153,11 +156,13 @@ var CategoryDiv = React.createClass({
 	render: function() {
 		var categories = this.props.categories;
 		var onCategoryClick = this.props.onCategoryClick;
+		var categoryFocused = this.props.categoryFocused;
+
 		return (
 			<div>
 				<ul className="category">
 					{categories.map(function(category) {
-						return <Category category={category} onCategoryClick={onCategoryClick} />;
+						return <Category focus={categoryFocused} category={category} onCategoryClick={onCategoryClick} />;
 					})}
 				</ul>
 			</div>
@@ -185,7 +190,7 @@ var ContentDiv = React.createClass({
 		var entries = data[this.state.category];
 		return (
 			<div>
-				<CategoryDiv categories={categories} onCategoryClick={this.onCategoryClick} />
+				<CategoryDiv categoryFocused={this.state.category} categories={categories} onCategoryClick={this.onCategoryClick} />
 				<hr />
 				<Entries entries={entries} />
 				<hr />
