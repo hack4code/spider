@@ -172,6 +172,23 @@ var CategoryDiv = React.createClass({
 	}
 });
 
+var Hr = React.createClass({
+	render: function() {
+		var style = {
+			border: "none",
+			height: 1,
+			color: "#EEE",
+			backgroundColor: "#EEE",
+			marginBottom: "1em",
+			clear: "both"
+		};
+
+		return (
+			<hr style={style} />
+		)
+	}
+});
+
 var ContentDiv = React.createClass({
 	getInitialState: function() {
 		return {category: "新闻"};
@@ -193,9 +210,9 @@ var ContentDiv = React.createClass({
 		return (
 			<div>
 				<CategoryDiv categoryFocused={this.state.category} categories={categories} onCategoryClick={this.onCategoryClick} />
-				<hr />
+				<Hr />
 				<Entries entries={entries} />
-				<hr />
+				<Hr />
 			</div>
 		)
 	}
@@ -251,6 +268,7 @@ var App = React.createClass({
 		$.getJSON("/api/day", {day: day}).done(function(data) {
 			var err = data["err"];
 			if (!err) {
+				document.title = day;
 				this.setState({day_before: data["day_before"],
 											 day_after: data["day_after"],
 											 data: data["data"]});
