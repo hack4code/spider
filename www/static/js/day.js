@@ -128,9 +128,22 @@ var Category = React.createClass({
 	},
 
 	render: function() {
+		var listyle = {
+			display: "inline-block",
+		  marginRight: "1.6em"
+		};
+
+		var astyle = {
+			fontFamily: "Pingfang SC, Microsoft YaHei",
+			fontWeight: "bold",
+			fontSize: "1.0em",
+			color: "#666666",
+			textDecoration: "none"
+		};
+
 		return (
-			<li className="link">
-				<a href="#" onClick={this.onClick.bind(this, this.props.category)}>{this.props.category}</a>
+			<li style={listyle}>
+				<a style={astyle} href="#" onClick={this.onClick.bind(this, this.props.category)}>{this.props.category}</a>
 			</li>
 		)
 	}
