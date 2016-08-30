@@ -140,7 +140,7 @@ var Category = React.createClass({
 			textDecoration: "none"
 		};
 
-		if (this.props.focus == this.props.category) {
+		if (this.props.focus) {
 			astyle["color"] = "#222222";
 		}
 
@@ -162,7 +162,9 @@ var CategoryDiv = React.createClass({
 			<div>
 				<ul className="category">
 					{categories.map(function(category) {
-						return <Category focus={categoryFocused} category={category} onCategoryClick={onCategoryClick} />;
+						var focus = (categoryFocused == category);
+						console.log(focus);
+						return <Category focus={focus} category={category} onCategoryClick={onCategoryClick} />;
 					})}
 				</ul>
 			</div>
