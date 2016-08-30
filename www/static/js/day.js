@@ -1,7 +1,24 @@
 var Rank = React.createClass({
 	render: function() {
+		var style = {
+		 float: "left",
+		 color: "#c6c6c6",
+		 textAlign: "right",
+		 fontFamily: "arial",
+		 fontSize: "medium",
+		 fontWeight: "bold",
+		 overflow: "hidden",
+		 width: "3em",
+		 paddingRight: "2em",
+		 marginTop: "1.2em",
+/*
+		 paddingLeft: "1em",
+		 marginLeft: "-2em"
+*/
+		};
+
 		return (
-			<span className="rank">
+			<span style={style}>
 				{this.props.rank}
 			</span>
 		)
