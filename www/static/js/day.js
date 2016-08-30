@@ -10,8 +10,9 @@ var Rank = React.createClass({
 
 var ArticleLink = React.createClass({
 	render: function() {
+		var url = "/a/" + this.props.aid;
 		return (
-			<a target="_blank">{this.props.title}</a>
+			<a href={url} target="_blank">{this.props.title}</a>
 		)
 	}
 });
@@ -20,7 +21,7 @@ var OrginalLink = React.createClass({
 	render: function() {
 		return (
 			<span className="orglink">
-				<a target="_blank">
+				<a href={this.props.url} target="_blank">
 				<i className="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
 			</span>
@@ -30,9 +31,10 @@ var OrginalLink = React.createClass({
 
 var DomainLink = React.createClass({
 	render: function() {
+		var url = "http://" + this.props.domain;
 		return (
 			<span className="domain">
-				(<a href="#">{this.props.domain}</a>)
+				(<a href={url} target="_blank">{this.props.domain}</a>)
 			</span>
 		)
 	}
