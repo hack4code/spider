@@ -122,7 +122,10 @@ var Entries = React.createClass({
 });
 
 var Category = React.createClass({
-	onClick: function(category) {
+	onClick: function(e, category) {
+		e.preventDefault();
+		e.stopPropagation();
+
 		this.props.onCategoryClick(category);
 	},
 
@@ -146,7 +149,7 @@ var Category = React.createClass({
 
 		return (
 			<li style={listyle}>
-				<a style={astyle} href="#" onClick={this.onClick.bind(this, this.props.category)}>{this.props.category}</a>
+				<a href="#" style={astyle} onClick={(event)=>this.onClick(event, this.props.category)}>{this.props.category}</a>
 			</li>
 		)
 	}
@@ -219,7 +222,10 @@ var ContentDiv = React.createClass({
 });
 
 var DayLink = React.createClass({
-	onClick: function(day) {
+	onClick: function(e, day) {
+		e.preventDefault();
+		e.stopPropagation();
+
 		this.props.onDayLinkClick(day);
 	},
 
@@ -235,7 +241,7 @@ var DayLink = React.createClass({
 
 		return (
 			<span className={this.props.handType}>
-				<a href="#" onClick={this.onClick.bind(this, this.props.day)}>
+				<a href="#" onClick={(event)=>this.onClick(event, this.props.day)}>
 					<i className={cn} aria-hidden="true"></i>
 		  	</a>
 			</span>
