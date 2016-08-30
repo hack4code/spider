@@ -93,8 +93,12 @@ def day_entries():
             day_entry = get_end_day()
             entries = get_entries(day_entry)
     day_before = get_before_day(day_entry)
+    if day_before is not None:
+        day_before = day_before.strftime('%Y-%m-%d')
     day_after = get_after_day(day_entry)
+    if day_after is not None:
+        day_after = day_after.strftime('%Y-%m-%d')
     return jsonify(err=0,
-                   before=day_before,
-                   after=day_after,
-                   entries=entries)
+                   day_before=day_before,
+                   day_after=day_after,
+                   data=entries)

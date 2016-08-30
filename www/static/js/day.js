@@ -151,39 +151,23 @@ var CategoryDiv = React.createClass({
 });
 
 var ContentDiv = React.createClass({
-	loadFromServer: function() {
-		console.log("loadFromServer");
-		$.getJSON("/api/day", {day: "2016-06-24"}).done(function(data) {
-			var categories = [];
-			var entries = data["entries"];
-			$.each(entries, function(key, val) {
-				categories.push(key);
-			});
-			this.setState({category: categories[0], data: entries});
-		}.bind(this));
-	},
-
 	getInitialState: function() {
-		return {category: "init", data: {init: []}};
-	},
-
-	componentDidMount: function() {
-		this.loadFromServer();
+		return {category: "新闻"};
 	},
 
 	onCategoryClick: function(category) {
-		console.log(category);
 		this.setState({category: category});
 	},
 
 	render: function() {
+		var data = this.props.data;
 		var categories = [];
-		$.each(this.state.data, function(key, val) {
+
+		$.each(data, function(key, val) {
 			categories.push(key);
 		});
 
-		var entries = this.state.data[this.state.category];
-
+		var entries = data[this.state.category];
 		return (
 			<div>
 				<CategoryDiv categories={categories} onCategoryClick={this.onCategoryClick} />
@@ -195,7 +179,81 @@ var ContentDiv = React.createClass({
 	}
 });
 
-ReactDOM.render(
-  <ContentDiv />,
-  document.getElementById('content')
-);
+var DayLink = React.createClass({
+	onClick: function(day) {
+		this.props.onDayLinkClick(day);
+	},
+
+	render: function() {
+		var cn;
+
+		if (this.props.handType == "handright") {
+			cn = "fa fa-hand-o-right";
+		}
+		else {
+			cn = "fa fa-hand-o-left";
+		}
+
+		return (
+			<span className={this.props.handType}>
+				<a href="#" onClick={this.onClick.bind(this, this.props.day)}>
+					<i className={cn} aria-hidden="true"></i>
+		  	</a>
+			</span>
+		)
+	}
+});
+
+var DayLinkDiv = React.createClass({
+	render: function() {
+		return (
+			<div className="daylink">
+				<DayLink handType="handleft" day={this.props.day_after} onDayLinkClick={this.props.onDayLinkClick} />
+				<DayLink handType="handright" day={this.props.day_before} onDayLinkClick={this.props.onDayLinkClick} />
+			</div>
+		)
+	}
+});
+
+var App = React.createClass({
+	getInitialState: function() {
+		return {day_before: null,
+						day_after: null,
+						data:{"新闻": [],
+										 "技术": [],
+										 "科技": [],
+										 "安全": []}}
+	},
+
+	setDay: function(day) {
+		$.getJSON("/api/day", {day: day}).done(function(data) {
+			var err = data["err"];
+			if (!err) {
+				this.setState({day_before: data["day_before"],
+											 day_after: data["day_after"],
+											 data: data["data"]});
+			}
+		}.bind(this));
+	},
+
+	onDayLinkClick: function(day) {
+		if (day) {
+			this.setDay(day);
+		}
+	},
+
+	componentDidMount: function() {
+		this.setDay(document.title);
+	},
+
+	render: function() {
+			return (
+				<div>
+					<ContentDiv data={this.state.data} />
+					<DayLinkDiv day_after={this.state.day_after} day_before={this.state.day_before} onDayLinkClick={this.onDayLinkClick} />
+				</div>
+			)
+		}
+});
+
+ReactDOM.render(<App />, document.getElementById('content'));
