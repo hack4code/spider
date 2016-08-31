@@ -188,7 +188,6 @@ var CategoryDiv = React.createClass({
 				<ul className="category">
 					{categories.map(function(category) {
 						var focus = (categoryFocused == category);
-						console.log(focus);
 						return <Category focus={focus} category={category} onCategoryClick={onCategoryClick} />;
 					})}
 				</ul>
@@ -236,6 +235,12 @@ var ContentDiv = React.createClass({
 	getInitialState: function() {
 		var categories = this.getCategories();
 		return {category: categories[0]};
+	},
+
+	componentDidMount: function() {
+		var categories = this.getCategories();
+		console.log(categories[0]);
+		this.setState({category: categories[0]});
 	},
 
 	onCategoryClick: function(category) {
@@ -313,6 +318,7 @@ var App = React.createClass({
 
 			if (!err) {
 				document.title = day;
+				window.history.pushState(day, day, "/d/" + day);
 				this.setState({day_before: data["day_before"],
 											 day_after: data["day_after"],
 											 data: data["data"]});
