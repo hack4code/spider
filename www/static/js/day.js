@@ -215,8 +215,18 @@ var Hr = React.createClass({
 });
 
 var ContentDiv = React.createClass({
+	getCategories: function() {
+		var data = this.props.data;
+		var categories = [];
+		$.each(data, function(key, val) {
+			categories.push(key);
+		});
+		return categories;
+	},
+
 	getInitialState: function() {
-		return {category: "新闻"};
+		var categories = this.getCategories();
+		return {category: categories[0]};
 	},
 
 	onCategoryClick: function(category) {
@@ -224,14 +234,10 @@ var ContentDiv = React.createClass({
 	},
 
 	render: function() {
-		var categories = [];
 		var data = this.props.data;
-
-		$.each(data, function(key, val) {
-			categories.push(key);
-		});
-
+		var categories = this.getCategories();
 		var entries = data[this.state.category];
+
 		return (
 			<div>
 				<CategoryDiv categoryFocused={this.state.category} categories={categories} onCategoryClick={this.onCategoryClick} />
