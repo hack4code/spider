@@ -14,6 +14,7 @@ services:
                 expose:
                         - "27017"
                 volumes:
+                        - ./mongo/script/:/script/
                         - ./mongo/data/:/data/db/
                         - ~/db/:/back/
                 networks:
