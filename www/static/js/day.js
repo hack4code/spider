@@ -221,7 +221,16 @@ var ContentDiv = React.createClass({
 		$.each(data, function(key, val) {
 			categories.push(key);
 		});
-		return categories;
+		return categories.sort(function(a, b) {
+			var sortList = {
+				"技术": 0,
+				"数据库": 1,
+				"安全": 2,
+				"科技": 3,
+				"新闻": 4
+			};
+			return sortList[a] > sortList[b];
+		});
 	},
 
 	getInitialState: function() {
