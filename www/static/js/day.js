@@ -27,9 +27,17 @@ var Rank = React.createClass({
 
 var ArticleLink = React.createClass({
 	render: function() {
+		var style = {
+			fontFamily: "verdana, helvetica, Pingfang SC, Microsoft YaHei,arial, sans-serif",
+			fontSize: "0.9em",
+			fontWeight: "normal",
+		};
 		var url = "/a/" + this.props.aid;
+
 		return (
-			<a href={url} target="_blank">{this.props.title}</a>
+			<span className="articlelink">
+				<a style={style} href={url} target="_blank">{this.props.title}</a>
+			</span>
 		)
 	}
 });
@@ -38,12 +46,12 @@ var OrginalLink = React.createClass({
 	render: function() {
 		var style = {
 			padding: "0 6px",
-		  fontSize: "x-small"
+		  fontSize: "x-small",
 		};
 
 		return (
-			<span style={style}>
-				<a href={this.props.url} target="_blank">
+			<span className="articlelink">
+				<a style={style} href={this.props.url} target="_blank">
 				<i className="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
 			</span>
@@ -53,10 +61,17 @@ var OrginalLink = React.createClass({
 
 var DomainLink = React.createClass({
 	render: function() {
+		var style = {
+			color: "#888",
+			fontSize: "x-small",
+			whiteSpace: "nowrap",
+			padding: "0 1px"
+		};
 		var url = "http://" + this.props.domain;
+
 		return (
-			<span className="domain">
-				(<a href={url} target="_blank">{this.props.domain}</a>)
+			<span>
+				<a style={style} href={url} target="_blank">({this.props.domain})</a>
 			</span>
 		)
 	}
@@ -64,8 +79,14 @@ var DomainLink = React.createClass({
 
 var EntryTitle = React.createClass({
 	render: function() {
+		var style = {
+			display: "block",
+			overflow: "hidden",
+			margin: "3px 0"
+		};
+
 		return (
-			<div><p className="title">
+			<div><p style={style}>
 				<ArticleLink aid={this.props.aid} title={this.props.title} />
 				<OrginalLink url={this.props.url} />
 				<DomainLink domain={this.props.domain} />
@@ -214,8 +235,7 @@ var Hr = React.createClass({
 });
 
 var ContentDiv = React.createClass({
-	getCategories: function() {
-		var data = this.props.data;
+	getCategories: function(data) {
 		var categories = [];
 		$.each(data, function(key, val) {
 			categories.push(key);
@@ -233,14 +253,12 @@ var ContentDiv = React.createClass({
 	},
 
 	getInitialState: function() {
-		var categories = this.getCategories();
+		var categories = this.getCategories(this.props.data);
 		return {category: categories[0]};
 	},
 
-	componentDidMount: function() {
-		var categories = this.getCategories();
-		console.log(categories[0]);
-		this.setState({category: categories[0]});
+	componentWillReceiveProps: function(nextProps) {
+		this.setState({category: this.getCategories(nextProps.data)[0]});
 	},
 
 	onCategoryClick: function(category) {
@@ -249,7 +267,7 @@ var ContentDiv = React.createClass({
 
 	render: function() {
 		var data = this.props.data;
-		var categories = this.getCategories();
+		var categories = this.getCategories(data);
 		var entries = data[this.state.category];
 
 		return (

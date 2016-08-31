@@ -630,3 +630,20 @@ label {
 #alist li {
  margin-bottom: -0.8em;
 }
+
+
+/*
+ * react
+ */
+
+.articlelink a {
+	color: blue;
+}
+
+.articlelink a:visited {
+	color: #551a8b;
+}
+
+.articlelink A {
+	text-decoration: none;
+}
