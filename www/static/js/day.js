@@ -36,8 +36,13 @@ var ArticleLink = React.createClass({
 
 var OrginalLink = React.createClass({
 	render: function() {
+		var style = {
+			padding: "0 6px",
+		  fontSize: "x-small"
+		};
+
 		return (
-			<span className="orglink">
+			<span style={style}>
 				<a href={this.props.url} target="_blank">
 				<i className="fa fa-paper-plane-o" aria-hidden="true"></i>
 				</a>
@@ -219,8 +224,8 @@ var ContentDiv = React.createClass({
 	},
 
 	render: function() {
-		var data = this.props.data;
 		var categories = [];
+		var data = this.props.data;
 
 		$.each(data, function(key, val) {
 			categories.push(key);
@@ -258,7 +263,7 @@ var DayLink = React.createClass({
 
 		return (
 			<span className={this.props.handType}>
-				<a href="#" onClick={(event)=>this.onClick(event, this.props.day)}>
+				<a href="#" onClick={(e)=>this.onClick(e, this.props.day)}>
 					<i className={cn} aria-hidden="true"></i>
 		  	</a>
 			</span>
@@ -282,14 +287,15 @@ var App = React.createClass({
 		return {day_before: null,
 						day_after: null,
 						data:{"新闻": [],
-										 "技术": [],
-										 "科技": [],
-										 "安全": []}}
+									"技术": [],
+									"科技": [],
+									"安全": []}}
 	},
 
 	setDay: function(day) {
 		$.getJSON("/api/day", {day: day}).done(function(data) {
 			var err = data["err"];
+
 			if (!err) {
 				document.title = day;
 				this.setState({day_before: data["day_before"],
