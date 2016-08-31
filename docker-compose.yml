@@ -1,0 +1,69 @@
+version: "2"
+services:
+        redis:
+                image: redis
+                container_name: redis
+                expose:
+                        - "6379"
+                networks:
+                        - redis
+
+        mongodb:
+                image: mongo
+                container_name: mongodb
+                expose:
+                        - "27017"
+                volumes:
+                        - ./script:/script:ro
+                        - ./mongodb/:/data/db/
+                        - ~/db/:/back/
+                networks:
+                        - mongodb
+
+        spider:
+                build:
+                        context: .
+                        dockerfile: Dockerfile-spider
+                container_name: spider
+                depends_on:
+                        - redis
+                        - mongodb
+                networks:
+                        - redis
+                        - mongodb
+                links:
+                        - redis
+                        - mongodb
+                volumes:
+                        - ./spider/:/spider/
+                command: su -m spider -c "celery -A task.spider worker -l info"
+
+        gw:
+                build:
+                        context: .
+                        dockerfile: Dockerfile-gw
+                container_name: gw
+                ports:
+                        - "8001:8001"
+                depends_on:
+                        - redis
+                        - mongodb
+                networks:
+                        - gw
+                        - redis
+                        - mongodb
+                links:
+                        - redis
+                        - mongodb
+                volumes:
+                        - ./spider/:/spider/
+                command: su -m gw -c "uwsgi --ini-paste uwsgi.ini"
+
+
+networks:
+        gw:
+                driver: bridge
+        redis:
+                driver: bridge
+        mongodb:
+                driver: bridge
