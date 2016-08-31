@@ -14,8 +14,8 @@ services:
                 expose:
                         - "27017"
                 volumes:
-                        - ./script:/script:ro
-                        - ./mongodb/:/data/db/
+                        - ./mongo/script:/script:ro
+                        - ./mongo/data/:/data/db/
                         - ~/db/:/back/
                 networks:
                         - mongodb
@@ -59,6 +59,37 @@ services:
                         - ./spider/:/spider/
                 command: su -m gw -c "uwsgi --ini-paste uwsgi.ini"
 
+        www:
+                build:
+                        context: .
+                        dockerfile: Dockerfile-www
+                container_name: www
+                networks:
+                        - mongodb
+                        - gw
+                        - www
+                expose:
+                        - "8000"
+                volumes:
+                        - ./www/:/www/
+                command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
+
+        nginx:
+                image: nginx
+                container_name: nginx
+                depends_on:
+                        - www
+                volumes:
+                        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+                        - ./nginx/www.conf:/etc/nginx/www.conf:ro
+                        - ./www/static/:/www/static/:ro
+                        - ./www/fonts/:/www/fonts:ro
+                        - /etc/letsencrypt/archive/wartalker.me:/cert/:ro
+                networks:
+                        - www
+                ports:
+                        - "80:80"
+                        - "443:443"
 
 networks:
         gw:
@@ -66,4 +97,6 @@ networks:
         redis:
                 driver: bridge
         mongodb:
+                driver: bridge
+        www:
                 driver: bridge
