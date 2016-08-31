@@ -1,7 +1,7 @@
 FROM python:2.7
 
-# ENV http_proxy socks5://192.168.1.135:8080
-# ENV https_proxy socks5://192.168.1.135:8080
+# ENV http_proxy http://103.55.27.122:8888
+# ENV https_proxy http://103.55.27.122:8888
 
 RUN mkdir /spider/
 ADD ./spider/requirements.txt /spider/requirements.txt
