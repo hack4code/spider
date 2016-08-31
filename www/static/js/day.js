@@ -318,7 +318,7 @@ var App = React.createClass({
 
 			if (!err) {
 				document.title = day;
-				window.history.pushState(day, day, "/d/" + day);
+				window.history.pushState(day, day, "/j/" + day);
 				this.setState({day_before: data["day_before"],
 											 day_after: data["day_after"],
 											 data: data["data"]});
