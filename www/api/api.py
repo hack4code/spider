@@ -83,6 +83,8 @@ def day_entries():
         return jsonify(err=1, msg='no articles')
 
     entries = get_entries(day_entry)
+    if len(entries) == 0:
+        entries = None
 
     day_before = get_before_day(day_entry)
     if day_before is not None:

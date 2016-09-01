@@ -1,13 +1,18 @@
 var NavSector = React.createClass({
 	render: function() {
+		var style = {
+			fontSize: "0.6em",
+			fontWeight: "bold"
+		};
+
 		return (
-			<div>
-				<h2>导航</h2>
+			<div style={style}>
+				<p>导航</p>
 				<ul>
-					<li><h3>/d/Y-M-D: 按日期显示文章</h3></li>
-					<li><h3>/l/p: 所有订阅源</h3></li>
-					<li><h3>/f/atom: 添加rss订阅源</h3></li>
-					<li><h3>/f/blog: 添加blog订阅源</h3></li>
+					<li><p>/d/Y-M-D: 按日期显示文章</p></li>
+					<li><p>/l/p: 所有订阅源</p></li>
+					<li><p>/f/atom: 添加rss订阅源</p></li>
+					<li><p>/f/blog: 添加blog订阅源</p></li>
 				</ul>
 			</div>
 		)
@@ -16,12 +21,17 @@ var NavSector = React.createClass({
 
 var DeclareSector = React.createClass({
 	render: function() {
+		var style = {
+			fontSize: "0.6em",
+			fontWeight: "bold"
+		};
+
 		return (
-			<div>
-				<h2>声明</h2>
+			<div style={style}>
+				<p>声明</p>
 				<ul>
-					<li><h3>所有文章标题处均附有原文链接</h3></li>
-					<li><h3>所有内容来自互联网，任何商业用途请联系原作者</h3></li>
+					<li><p>所有文章标题处均附有原文链接</p></li>
+					<li><p>所有内容来自互联网，任何商业用途请联系原作者</p></li>
 				</ul>
 			</div>
 		)
@@ -51,7 +61,7 @@ var SpiderButton = React.createClass({
 
 		return (
 			<li><div>
-				<h3>{this.props.desc}</h3>
+				<p>{this.props.desc}</p>
 				<a style={style} href={this.props.url} target="_blank">{this.props.title}</a>
 			</div></li>
 		)
@@ -60,9 +70,14 @@ var SpiderButton = React.createClass({
 
 var SubmitSector = React.createClass({
 	render: function() {
+		var style = {
+			fontSize: "0.6em",
+			fontWeight: "bold"
+		};
+
 		return (
-			<div>
-				<h2>Spider</h2>
+			<div style={style}>
+				<p>Spider</p>
 				<ul>
 					<SpiderButton desc="添加rss源，支持rss与atom" url="/f/atom" title="生成RSS Spider" />
 					<SpiderButton desc="添加blog,用于没有rss输出的blog" url="/f/blog" title="生成Blog Spider" />
@@ -75,13 +90,14 @@ var SubmitSector = React.createClass({
 var AddressSector = React.createClass({
 	render: function() {
 		var style = {
-			fontSize: "1.2em",
+			fontSize: "0.6em",
+			fontWeight: "bold"
 		};
 
 		return (
-			<div>
-			<h2>联系方式</h2>
-			<ul style={style} >
+			<div style={style}>
+			<p>联系方式</p>
+			<ul>
 				<li>
 				<p>email: <a href="mailto:wartalker@gmail.com">wartalker@gmail.com</a></p>
 				</li>
@@ -102,7 +118,6 @@ var FloatSide = React.createClass({
 			width: "300",
 			padding: "0 32px",
 			fontFamily: "sans-serif",
-			fontSize: "0.6em",
 			color: "dimgray"
 		};
 
@@ -446,6 +461,14 @@ var ContentDiv = React.createClass({
 		});
 	},
 
+	getDefaultProps: function() {
+	   return { data: {"新闻": [],
+						 				 "技术": [],
+						         "科技": [],
+						         "安全": []},
+					  }
+	},
+
 	getInitialState: function() {
 		var categories = this.getCategories(this.props.data);
 		return {category: categories[0]};
@@ -530,11 +553,7 @@ var DayLinkDiv = React.createClass({
 var App = React.createClass({
 	getInitialState: function() {
 		return {day_before: null,
-						day_after: null,
-						data:{"新闻": [],
-									"技术": [],
-									"科技": [],
-									"安全": []}}
+						day_after: null}
 	},
 
 	setDay: function(day) {
@@ -542,11 +561,18 @@ var App = React.createClass({
 			var err = data["err"];
 
 			if (!err) {
+				var entry_data = data["data"];
+
 				document.title = day;
-				window.history.pushState(day, day, "/j/" + day);
-				this.setState({day_before: data["day_before"],
-											 day_after: data["day_after"],
-											 data: data["data"]});
+				window.history.pushState(day, day, "/d/" + day);
+				if (entry_data !== null)
+								this.setState({day_before: data["day_before"],
+															 day_after: data["day_after"],
+															 data: entry_data});
+				else {
+								this.setState({day_before: data["day_before"],
+															 day_after: data["day_after"]});
+				}
 			}
 		}.bind(this));
 	},
