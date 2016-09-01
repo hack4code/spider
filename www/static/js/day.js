@@ -115,7 +115,7 @@ var FloatSide = React.createClass({
 		var style = {
 			display: "block",
 			float: "right",
-			width: "300",
+			width: "300px",
 			padding: "0 32px",
 			fontFamily: "sans-serif",
 			color: "dimgray"
@@ -271,7 +271,7 @@ var ArticleTag = React.createClass({
 			fontSize: "x-small",
 			color: "#999",
 			backgroundColor: "#eee",
-			borderRadius: "30",
+			borderRadius: "30px",
 			padding: "1px 10px 0",
 			whiteSpace: "nowrap",
 			margin: "0 1px 0 0",
