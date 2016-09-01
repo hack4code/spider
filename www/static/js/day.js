@@ -254,10 +254,11 @@ var SpiderTag = React.createClass({
 		};
 		var spid = this.props.spider.spid;
 		var spname = this.props.spider.spname;
+		var url = "/p/" + spid;
 
 		return (
 			<span>
-				<a style={style} href="#">[{spname}]</a>
+				<a style={style} href={url} target="_blank">[{spname}]</a>
 			</span>
 		)
 	}
