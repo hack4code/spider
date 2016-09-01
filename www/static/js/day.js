@@ -1,3 +1,17 @@
+var ClearLeft = React.createClass({
+	render: function() {
+		var style = {
+			clear: "left",
+			height: 0
+		};
+
+		return (
+			<div style={style}>
+			</div>
+		)
+	}
+});
+
 var Rank = React.createClass({
 	render: function() {
 		var style = {
@@ -86,11 +100,13 @@ var EntryTitle = React.createClass({
 		};
 
 		return (
-			<div><p style={style}>
+			<div>
+			<p style={style}>
 				<ArticleLink aid={this.props.aid} title={this.props.title} />
 				<OrginalLink url={this.props.url} />
 				<DomainLink domain={this.props.domain} />
-			</p></div>
+			</p>
+			</div>
 		)
 	}
 });
@@ -158,11 +174,17 @@ var TagList = React.createClass({
 
 var EntryTags = React.createClass({
 	render: function() {
+		var style = {
+			display: "flex-inline",
+			flexDirection: "column",
+			flexWrap: "wrap",
+			alignItems: "center"
+		};
 		var spider = this.props.spider;
 		var tags = this.props.tags;
 
 		return (
-			<div>
+			<div style={style}>
 				<SpiderTag spider={spider} />
 				<TagList tags={tags} />
 			</div>
@@ -188,11 +210,14 @@ var Entry = React.createClass({
 		}
 
 		return (
-			<div style={style}>
-				<Rank rank={index} />
-				<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
-				<EntryTags spider={spider} tags={tags} />
-				<div className="clearleft"></div>
+			<div>
+				<div style={style}>
+					<Rank rank={index} />
+					<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
+					<EntryTags spider={spider} tags={tags} />
+					<ClearLeft />
+				</div>
+				<ClearLeft />
 			</div>
 		)
 	}
@@ -247,13 +272,18 @@ var Category = React.createClass({
 
 var CategoryDiv = React.createClass({
 	render: function() {
+		var style = {
+			listStyle: "none",
+			marginBottom: 0,
+			marginLeft: "2em"
+		};
 		var categories = this.props.categories;
 		var onCategoryClick = this.props.onCategoryClick;
 		var categoryFocused = this.props.categoryFocused;
 
 		return (
 			<div>
-				<ul className="category">
+				<ul style={style}>
 					{categories.map(function(category) {
 						var focus = (categoryFocused == category);
 						return <Category focus={focus} category={category} onCategoryClick={onCategoryClick} />;
@@ -338,16 +368,23 @@ var DayLink = React.createClass({
 
 	render: function() {
 		var cn;
+		var style;
 
 		if (this.props.handType == "handright") {
 			cn = "fa fa-hand-o-right";
+			style = {
+				float: "right"
+			}
 		}
 		else {
 			cn = "fa fa-hand-o-left";
+			style = {
+				float: "left"
+			}
 		}
 
 		return (
-			<span className={this.props.handType}>
+			<span style={style}>
 				<a href="#" onClick={(e)=>this.onClick(e, this.props.day)}>
 					<i className={cn} aria-hidden="true"></i>
 		  	</a>
@@ -358,8 +395,13 @@ var DayLink = React.createClass({
 
 var DayLinkDiv = React.createClass({
 	render: function() {
+		var style = {
+			paddingLeft: "40%",
+			paddingRight: "40%"
+		};
+
 		return (
-			<div className="daylink">
+			<div style={style}>
 				<DayLink handType="handleft" day={this.props.day_after} onDayLinkClick={this.props.onDayLinkClick} />
 				<DayLink handType="handright" day={this.props.day_before} onDayLinkClick={this.props.onDayLinkClick} />
 			</div>
