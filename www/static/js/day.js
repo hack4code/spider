@@ -82,7 +82,7 @@ var EntryTitle = React.createClass({
 		var style = {
 			display: "block",
 			overflow: "hidden",
-			margin: "3px 0"
+			margin: 0
 		};
 
 		return (
@@ -97,23 +97,62 @@ var EntryTitle = React.createClass({
 
 var SpiderTag = React.createClass({
 	render: function() {
+		var style = {
+			color: "#999",
+			fontSize: "x-small",
+			fontWeight: "bold",
+			marginRight: "1em",
+			textDecoration: "none"
+		};
 		var spid = this.props.spider.spid;
 		var spname = this.props.spider.spname;
+
 		return (
-			<li className="spider">
-				<a href="#">[{spname}]</a>
-			</li>
+			<span>
+				<a style={style} href="#">[{spname}]</a>
+			</span>
 		)
 	}
 });
 
 var ArticleTag = React.createClass({
 	render: function() {
+		var style = {
+			display: "inline-block",
+			listStylePosition: "inside",
+			fontWeight: "normal",
+			fontSize: "x-small",
+			color: "#999",
+			backgroundColor: "#eee",
+			borderRadius: "30",
+			padding: "1px 10px 0",
+			whiteSpace: "nowrap",
+			margin: "0 1px 0 0",
+		};
+
 		return (
-			<li className="tag">
+			<li style={style}>
 				{this.props.tag}
 			</li>
 	  )
+	}
+});
+
+var TagList = React.createClass({
+	render: function() {
+		var style = {
+			display: "inline-block",
+ 			listStyleType: "none",
+			padding: 0,
+			margin: 0
+		};
+		var tags = this.props.tags;
+
+		return (
+			<ul style={style}>
+				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
+			</ul>
+		)
 	}
 });
 
@@ -121,17 +160,25 @@ var EntryTags = React.createClass({
 	render: function() {
 		var spider = this.props.spider;
 		var tags = this.props.tags;
+
 		return (
-			<div className="bottom"><ul>
+			<div>
 				<SpiderTag spider={spider} />
-				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
-			</ul></div>
+				<TagList tags={tags} />
+			</div>
 		)
 	}
 });
 
 var Entry = React.createClass({
 	render: function() {
+		var style = {
+			display: "block",
+			overflow: "hidden",
+			listStyleType: "none",
+			padding: 0,
+			margin: "0.7em 0"
+		};
 		var index = this.props.index;
 		var entry = this.props.entry;
 		var spider = {spid: entry[5], spname: entry[3]};
@@ -141,7 +188,7 @@ var Entry = React.createClass({
 		}
 
 		return (
-			<div className="entry">
+			<div style={style}>
 				<Rank rank={index} />
 				<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
 				<EntryTags spider={spider} tags={tags} />
