@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from collections import namedtuple, defaultdict, OrderedDict
+from collections import namedtuple, defaultdict
 from pymongo import MongoClient, ASCENDING, DESCENDING
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
@@ -142,13 +142,7 @@ def get_entries(day):
     entries = defaultdict(list)
     for e in sorted(el, key=lambda i: scores[i.id], reverse=True):
         entries[e.category].append(e)
-    categories = ['技术',
-                  '数据库',
-                  '安全',
-                  '科技',
-                  '新闻']
-    return OrderedDict(sorted(entries.items(),
-                              key=lambda i: categories.index(i[0])))
+    return entries
 
 
 def get_before_day(day):
