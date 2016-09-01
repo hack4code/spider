@@ -13,17 +13,14 @@ entry_page = Blueprint('entry_page',
                        template_folder='template')
 
 
-def get_day(day):
-    y, m, d = [int(i) for i in day.split('-')]
-    return date(y, m, d)
-
-
 @entry_page.route('/<day>', methods=['GET'])
 @need_uid
 def show_entries(day):
     try:
-        day_entry = get_day(day)
+        y, m, d = [int(i) for i in day.split('-')]
+        day_entry = date(y, m, d)
     except:
-        raise BadRequest('invalid date {}'.format(day))
+        raise BadRequest('invalid day')
+
     return render_template('day.html',
                            day_entry=day_entry)
