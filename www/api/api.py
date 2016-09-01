@@ -8,7 +8,7 @@ from flask import Blueprint, jsonify, request, session
 
 from app import app
 from model import format_aid, get_article, vote_article
-from model import get_begin_day, get_end_day, \
+from model import get_begin_day, \
     get_entries, get_before_day, get_after_day
 
 
@@ -69,35 +69,28 @@ def get_day(day):
 
 @api_page.route('/day', methods=['GET'])
 def day_entries():
-    day = request.args.get('day', None)
-    if day is None:
-        return jsonify(err=1, msg='no day')
     try:
-        day_entry = get_day(day)
+        day_entry = get_day(request.args.get('day', None))
     except:
-        return jsonify(err=2, msg='invalid day')
+        return jsonify(err=1, msg='invalid day')
 
     day_begin = get_begin_day()
 
     if day_begin is None or day_entry is None:
-        return jsonify(err=3, msg='no articles')
+        return jsonify(err=1, msg='no articles')
 
     if day_entry < day_begin or day_entry > date.today():
-        return jsonify(err=3, msg='no articles')
+        return jsonify(err=1, msg='no articles')
 
     entries = get_entries(day_entry)
-    if (len(entries) == 0):
-        if day_entry != date.today():
-            return jsonify(err=3, msg='no articles')
-        else:
-            day_entry = get_end_day()
-            entries = get_entries(day_entry)
+
     day_before = get_before_day(day_entry)
     if day_before is not None:
         day_before = day_before.strftime('%Y-%m-%d')
     day_after = get_after_day(day_entry)
     if day_after is not None:
         day_after = day_after.strftime('%Y-%m-%d')
+
     return jsonify(err=0,
                    day_before=day_before,
                    day_after=day_after,
