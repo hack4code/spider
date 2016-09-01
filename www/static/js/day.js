@@ -267,8 +267,6 @@ var SpiderTag = React.createClass({
 var ArticleTag = React.createClass({
 	render: function() {
 		var style = {
-			display: "inline-block",
-			listStylePosition: "inside",
 			fontWeight: "normal",
 			fontSize: "x-small",
 			color: "#999",
@@ -280,38 +278,20 @@ var ArticleTag = React.createClass({
 		};
 
 		return (
-			<li style={style}>
+			<span style={style}>
 				{this.props.tag}
-			</li>
+			</span>
 	  )
-	}
-});
-
-var TagList = React.createClass({
-	render: function() {
-		var style = {
-			display: "inline-block",
- 			listStyleType: "none",
-			padding: 0,
-			margin: 0
-		};
-		var tags = this.props.tags;
-
-		return (
-			<ul style={style}>
-				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
-			</ul>
-		)
 	}
 });
 
 var EntryTags = React.createClass({
 	render: function() {
 		var style = {
-			display: "flex-inline",
-			flexDirection: "column",
+			display: "flex",
+			flexDirection: "row",
 			flexWrap: "wrap",
-			alignItems: "center"
+			alignItems: "baseline"
 		};
 		var spider = this.props.spider;
 		var tags = this.props.tags;
@@ -319,7 +299,7 @@ var EntryTags = React.createClass({
 		return (
 			<div style={style}>
 				<SpiderTag spider={spider} />
-				<TagList tags={tags} />
+				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
 			</div>
 		)
 	}
