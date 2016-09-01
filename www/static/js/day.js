@@ -1,3 +1,125 @@
+var NavSector = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<h2>导航</h2>
+				<ul>
+					<li><h3>/d/Y-M-D: 按日期显示文章</h3></li>
+					<li><h3>/l/p: 所有订阅源</h3></li>
+					<li><h3>/f/atom: 添加rss订阅源</h3></li>
+					<li><h3>/f/blog: 添加blog订阅源</h3></li>
+				</ul>
+			</div>
+		)
+	}
+});
+
+var DeclareSector = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<h2>声明</h2>
+				<ul>
+					<li><h3>所有文章标题处均附有原文链接</h3></li>
+					<li><h3>所有内容来自互联网，任何商业用途请联系原作者</h3></li>
+				</ul>
+			</div>
+		)
+	}
+});
+
+var SpiderButton = React.createClass({
+	render: function() {
+		var style = {
+			backgroundColor: "#eff6fa",
+			border: "0.1em solid #eff6fa",
+			borderRadius: "0.4em",
+			boxSizing: "border-box",
+			color: "#259",
+			cursor: "pointer",
+			display: "inline-block",
+			fontSize: "0.6em",
+			fontWeight: "bold",
+			height: "3em",
+			width: "92%",
+			letterSpacing: "0.1rem",
+			lineHeight: "3em",
+			padding: "1 4em",
+			textAlign: "center",
+			textDecoration: "none"
+		};
+
+		return (
+			<li><div>
+				<h3>{this.props.desc}</h3>
+				<a style={style} href={this.props.url} target="_blank">{this.props.title}</a>
+			</div></li>
+		)
+	}
+});
+
+var SubmitSector = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<h2>Spider</h2>
+				<ul>
+					<SpiderButton desc="添加rss源，支持rss与atom" url="/f/atom" title="生成RSS Spider" />
+					<SpiderButton desc="添加blog,用于没有rss输出的blog" url="/f/blog" title="生成Blog Spider" />
+				</ul>
+			</div>
+		)
+	}
+});
+
+var AddressSector = React.createClass({
+	render: function() {
+		var style = {
+			fontSize: "1.2em",
+		};
+
+		return (
+			<div>
+			<h2>联系方式</h2>
+			<ul style={style} >
+				<li>
+				<p>email: <a href="mailto:wartalker@gmail.com">wartalker@gmail.com</a></p>
+				</li>
+				<li>
+				<p>github: <a href="https://github.com/wartalker/BlogSpider" target="_blank">BlogSpider</a></p>
+				</li>
+			</ul>
+			</div>
+		)
+	}
+});
+
+var FloatSide = React.createClass({
+	render: function() {
+		var style = {
+			display: "block",
+			float: "right",
+			width: "300",
+			padding: "0 32px",
+			fontFamily: "sans-serif",
+			fontSize: "0.6em",
+			color: "dimgray"
+		};
+
+		return (
+			<div style={style}>
+				<NavSector />
+				<Hr />
+				<DeclareSector />
+				<Hr />
+				<SubmitSector />
+				<Hr />
+				<AddressSector />
+			</div>
+		)
+	}
+});
+
 var ClearLeft = React.createClass({
 	render: function() {
 		var style = {
@@ -6,8 +128,7 @@ var ClearLeft = React.createClass({
 		};
 
 		return (
-			<div style={style}>
-			</div>
+			<div style={style}></div>
 		)
 	}
 });
@@ -25,10 +146,6 @@ var Rank = React.createClass({
 		 width: "3em",
 		 paddingRight: "2em",
 		 marginTop: "1.2em",
-/*
-		 paddingLeft: "1em",
-		 marginLeft: "-2em"
-*/
 		};
 
 		return (
@@ -351,6 +468,7 @@ var ContentDiv = React.createClass({
 			<div>
 				<CategoryDiv categoryFocused={this.state.category} categories={categories} onCategoryClick={this.onCategoryClick} />
 				<Hr />
+				<FloatSide />
 				<Entries entries={entries} />
 				<Hr />
 			</div>
