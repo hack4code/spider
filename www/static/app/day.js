@@ -196,6 +196,7 @@ var DomainLink = React.createClass({
 			color: "#888",
 			fontSize: "x-small",
 			whiteSpace: "nowrap",
+			textDecoration: "none"
 		};
 		var url = "http://" + this.props.domain;
 
