@@ -74,15 +74,20 @@ var SubmitSector = React.createClass({
 
 var AddressSector = React.createClass({
 	render: function() {
+		var style = {
+			color: "#888",
+			textDecoration: "none"
+		};
+
 		return (
 			<div>
 			<p>联系方式</p>
 			<ul>
 				<li>
-				<p>email: <a href="mailto:wartalker@gmail.com">wartalker@gmail.com</a></p>
+				<p>email: <a style={style} href="mailto:wartalker@gmail.com">wartalker@gmail.com</a></p>
 				</li>
 				<li>
-				<p>github: <a href="https://github.com/wartalker/BlogSpider" target="_blank">BlogSpider</a></p>
+				<p>github: <a style={style} href="https://github.com/wartalker/BlogSpider" target="_blank">BlogSpider</a></p>
 				</li>
 			</ul>
 			</div>
@@ -191,7 +196,6 @@ var DomainLink = React.createClass({
 			color: "#888",
 			fontSize: "x-small",
 			whiteSpace: "nowrap",
-			padding: "0 1px"
 		};
 		var url = "http://" + this.props.domain;
 
@@ -205,8 +209,14 @@ var DomainLink = React.createClass({
 
 var EntryTitle = React.createClass({
 	render: function() {
+		var style = {
+			margin: 0,
+			padding: 0,
+			lineHeight: 1
+		};
+
 		return (
-			<div>
+			<div style={style}>
 				<ArticleLink aid={this.props.aid} title={this.props.title} />
 				<OrginalLink url={this.props.url} />
 				<DomainLink domain={this.props.domain} />
@@ -221,7 +231,8 @@ var SpiderTag = React.createClass({
 			color: "#999",
 			fontSize: "x-small",
 			fontWeight: "bold",
-			marginRight: "1em",
+			marginRight: "4px",
+			marginBottom: "2px",
 			textDecoration: "none"
 		};
 		var spid = this.props.spider.spid;
@@ -246,6 +257,7 @@ var ArticleTag = React.createClass({
 			borderRadius: "30px",
 			padding: "1px 10px",
 			marginRight: "4px",
+			marginBottom: "2px",
 			whiteSpace: "nowrap"
 		};
 
@@ -282,7 +294,7 @@ var Entry = React.createClass({
 		var style = {
 			display: "flex",
 			alignItems: "center",
-			marginBottom: "12px"
+			marginBottom: "10px"
 		};
 
 		var index = this.props.index;
