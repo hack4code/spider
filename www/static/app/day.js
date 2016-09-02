@@ -1,12 +1,7 @@
 var NavSector = React.createClass({
 	render: function() {
-		var style = {
-			fontSize: "0.6em",
-			fontWeight: "bold"
-		};
-
 		return (
-			<div style={style}>
+			<div>
 				<p>导航</p>
 				<ul>
 					<li><p>/d/Y-M-D: 按日期显示文章</p></li>
@@ -21,13 +16,8 @@ var NavSector = React.createClass({
 
 var DeclareSector = React.createClass({
 	render: function() {
-		var style = {
-			fontSize: "0.6em",
-			fontWeight: "bold"
-		};
-
 		return (
-			<div style={style}>
+			<div>
 				<p>声明</p>
 				<ul>
 					<li><p>所有文章标题处均附有原文链接</p></li>
@@ -70,13 +60,8 @@ var SpiderButton = React.createClass({
 
 var SubmitSector = React.createClass({
 	render: function() {
-		var style = {
-			fontSize: "0.6em",
-			fontWeight: "bold"
-		};
-
 		return (
-			<div style={style}>
+			<div>
 				<p>Spider</p>
 				<ul>
 					<SpiderButton desc="添加rss源，支持rss与atom" url="/f/atom" title="生成RSS Spider" />
@@ -89,13 +74,8 @@ var SubmitSector = React.createClass({
 
 var AddressSector = React.createClass({
 	render: function() {
-		var style = {
-			fontSize: "0.6em",
-			fontWeight: "bold"
-		};
-
 		return (
-			<div style={style}>
+			<div>
 			<p>联系方式</p>
 			<ul>
 				<li>
@@ -118,6 +98,8 @@ var FloatSide = React.createClass({
 			width: "300px",
 			padding: "0 32px",
 			fontFamily: "sans-serif",
+			fontSize: "0.7em",
+			fontWeight: "bold",
 			color: "dimgray"
 		};
 
