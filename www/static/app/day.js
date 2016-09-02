@@ -133,16 +133,14 @@ var ClearLeft = React.createClass({
 var Rank = React.createClass({
 	render: function() {
 		var style = {
-		 float: "left",
 		 color: "#c6c6c6",
 		 textAlign: "right",
 		 fontFamily: "arial",
 		 fontSize: "medium",
 		 fontWeight: "bold",
-		 overflow: "hidden",
-		 width: "3em",
-		 paddingRight: "2em",
-		 marginTop: "1.2em",
+		 width: "40px",
+		 paddingRight: "25px",
+		 flexShrink: 0
 		};
 
 		return (
@@ -207,19 +205,11 @@ var DomainLink = React.createClass({
 
 var EntryTitle = React.createClass({
 	render: function() {
-		var style = {
-			display: "block",
-			overflow: "hidden",
-			margin: 0
-		};
-
 		return (
 			<div>
-			<p style={style}>
 				<ArticleLink aid={this.props.aid} title={this.props.title} />
 				<OrginalLink url={this.props.url} />
 				<DomainLink domain={this.props.domain} />
-			</p>
 			</div>
 		)
 	}
@@ -254,9 +244,9 @@ var ArticleTag = React.createClass({
 			color: "#999",
 			backgroundColor: "#eee",
 			borderRadius: "30px",
-			padding: "1px 10px 0",
-			whiteSpace: "nowrap",
-			margin: "0 1px 0 0",
+			padding: "1px 10px",
+			marginRight: "4px",
+			whiteSpace: "nowrap"
 		};
 
 		return (
@@ -290,12 +280,11 @@ var EntryTags = React.createClass({
 var Entry = React.createClass({
 	render: function() {
 		var style = {
-			display: "block",
-			overflow: "hidden",
-			listStyleType: "none",
-			padding: 0,
-			margin: "0.7em 0"
+			display: "flex",
+			alignItems: "center",
+			marginBottom: "12px"
 		};
+
 		var index = this.props.index;
 		var entry = this.props.entry;
 		var spider = {spid: entry[5], spname: entry[3]};
@@ -305,15 +294,13 @@ var Entry = React.createClass({
 		}
 
 		return (
-			<div>
 				<div style={style}>
 					<Rank rank={index} />
-					<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
-					<EntryTags spider={spider} tags={tags} />
-					<ClearLeft />
+					<div>
+						<EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
+						<EntryTags spider={spider} tags={tags} />
+					</div>
 				</div>
-				<ClearLeft />
-			</div>
 		)
 	}
 });
