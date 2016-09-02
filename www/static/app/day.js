@@ -122,19 +122,6 @@ var FloatSide = React.createClass({
 	}
 });
 
-var ClearLeft = React.createClass({
-	render: function() {
-		var style = {
-			clear: "left",
-			height: 0
-		};
-
-		return (
-			<div style={style}></div>
-		)
-	}
-});
-
 var Rank = React.createClass({
 	render: function() {
 		var style = {
@@ -159,7 +146,7 @@ var Rank = React.createClass({
 var ArticleLink = React.createClass({
 	render: function() {
 		var style = {
-			fontFamily: "verdana, helvetica, Pingfang SC, Microsoft YaHei,arial, sans-serif",
+			fontFamily: "verdana, helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
 			fontSize: "0.9em",
 			fontWeight: "normal",
 		};
@@ -295,16 +282,13 @@ var Entry = React.createClass({
 		var style = {
 			display: "flex",
 			alignItems: "center",
-			marginBottom: "10px"
+			marginBottom: "12px"
 		};
 
 		var index = this.props.index;
 		var entry = this.props.entry;
 		var spider = {spid: entry[5], spname: entry[3]};
-		var tags = entry[4];
-		if (!tags) {
-			tags = [];
-		}
+		var tags = (entry[4] == null) ? [] : entry[4];
 
 		return (
 				<div style={style}>
@@ -524,18 +508,16 @@ var App = React.createClass({
 			var err = data["err"];
 
 			if (!err) {
-				var entry_data = data["data"];
+				var nstate = {day_before: data["day_before"],
+										  day_after: data["day_after"]};
+
+				if (data["data"]) {
+					nstate["data"] = data["data"];
+				}
 
 				document.title = day;
 				window.history.pushState(day, day, "/d/" + day);
-				if (entry_data !== null)
-								this.setState({day_before: data["day_before"],
-															 day_after: data["day_after"],
-															 data: entry_data});
-				else {
-								this.setState({day_before: data["day_before"],
-															 day_after: data["day_after"]});
-				}
+				this.setState(nstate);
 			}
 		}.bind(this));
 	},
