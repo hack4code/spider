@@ -8,8 +8,8 @@ from flask import Blueprint, jsonify, request, session
 
 from app import app
 from model import format_aid, get_article, vote_article
-from model import get_begin_day, \
-    get_entries, get_before_day, get_after_day
+from model import get_begin_day, get_entries, get_before_day, \
+    get_after_day, get_categories
 
 
 logger = logging.getLogger(__name__)
@@ -97,3 +97,10 @@ def day_entries():
                    day_before=day_before,
                    day_after=day_after,
                    data=entries)
+
+
+@api_page.route('/categories', methods=['GET'])
+def categories():
+    categories = get_categories()
+    return jsonify(err=0,
+                   data=categories)
