@@ -1,7 +1,9 @@
+pytz>dev
+billiard>=3.3.0.23,<3.4
+kombu>=3.0.35,<3.1
 amqp
 anyjson
 attrs
-billiard
 celery
 cffi
 characteristic
@@ -14,7 +16,6 @@ idna
 ipaddress
 itsdangerous
 Jinja2
-kombu
 lxml
 MarkupSafe
 parsel
@@ -26,7 +27,6 @@ PyDispatcher
 pymongo
 pyOpenSSL
 python-dateutil
-pytz
 queuelib
 redis
 requests
