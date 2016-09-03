@@ -18,8 +18,8 @@ var Input = React.createClass({
 		};
 
     return (
-      <input type={this.props.type} style={style} value={this.props.value} onChange={this.handleChange} />
-    );
+			<input style={style} value={this.props.value} onChange={this.handleChange} type={this.props.type}/>
+		)
   }
 });
 
@@ -52,12 +52,16 @@ var EditBox = React.createClass({
 var Select = React.createClass({
 	getInitialState: function() {
 		return {list: []};
-	}
+	},
 	
 	componentDidMount: function() {
 		$.getJSON(this.props.url).done(function(data) {
-			this.setState({list: data});
-		});
+			let err = data["err"];
+			if (!err) {
+				let list = data["data"];
+				this.setState({list: list});
+			}
+		}.bind(this));
 	},
 
   handleChange: function(e) {
@@ -80,7 +84,7 @@ var Select = React.createClass({
 		var list = this.state.list;
 
 		return (
-			<select style={style} value={list[0]} onChange={this.handleChange}>
+			<select style={style} value={this.props.value} onChange={this.handleChange}>
 				{list.map(function(v) { return <option value={v}>{v}</option>; })}
 			</select>
 		)
@@ -92,7 +96,7 @@ var SelectBox = React.createClass({
 		return (
 			<div>
 				<Label desc={this.props.desc} />
-				<Select updateField={this.props.updateField} field={this.props.field} value={this.props.value} />
+				<Select updateField={this.props.updateField} url={this.props.url} field={this.props.field} value={this.props.value} />
 			</div>
 		)
 	}
@@ -118,31 +122,39 @@ var Button = React.createClass({
 		};
 
 		return (
-			<input style={style} type="submit" value={this.props.value} onClick={this.props.submit} >
+			<input style={style} type="submit" value={this.props.value} onClick={this.props.submit}/>
 		)
 	}
 });
 
-var AtomForm = React.createClass({
-	getInitialState: function() {
-		return {};
+
+var App = React.createClass({
+	getInitialState: function(){
+		return {category: "null"};
+	},
+
+	submit: function() {
+		console.log("submit");
 	},
 
 	updateField: function(k, v) {
-		this.setState({k: v});
-	},
-	
-	submit: function() {
+		var ns = {};
+
+		ns[k] = v;
+		this.setState(ns);
 	},
 
 	render: function() {
+		console.log(this.state);
 		return (
-			<form>
+			<form><fieldset>
 				<EditBox desc="网址" type="url" field="url" value="" />
-				<Select desc="类别" field="category" url="" />
+				<SelectBox desc="类别" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
 				<EditBox desc="selector[用于非全文输出的feed]" type="url" field="content" value="" />
 				<Button submit={this.submit} />
-			</form>
+			</fieldset></form>
 		)
 	}
 });
+
+ReactDOM.render(<App />, document.getElementById('content'));
