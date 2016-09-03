@@ -51,15 +51,14 @@ var EditBox = React.createClass({
 
 var Select = React.createClass({
 	getInitialState: function() {
-		return {list: []};
+		return {list: ["null",]};
 	},
 	
 	componentDidMount: function() {
 		$.getJSON(this.props.url).done(function(data) {
-			let err = data["err"];
+			var err = data["err"];
 			if (!err) {
-				let list = data["data"];
-				this.setState({list: list});
+				this.setState({list: data["data"]});
 			}
 		}.bind(this));
 	},
@@ -103,6 +102,13 @@ var SelectBox = React.createClass({
 });
 
 var Button = React.createClass({
+	handleClick: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		this.props.submit();
+	},
+
 	render: function() {
 		var style = {
 			backgroundColor: "transparent",
@@ -122,7 +128,7 @@ var Button = React.createClass({
 		};
 
 		return (
-			<input style={style} type="submit" value={this.props.value} onClick={this.props.submit}/>
+			<input style={style} type="submit" value="提交" onClick={this.handleClick}/>
 		)
 	}
 });
@@ -134,14 +140,10 @@ var App = React.createClass({
 	},
 
 	submit: function() {
-		console.log("submit");
 	},
 
 	updateField: function(k, v) {
-		var ns = {};
-
-		ns[k] = v;
-		this.setState(ns);
+		this.setState({[k]: v});
 	},
 
 	render: function() {
