@@ -1,3 +1,20 @@
+var ErrMsg = React.createClass({
+	render: function() {
+		var style = {
+			textAlign: "center",
+			fontSize: "0.5em",
+			color: "#888",
+			marginBottom: "1em"
+		};
+
+		return (
+			<div style={style}>
+				<span></span>
+			</div>
+		)
+	}
+});
+
 var Input = React.createClass({
   handleChange: function(e) {
 		var v = e.target.value;
@@ -58,7 +75,9 @@ var Select = React.createClass({
 		$.getJSON(this.props.url).done(function(data) {
 			var err = data["err"];
 			if (!err) {
-				this.setState({list: data["data"]});
+				var list = data["data"];
+				this.setState({list: list});
+				this.props.updateField(this.props.field, list[0]);
 			}
 		}.bind(this));
 	},
@@ -136,10 +155,32 @@ var Button = React.createClass({
 
 var App = React.createClass({
 	getInitialState: function(){
-		return {category: "null"};
+		return {category: "",
+						url: "",
+						content: ""}
 	},
 
 	submit: function() {
+		var form = this.state;
+		if (form["url"] == "") {
+			$("span").text("需要网址数据").show().fadeOut(1500);
+			return;
+		}
+
+		$("span").text("正在提交 .....").show();
+		$.ajax({type: "post",
+						url: "/api/feed/atom",
+						data: form,
+						success: function(r){
+					 		if (r['err'] == 0) {
+								$("span").text("成功").show().fadeOut(1500);
+				 			}
+			      	else {
+								$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
+			      	}
+							this.setState({url: "", content: ""});
+					  }.bind(this)}
+		);
 	},
 
 	updateField: function(k, v) {
@@ -148,12 +189,15 @@ var App = React.createClass({
 
 	render: function() {
 		return (
-			<form><fieldset>
-				<EditBox desc="网址" type="url" field="url" value="" />
-				<SelectBox desc="类别" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
-				<EditBox desc="selector[用于非全文输出的feed]" type="url" field="content" value="" />
-				<Button submit={this.submit} />
-			</fieldset></form>
+			<div>
+				<ErrMsg />
+				<form><fieldset>
+					<EditBox desc="网址" updateField={this.updateField} type="url" field="url" value={this.state.url} />
+					<SelectBox desc="类别" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
+					<EditBox desc="selector[用于非全文输出的feed]" updateField={this.updateField} type="text" field="content" value={this.state.content} />
+					<Button submit={this.submit} />
+				</fieldset></form>
+			</div>
 		)
 	}
 });
