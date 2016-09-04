@@ -271,7 +271,7 @@ var EntryTags = React.createClass({
 		return (
 			<div style={style}>
 				<SpiderTag spider={spider} />
-				{tags.map(function(tag) { return <ArticleTag tag={tag} />; })}
+				{tags.map(function(tag, index) { return <ArticleTag key={index} tag={tag} />; })}
 			</div>
 		)
 	}
@@ -308,7 +308,7 @@ var Entries = React.createClass({
 		return (
 			<div>
 				{entries.map(function(entry, index) {
-					return <Entry index={index} entry={entry} />
+					return <Entry key={index} index={index} entry={entry} />
 				})}
 			</div>
 		)
@@ -363,9 +363,9 @@ var CategoryDiv = React.createClass({
 		return (
 			<div>
 				<ul style={style}>
-					{categories.map(function(category) {
+					{categories.map(function(category, index) {
 						var focus = (categoryFocused == category);
-						return <Category focus={focus} category={category} onCategoryClick={onCategoryClick} />;
+						return <Category key={index} focus={focus} category={category} onCategoryClick={onCategoryClick} />;
 					})}
 				</ul>
 			</div>
