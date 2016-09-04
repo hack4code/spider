@@ -84,7 +84,7 @@ var Select = React.createClass({
 
 		return (
 			<select style={style} value={this.props.value} onChange={this.handleChange}>
-				{list.map(function(v) { return <option value={v}>{v}</option>; })}
+				{list.map(function(v, index) { return <option key={index} value={v}>{v}</option>; })}
 			</select>
 		)
 	}
@@ -147,7 +147,6 @@ var App = React.createClass({
 	},
 
 	render: function() {
-		console.log(this.state);
 		return (
 			<form><fieldset>
 				<EditBox desc="网址" type="url" field="url" value="" />
