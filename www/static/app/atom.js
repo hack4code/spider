@@ -1,3 +1,37 @@
+var Title = React.createClass({
+	render: function() {
+		var style = {
+			fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
+			fontSize: "1.6em",
+			fontWeight: "normal",
+			textAlign: "center"
+		};
+
+		return (
+			<div>
+				<p style={style}>{this.props.title}</p>
+			</div>
+		)
+	}
+});
+
+var Hr = React.createClass({
+	render: function() {
+		var style = {
+			border: "none",
+			height: 1,
+			color: "#EEE",
+			backgroundColor: "#EEE",
+			marginBottom: "1em",
+			clear: "both"
+		};
+
+		return (
+			<hr style={style} />
+		)
+	}
+});
+
 var ErrMsg = React.createClass({
 	render: function() {
 		var style = {
@@ -43,8 +77,9 @@ var Input = React.createClass({
 var Label = React.createClass({
 	render: function() {
 		var style = {
+ 			fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
 			fontSize: "1.0em",
-			fontWeight: "bold",
+			fontWeight: "normal",
 			marginBottom: "0.5em",
 			display: "block"
 		};
@@ -153,7 +188,7 @@ var Button = React.createClass({
 });
 
 
-var App = React.createClass({
+var SubmitForm = React.createClass({
 	getInitialState: function(){
 		return {category: "",
 						url: "",
@@ -188,15 +223,33 @@ var App = React.createClass({
 	},
 
 	render: function() {
+		var style = {
+			borderWidth: 0,
+			padding: 0,
+			paddingLeft: "36px"
+		};
+
 		return (
 			<div>
 				<ErrMsg />
-				<form><fieldset>
-					<EditBox desc="网址" updateField={this.updateField} type="url" field="url" value={this.state.url} />
-					<SelectBox desc="类别" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
-					<EditBox desc="selector[用于非全文输出的feed]" updateField={this.updateField} type="text" field="content" value={this.state.content} />
+				<form><fieldset style={style}>
+					<EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
+					<SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
+					<EditBox desc="selector[用于非全文输出的feed]:" updateField={this.updateField} type="text" field="content" value={this.state.content} />
 					<Button submit={this.submit} />
 				</fieldset></form>
+			</div>
+		)
+	}
+});
+
+var App = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<Title title="添加订阅源(rss|atom)" />
+				<Hr />
+				<SubmitForm />
 			</div>
 		)
 	}
