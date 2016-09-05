@@ -20,7 +20,7 @@ api_page = Blueprint('api_page',
                      template_folder='template')
 
 
-@api_page.route('/feed/atom', methods=['POST'])
+@api_page.route('/feed/rss', methods=['POST'])
 def gen_atom_feed():
     try:
         url = '{}/atom'.format(app.config['FEED_SUBMIT_URL'])
