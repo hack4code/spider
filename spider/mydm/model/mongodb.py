@@ -23,6 +23,7 @@ class MongoDB(object):
         feed.ensure_index('url', name='idx_url')
         article = db['article']
         article.ensure_index('crawl_date', name='idx_crawl_date')
+        article.ensure_index('spider', name='idx_spider')
         self.db = db
 
     def __getattr__(self, key):
