@@ -2,86 +2,14 @@
 {% block title %}添加feed{% endblock %}
 
 {% block main %}
-
-<div class="feedpage">
-
-<div>
-<h1 class="title">添加订阅源(blog)</h1>
-<hr class="ehr"></hr>
-</div>
-
-<div class="feed">
-
 <script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
-<script>
-$(document).ready(function(){
-$("form").submit(function(e){
-e.preventDefault();
-$("span").text("正在提交 .....").show();
+<script src="{{ url_for('static', filename='js/react.js') }}"></script>
+<script src="{{ url_for('static', filename='js/react-dom.js') }}"></script>
+<script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/remarkable.min.js') }}"></script>
 
-var url = $("#url").val();
-var category = $("#category").val();
-var entry = $("#entry").val();
-var item_title = $("#title").val();
-var item_link = $("#link").val();
-var item_content = $("#content").val();
-
-$.ajax({
-        type: "post",
-        url: "/api/feed/blog",
-        data: {
-		url: url,
- 	        category: category,
-	  	entry: entry,
-	 	item_title: item_title,
-	 	item_link: item_link,
-	 	item_content: item_content,
-       },
-       success: function (r) {
-	       if (r['err'] == 0) {
-		$("span").text("成功").show().fadeOut(1500);
-		 $("input").each(function() {
-		   if ($(this).attr("type") != "submit") {
-		     $(this).val("");
-		   }
-		 });
-	       }
-	       else {
-		$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
-	       }
-       }
-});})});
-</script>
-
-<div class="errmsg"><span></span></div>
-
-<form><fieldset>
-<label for="nameField">Blog网址</label>
-<input id="url" class="edit" type="url" name="url">
-
-<label for="nameField">类别</label>
-<select id="category" class="edit">
-{% for category in categories %}
-<option>{{ category }}</option>
-{% endfor %}
-</select>
-
-<label for="nameField">文章Selector</label>
-<input id="entry" class="edit" name="entry">
-
-<label for="nameField">标题Selector</label>
-<input id="title" class="edit" name="title">
-
-<label for="nameField">链接Selector</label>
-<input id="link" class="edit" name="link">
-
-<label for="nameField">内容Selector</label>
-<input id="content" class="edit" name="content">
-
-<input class='button' type='submit' value='提交'>
-</fieldset></form>
-
-</div>
+<div class="feedpage" id="content">
 </div>
 
+<script type="text/babel" src="{{ url_for('static', filename='app/blog.js') }}"></script>
 {% endblock %}
