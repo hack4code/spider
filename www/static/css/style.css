@@ -251,46 +251,6 @@ th {
  text-align: center;
 }
 
-/*
-*  entry page
-*/
-/*
-.ehr {
- border: none;
- height: 1px;
- color: #EEE;
- background-color: #EEE;
- margin-bottom: 1em;
- clear: both;
-}
-
-.category {
- list-style: none;
- margin-bottom: 0em;
- margin-left: 2em;
-}
-
-.category .link {
- display: inline-block;
- margin-right: 1.6em;
-}
-
-.category .link a {
- font-family: 'Pingfang SC', 'Microsoft YaHei';
- font-weight: bold;
- font-size: 1.0em;
- color: #666666;
-}
-
-.category .active a {
- color: #222222;
-}
-
-.category .link A {
- text-decoration: none;
-}
-*/
-
 /* side */
 .side {
  display: block;
@@ -350,81 +310,6 @@ th {
 
 .handright {
  float: right;
-}
-
-/*
- * atom blog page
- */
-.feedpage .title {
- text-align: center;
-}
-
-fieldset {
- border-width: 0;
- padding: 0;
-}
-
-label {
- font-size: 1.0em;
- font-weight: bold;
- margin-bottom: 0.5em;
- display: block;
-}
-
-.feed {
- margin-left: 1em;
-}
-
-.post {
- border-width: 0;
- padding: 0;
-}
-
-.edit {
- background-color: transparent;
- border: 0.1rem solid #d1d1d1;
- border-radius: 1px;
- box-shadow: none;
- box-sizing: border-box;
- height: 3.2em;
- width: 42em;
- margin: 0em 0em 1.2em 0em;
- display: block;
-}
-
-.edit:focus {
- border-color: #51a7e8;
- box-shadow: inset 0px 0px 0px rgba(0, 0, 0, 0.075), 0px 0px 0px rgba(81, 167, 232, 0.5);
-}
-
-.button {
- background-color: transparent;
- border: 0.1rem solid #d1d1d1;
- border-radius: 0.4rem;
- box-sizing: border-box;
- cursor: pointer;
- display: inline-block;
- font-size: 0.4rem;
- font-weight: 700;
- height: 3.2em;
- letter-spacing: 0.3em;
- text-align: center;
- text-decoration: none;
- text-transform: uppercase;
- white-space: nowrap;
-}
-
-.button:focus {
- background-color: transparent;
- border-color: #51a7e8;
- outline: 0;
-}
-
-.errmsg {
- text-align: center;
- font-size: 0.5em;
- color: #888;
- margin-bottom: 1em;
 }
 
 /*
