@@ -104,3 +104,48 @@ def categories():
     categories = get_categories()
     return jsonify(err=0,
                    data=categories)
+
+
+from collections import namedtuple
+from model import get_spiders, get_last_aid, get_first_aid, \
+    get_entries_next, get_entries_pre, get_entries_spider, \
+    check_aid
+
+
+Spider = namedtuple('Spider', ['id', 'source'])
+
+
+@api_page.route('/spider', methods=['GET'])
+def show_entries():
+    spid = request.args.get('spid', None)
+    if spid is None:
+        return jsonify(err=1, msg='no spid')
+    spiders = get_spiders()
+    if spid not in spiders:
+        return jsonify(err=2, msg='invalid spider id')
+
+    aid_last = get_last_aid(spid)
+    aid_first = get_first_aid(spid)
+    aid = request.args.get('aid', None)
+    if aid:
+        try:
+            aid = format_aid(aid)
+        except:
+            return jsonify(err=3, msg='invalid aid')
+
+        if not check_aid(aid, aid_first, aid_last):
+            return jsonify(err=4, msg='aid not found')
+        q = request.args.get('q', 'n')
+        if q == 'n':
+            entries = get_entries_next(spid, aid)
+        elif q == 'p':
+            entries = get_entries_pre(spid, aid)
+    else:
+        entries = get_entries_spider(spid)
+
+    if entries is None or len(entries) == 0:
+        return jsonify(err=5, msg='no article found')
+
+    return jsonify(err=0,
+                   spider=Spider(spid, spiders[spid]),
+                   entries=entries)

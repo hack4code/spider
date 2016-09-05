@@ -251,7 +251,7 @@ def get_entries_next(spid, aid):
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(a['_id'], a['title']))
+        entries.append(Entry(str(a['_id']), a['title']))
     return entries
 
 
@@ -270,7 +270,7 @@ def get_entries_pre(spid, aid):
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(a['_id'], a['title']))
+        entries.append(Entry(str(a['_id']), a['title']))
     return list(reversed(entries))
 
 
@@ -288,7 +288,7 @@ def get_entries_spider(spid):
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(a['_id'], a['title']))
+        entries.append(Entry(str(a['_id']), a['title']))
     return entries
 
 

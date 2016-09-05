@@ -2,11 +2,10 @@
 
 
 from collections import namedtuple
-from flask import request, render_template, Blueprint
-from model import get_spiders, get_last_aid, get_first_aid, \
-    get_entries_next, get_entries_pre, get_entries_spider, \
-    format_aid, check_aid
-from error import BadRequest, NotFound
+from flask import render_template, Blueprint
+
+from model import get_spiders
+from error import BadRequest
 
 
 spider_page = Blueprint('spider_page',
@@ -23,42 +22,9 @@ Spider = namedtuple('Spider', ['id', 'source'])
 
 
 @spider_page.route('/<spid>', methods=['GET'])
-def show_category(spid):
+def sp_entries(spid):
     spiders = get_spiders()
     if spid not in spiders:
-        raise BadRequest('invalid spider {}'.format(spid))
-
-    aid_last = get_last_aid(spid)
-    aid_first = get_first_aid(spid)
-    aid = request.args.get('aid', None)
-    if aid:
-        try:
-            aid = format_aid(aid)
-        except:
-            raise BadRequest('invalid aid {}'.format(aid))
-
-        if not check_aid(aid, aid_first, aid_last):
-            raise NotFound('article id {} for {} not existed'.format(
-                aid, spid))
-        q = request.args.get('q', 'n')
-        if q == 'n':
-            entries = get_entries_next(spid, aid)
-        elif q == 'p':
-            entries = get_entries_pre(spid, aid)
-    else:
-        entries = get_entries_spider(spid)
-
-    if entries is None or len(entries) == 0:
-        raise NotFound('no article for {}'.format(spiders[spid]))
-
-    aid_begin = entries[0].id
-    aid_end = entries[-1].id
-    entry_begin = True if aid_begin == aid_last else False
-    entry_end = True if aid_end == aid_first else False
-    return render_template('spider.html',
-                           spider=Spider(spid, spiders[spid]),
-                           entries=entries,
-                           aid_begin=aid_begin,
-                           aid_end=aid_end,
-                           entry_begin=entry_begin,
-                           entry_end=entry_end)
+        raise BadRequest('invalid spider id')
+    return render_template('spentries.html',
+                           spider=Spider(spid, spiders[spid]))
