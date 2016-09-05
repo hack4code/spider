@@ -64,7 +64,7 @@ var SubmitSector = React.createClass({
 			<div>
 				<p>Spider</p>
 				<ul>
-					<SpiderButton desc="添加rss源，支持rss与atom" url="/f/atom" title="生成RSS Spider" />
+					<SpiderButton desc="添加rss源，支持rss与atom" url="/f/rss" title="生成RSS Spider" />
 					<SpiderButton desc="添加blog,用于没有rss输出的blog" url="/f/blog" title="生成Blog Spider" />
 				</ul>
 			</div>
