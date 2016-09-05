@@ -195,7 +195,8 @@ var SubmitForm = React.createClass({
 						entry: "",
 						item_title: "",
 						item_link: "",
-						item_content: ""}
+						item_content: "",
+						removed_xpath_nodes: ""}
 	},
 
 	submit: function() {
@@ -242,6 +243,7 @@ var SubmitForm = React.createClass({
 					<EditBox desc="标题Selector:" updateField={this.updateField} type="text" field="item_title" value={this.state.item_title} />
 					<EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link" value={this.state.item_link} />
 					<EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content" value={this.state.item_content} />
+					<EditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
 					<Button submit={this.submit} />
 				</fieldset></form>
 			</div>
