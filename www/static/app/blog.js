@@ -212,12 +212,18 @@ var SubmitForm = React.createClass({
 						data: form,
 						success: function(r){
 					 		if (r['err'] == 0) {
+								this.setState({url: "",
+															 entry:"",
+															 item_title: "",
+															 item_link: "",
+															 item_content: "",
+															 removed_xpath_nodes: ""
+															 });
 								$("span").text("成功").show().fadeOut(1500);
 				 			}
 			      	else {
 								$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
 			      	}
-							this.setState({url: "", content: ""});
 					  }.bind(this)}
 		);
 	},
