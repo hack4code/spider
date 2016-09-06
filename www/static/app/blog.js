@@ -208,7 +208,7 @@ var SubmitForm = React.createClass({
 
 		$("span").text("正在提交 .....").show();
 		$.ajax({type: "post",
-						url: "/api/feed/feed",
+						url: "/api/feed/blog",
 						data: form,
 						success: function(r){
 					 		if (r['err'] == 0) {
