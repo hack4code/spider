@@ -2,19 +2,9 @@
 {% block title %}所有订阅网站{% endblock %}
 
 {% block main %}
-<div class="spspage">
+<div class="spiders">
 
-<div>
-<h1 class="title">所有订阅网站</h1>
-<hr class="ehr"></hr>
-</div>
-
-<ul id="clist">
-{% for k, v in spiders.items() %}
-<li><a href="/p/{{ k }}">{{ v }}</a></li>
-{% endfor %}
-</ul>
-
+<div id="content"></div>
 <div>
 {%- for i in range(36) -%}
 <br />
@@ -22,4 +12,7 @@
 </div>
 
 </div>
+
+<script type="text/babel" src="{{ url_for('static', filename='app/spiders.js') }}"></script>
+
 {% endblock %}
