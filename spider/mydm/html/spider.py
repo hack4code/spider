@@ -84,10 +84,10 @@ class BLOGSpider(Spider):
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc
             item['data_type'] = 'html'
-            link = item['link']
+            link = item['link'].strip()
             if link is None:
                 continue
-            if link.startswith('.') or link.startswith('/'):
+            if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
             yield Request(item['link'],
                           callback=self.extract_content,
