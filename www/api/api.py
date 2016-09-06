@@ -119,7 +119,7 @@ Spider = namedtuple('Spider', ['id', 'source'])
 def show_entries():
     spid = request.args.get('spid', None)
     if spid is None:
-        return jsonify(err=1, msg='no spid')
+        return jsonify(err=1, msg='no spider id')
     spiders = get_spiders()
     if spid not in spiders:
         return jsonify(err=2, msg='invalid spider id')
@@ -148,4 +148,12 @@ def show_entries():
 
     return jsonify(err=0,
                    spider=Spider(spid, spiders[spid]),
+                   entries=entries)
+
+
+@api_page.route('/spiders', methods=['GET'])
+def spiders():
+    spiders = get_spiders()
+    entries = [Spider(spid, name) for spid, name in spiders.items()]
+    return jsonify(err=0,
                    entries=entries)

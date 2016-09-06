@@ -2,14 +2,11 @@
 {% block title %}添加feed{% endblock %}
 
 {% block main %}
-<script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/react.js') }}"></script>
-<script src="{{ url_for('static', filename='js/react-dom.js') }}"></script>
-<script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/remarkable.min.js') }}"></script>
 
-<div class="feedpage" id="content">
+<div class="feedpage">
+<div id="content"></div>
 </div>
 
 <script type="text/babel" src="{{ url_for('static', filename='app/blog.js') }}"></script>
+
 {% endblock %}

@@ -225,7 +225,6 @@ var SubmitForm = React.createClass({
 	render: function() {
 		var style = {
 			borderWidth: 0,
-			padding: 0,
 			paddingLeft: "36px"
 		};
 
@@ -244,6 +243,7 @@ var SubmitForm = React.createClass({
 });
 
 var App = React.createClass({
+
 	render: function() {
 		return (
 			<div>

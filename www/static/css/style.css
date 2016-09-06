@@ -44,13 +44,6 @@
 /*
  *
  */
-.sppage,
-.epage {
-}
-
-.epage,
-.sppage,
-.feedpage,
 .page {
  font-size: 100%;
  background: #FFFFFF;
@@ -72,10 +65,6 @@ a {
  * media
  */
 @media screen and (min-device-width: 600px) {
- .feedpage {
-  width: 40em;
- }
- 
  .page {
   width: 48em;
  }
@@ -110,7 +99,6 @@ a {
   line-height: 1.6em;
   margin-bottom: 1.6em; 
  }
-
 
  #article {
   font-size: 1em;
@@ -251,143 +239,9 @@ th {
  text-align: center;
 }
 
-/* side */
-.side {
- display: block;
- float: right;
- width: 300px;
- padding: 0 32px;
- font-family: sans-serif;
- font-color: dimgray;
-}
-
-.side > h2,
-.submitsection > h2 {
- font-size: small;
- font-weight: bold;
-}
-
-.side li {
- font-size: x-small;
- font-weight: lighter;
- color: dimgray;
-}
-
-.submit {
-  background-color: #eff6fa;
-  border: 0.1em solid #eff6fa;
-  border-radius: 0.4em;
-  box-sizing: border-box;
-  color: #259;
-  cursor: pointer;
-  display: inline-block;
-  font-size: 0.6em;
-  font-weight: bold;
-  height: 3em;
-  width: 92%;
-  letter-spacing: 0.1rem;
-  line-height: 3em;
-  padding: 1 4em;
-  text-align: center;
-  text-decoration: none;
-}
-
-.clearleft {
- clear: left;
- height: 0px;
-}
-
-/* content */
-.content {
- display: block;
- z-index: 1;
-}
-
-
-.handleft {
- float: left;
-}
-
-.handright {
- float: right;
-}
-
 /*
- * spider page
+ * day page
  */
-
-.spspage .title,
-.sppage .title {
- font-family: 'Nunito', 'Lantinghei SC', 'Microsoft YaHei';
- font-size: normal;
- font-weight: bold;
- text-align: center;
-}
-
-/*
- * spiders page
- */
-.spspage .title {
- text-align: center;
-}
-
-/*
- * 
- */
-#alist,
-#clist {
- list-style: square; 
- color: red;
-}
-
-#clist {
- margin-left: 6em;
-}
-
-#alist {
- margin-left: 4em;
-}
-
-#clist li {
- line-height: 1em;
-}
-
-#alist a,
-#clist a {
- font-weight: 600;
- font-size: 0.7em;
- font-family: 'Nunito', 'Lantinghei SC', 'Microsoft YaHei';
-}
-
-#alist a {
- font-size: normal;
- line-height: 1.8em;
-}
-
-#clist a {
- font-size: normal;
- line-height: 2.4em;
-}
-
-#alist a:visited,
-#clist a:visited {
- color: #AAAAAA;
-}
-
-#alist A,
-#clist A {
- text-decoration: none;
-}
-
-#alist li {
- margin-bottom: -0.8em;
-}
-
-
-/*
- * react
- */
-
 .articlelink a {
 	color: blue;
 }
@@ -398,4 +252,22 @@ th {
 
 .articlelink A {
 	text-decoration: none;
+}
+
+/*
+ * feed
+ */
+
+.feedpage {
+	width: 40em;
+ 	margin: 0em auto;
+	background: "#FFFFFF";
+}
+
+.spentries a:visited {
+	color: #aaa;
+}
+
+.spiders a:visited {
+	color: #aaa;
 }

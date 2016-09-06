@@ -156,12 +156,10 @@ var App = React.createClass({
 	},
 
 	getInitialState: function() {
-		console.log("getInitialState");
 		return {name: "", entries: []}
 	},
 
 	componentDidMount: function() {
-		console.log("getEntries");
 		this.getEntries();
 	},
 

@@ -2,16 +2,9 @@
 {% block title %}{{ spider.source }}{% endblock %}
 {% block main %}
 
-<div class="sppage">
-
-<script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/react.js') }}"></script>
-<script src="{{ url_for('static', filename='js/react-dom.js') }}"></script>
-<script src="{{ url_for('static', filename='js/browser.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/remarkable.min.js') }}"></script>
+<div class="spentries">
 
 <div id="content"></div>
-
 <div>
 {%- for i in range(36) -%}
   <br />
