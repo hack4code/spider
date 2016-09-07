@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 from flask import Flask, render_template
 from error import NotFound, BadRequest
 
@@ -30,19 +29,6 @@ app.jinja_env.lstrip_blocks = True
 
 # config for session
 app.secret_key = 'qweasdzxcrty'
-
-# config for logging
-if not app.debug:
-    h = logging.FileHandler(app.config['LOG_FILE'],
-                            encoding='utf-8')
-    h.setLevel(logging.WARNING)
-    h.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s '
-        '[in %(pathname)s:%(lineno)d]'
-    ))
-    app.logger.addHandler(h)
-else:
-    print("Flask in debugging mode...")
 
 
 # error handler
