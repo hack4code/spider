@@ -412,6 +412,7 @@ var ContentDiv = React.createClass({
 	   return { data: {"新闻": [],
 						 				 "技术": [],
 						         "科技": [],
+										 "数据库": [],
 						         "安全": []},
 					  }
 	},

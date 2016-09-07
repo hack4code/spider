@@ -121,7 +121,7 @@ var AidLinkDiv = React.createClass({
 
 var App = React.createClass({
 	getEntries: function(aid, q) {
-		var spid = document.location.pathname.split("/").pop();
+		var spid = this.state.spid;
 		var args = {spid: spid};
 		if (aid != null) {
 			args['aid'] = aid;
@@ -131,8 +131,7 @@ var App = React.createClass({
 		$.getJSON("/api/spider", args).done(function(data){
 			var err = data["err"];
 			if (!err) {
-				var name = data["spider"][1];
-				this.setState({name: name, entries: data["entries"]});
+				this.setState({entries: data["entries"]});
 			}
 		}.bind(this));
 	},
@@ -156,7 +155,9 @@ var App = React.createClass({
 	},
 
 	getInitialState: function() {
-		return {name: "", entries: []}
+		var spid = $("#content").attr("spid");
+		var name = $("#content").attr("name");
+		return {spid: spid, name: name, entries: []}
 	},
 
 	componentDidMount: function() {
