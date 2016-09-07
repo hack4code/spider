@@ -6,17 +6,11 @@
 
 <article class="page" lang="{{ article.lang }}">
 
-<script src="{{ url_for('static', filename='js/jquery-2.2.0.min.js') }}"></script>
-{% block javascript %}
-<script type="text/javascript">
-{% include "vote.js" %}
-</script>
-{% endblock %}
-
 <header>
 <h1 class="title"><a href="{{ article.link }}">{{ article.title|safe }}</a></h1>
-<hr class="ahr"></hr>
 </header>
+
+<hr class="ahr"></hr>
 
 <div id="article">
 {{ article.content|safe }}
@@ -24,20 +18,7 @@
 
 <hr class="ahr"></hr>
 
-<div class="vote">
-  <a href="{{ article.id }}"><i class="fa fa-thumbs-o-up"></i></a>
-</div>
-<div class="footer">
-{% if article.source %}
-<p>
-本文章来自
-<span class="spider">
-<a href="/p/{{ article.spider }}">[{{ article.source }}]</a>
-</span>
-,  您可以对文章点赞.
-</p>
-{% endif %}
-</div>
+<div id="content" aid="{{ article.id }}" spid="{{ article.spider }}" spname="{{ article.source }}"></div>
 
 <div>
 {% for i in range(24) %}
@@ -46,5 +27,7 @@
 </div>
 
 </article>
+
+<script type="text/babel" src="{{ url_for('static', filename='app/vote.js') }}"></script>
 
 {% endblock %}
