@@ -156,13 +156,6 @@ var SelectBox = React.createClass({
 });
 
 var Button = React.createClass({
-	handleClick: function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		this.props.submit();
-	},
-
 	render: function() {
 		var style = {
 			backgroundColor: "transparent",
@@ -182,7 +175,7 @@ var Button = React.createClass({
 		};
 
 		return (
-			<input style={style} type="submit" value="提交" onClick={this.handleClick}/>
+			<input style={style} type="submit" value="提交" />
 		)
 	}
 });
@@ -199,33 +192,36 @@ var SubmitForm = React.createClass({
 						removed_xpath_nodes: ""}
 	},
 
-	submit: function() {
+	submit: function(e) {
+		e.preventDefault();
+
 		var form = this.state;
 		if (form["url"] == "" || form["entry"] == "" || form["item_title"] == "" || form["item_link"] == "" || form["item_content"] == "") {
 			$("span").text("数据不能为空").show().fadeOut(2000);
-			return;
 		}
-
-		$("span").text("正在提交 .....").show();
-		$.ajax({type: "post",
-						url: "/api/feed/blog",
-						data: form,
-						success: function(r){
-					 		if (r['err'] == 0) {
-								this.setState({url: "",
-															 entry:"",
-															 item_title: "",
-															 item_link: "",
-															 item_content: "",
-															 removed_xpath_nodes: ""
-															 });
-								$("span").text("成功").show().fadeOut(1500);
-				 			}
-			      	else {
-								$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
-			      	}
-					  }.bind(this)}
-		);
+		else {
+			$("span").text("正在提交 .....").show();
+			$.ajax({type: "post",
+							url: "/api/feed/blog",
+							data: form,
+							success: function(r){
+						 		if (r['err'] == 0) {
+									this.setState({url: "",
+																 entry:"",
+																 item_title: "",
+																 item_link: "",
+																 item_content: "",
+																 removed_xpath_nodes: ""
+																 });
+									$("span").text("成功").show().fadeOut(1500);
+					 			}
+				      	else {
+									$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
+				      	}
+						  }.bind(this)}
+						);
+		}
+		ReactDOM.findDOMNode(this.refs.Submit).blur();
 	},
 
 	updateField: function(k, v) {
@@ -242,7 +238,7 @@ var SubmitForm = React.createClass({
 		return (
 			<div>
 				<ErrMsg />
-				<form><fieldset style={style}>
+				<form style={style} onSubmit={this.submit}>
 					<EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
 					<SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
 					<EditBox desc="文章Selector:" updateField={this.updateField} type="text" field="entry" value={this.state.entry} />
@@ -250,8 +246,8 @@ var SubmitForm = React.createClass({
 					<EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link" value={this.state.item_link} />
 					<EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content" value={this.state.item_content} />
 					<EditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
-					<Button submit={this.submit} />
-				</fieldset></form>
+					<Button ref="Submit" />
+				</form>
 			</div>
 		)
 	}

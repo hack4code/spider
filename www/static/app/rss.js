@@ -156,13 +156,6 @@ var SelectBox = React.createClass({
 });
 
 var Button = React.createClass({
-	handleClick: function(e) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		this.props.submit();
-	},
-
 	render: function() {
 		var style = {
 			backgroundColor: "transparent",
@@ -182,7 +175,7 @@ var Button = React.createClass({
 		};
 
 		return (
-			<input style={style} type="submit" value="提交" onClick={this.handleClick}/>
+			<input style={style} type="submit" value="提交"/>
 		)
 	}
 });
@@ -195,27 +188,30 @@ var SubmitForm = React.createClass({
 						content: ""}
 	},
 
-	submit: function() {
+	submit: function(e) {
+		e.preventDefault();
+
 		var form = this.state;
 		if (form["url"] == "") {
 			$("span").text("需要网址数据").show().fadeOut(1500);
-			return;
 		}
-
-		$("span").text("正在提交 .....").show();
-		$.ajax({type: "post",
-						url: "/api/feed/rss",
-						data: form,
-						success: function(r){
-					 		if (r['err'] == 0) {
-								$("span").text("成功").show().fadeOut(1500);
-				 			}
-			      	else {
-								$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
-			      	}
-							this.setState({url: "", content: ""});
-					  }.bind(this)}
-		);
+		else {
+			$("span").text("正在提交 .....").show();
+			$.ajax({type: "post",
+							url: "/api/feed/rss",
+							data: form,
+							success: function(r){
+						 		if (r['err'] == 0) {
+									$("span").text("成功").show().fadeOut(1500);
+					 			}
+				      	else {
+									$("span").text("失败: " + r["msg"]).show().fadeOut(1500);
+				      	}
+								this.setState({url: "", content: ""});
+						  }.bind(this)}
+			);
+		}
+		ReactDOM.findDOMNode(this.refs.Submit).blur();
 	},
 
 	updateField: function(k, v) {
@@ -231,12 +227,12 @@ var SubmitForm = React.createClass({
 		return (
 			<div>
 				<ErrMsg />
-				<form><fieldset style={style}>
+				<form onSubmit={this.submit} style={style}>
 					<EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
 					<SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
 					<EditBox desc="selector[用于非全文输出的feed]:" updateField={this.updateField} type="text" field="content" value={this.state.content} />
-					<Button submit={this.submit} />
-				</fieldset></form>
+					<Button ref="Submit"/>
+				</form>
 			</div>
 		)
 	}
