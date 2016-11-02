@@ -79,14 +79,6 @@ a {
  #article img {
   max-width: 34em;
  }
-
- article[lang="en"] #article {
-  font-weight: normal;
- }
-
- article[lang="zh"] #article {
-  font-weight: lighter;
- }
 }
 
 @media screen and (max-device-width: 599px) {
@@ -165,7 +157,7 @@ article[lang="en"] #article {
 }
 
 article[lang="zh"] #article {
- font-family: 'Lantinghei SC', 'Microsoft YaHei', 'sans-serif' !important;
+ font-family: 'Pingfang SC', 'Microsoft YaHei', 'sans-serif' !important;
  line-height: 2.0em;
  font-size: 0.95em;
 }
