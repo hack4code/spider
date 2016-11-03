@@ -20,7 +20,6 @@ from lxml import etree
 from lxml.etree import QName
 
 from scrapy.utils.project import get_project_settings
-from scrapy.crawler import CrawlerProcess
 
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
@@ -53,6 +52,8 @@ def get_stats(custom_settings):
 
 
 def check_spider(sp_setting):
+    from scrapy.crawler import CrawlerProcess
+
     spcls = mk_spider_cls(sp_setting)
     custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.CountPipeline':
                                           255},
@@ -63,6 +64,7 @@ def check_spider(sp_setting):
                        'LOG_ENABLED': True,
                        'STATS_URL': settings['TEMP_SPIDER_STATS_URL'],
                        'STATS_KEY': str(id(spcls))}
+
     p = CrawlerProcess(custom_settings)
     p.crawl(spcls)
     p.start()
@@ -155,6 +157,7 @@ def gen_blogspider(spargs):
 task for crawl
 """
 
+
 @app.task
 def crawl(args):
     if len(args) == 0:
@@ -172,15 +175,25 @@ def crawl(args):
         )
 
     init_logger()
-    process = CrawlerProcess(settings)
-    loader = process.spider_loader
-    if args[0] == 'all':
-        crawl_spiders = [loader.load(spid) for spid in loader.list()]
-    else:
-        crawl_spiders = [loader.load(spid)
-                         for spid in args if spid in loader.list()]
-    for sp in crawl_spiders:
-        logger.info('spider: {}'.format(sp))
-        process.crawl(sp)
-    process.start()
+
+    def run_spiders(settings):
+        from twisted.internet import reactor
+        from scrapy.crawler import CrawlerRunner
+
+        runner = CrawlerRunner(settings)
+        loader = runner.spider_loader
+        if args[0] == 'all':
+            spiders = [loader.load(spid) for spid in loader.list()]
+        else:
+            spiders = [loader.load(spid)
+                       for spid in args if spid in loader.list()]
+        for sp in spiders:
+            runner.crawl(sp)
+        d = runner.join()
+        d.addBoth(lambda _: reactor.stop())
+
+        reactor.run()
+
+    run_spiders(settings)
+
     return True
