@@ -174,14 +174,13 @@ def crawl(args):
             level=logging.ERROR
         )
 
-    init_logger()
-
     from twisted.internet import reactor, defer
 
     @defer.inlineCallbacks
     def run_spiders(settings):
         from scrapy.crawler import CrawlerRunner
 
+        init_logger()
         runner = CrawlerRunner(settings)
         loader = runner.spider_loader
         if args[0] == 'all':
