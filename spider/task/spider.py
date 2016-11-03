@@ -11,8 +11,6 @@ except ImportError:
 
 import redis
 
-import logging
-
 from celery.utils.log import get_task_logger
 from celery import Celery
 
@@ -163,24 +161,17 @@ def crawl(args):
     if len(args) == 0:
         return False
 
-    def init_logger():
-        import sys
+    def init_logger(settings):
         from scrapy.utils.log import configure_logging
 
-        configure_logging(install_root_handler=False)
-        logging.basicConfig(
-            stream=sys.stdout,
-            format='%(asctime)s-%(levelname)s: %(message)s',
-            level=logging.ERROR
-        )
+        configure_logging(settings)
 
-    from twisted.internet import reactor, defer
+    init_logger(settings)
 
-    @defer.inlineCallbacks
     def run_spiders(settings):
+        from twisted.internet import reactor
         from scrapy.crawler import CrawlerRunner
 
-        init_logger()
         runner = CrawlerRunner(settings)
         loader = runner.spider_loader
         if args[0] == 'all':
@@ -188,11 +179,11 @@ def crawl(args):
         else:
             spiders = [loader.load(spid)
                        for spid in args if spid in loader.list()]
-        for sp in spiders:
-            yield runner.crawl(sp)
-        reactor.stop()
+
+        map(lambda sp: runner.crawl(sp), spiders)
+        d = runner.join()
+        d.addBoth(lambda _: reactor.stop())
 
     run_spiders(settings)
-    reactor.run()
 
     return True
