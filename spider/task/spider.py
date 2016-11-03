@@ -176,8 +176,10 @@ def crawl(args):
 
     init_logger()
 
+    from twisted.internet import reactor, defer
+
+    @defer.inlineCallbacks
     def run_spiders(settings):
-        from twisted.internet import reactor
         from scrapy.crawler import CrawlerRunner
 
         runner = CrawlerRunner(settings)
@@ -188,12 +190,10 @@ def crawl(args):
             spiders = [loader.load(spid)
                        for spid in args if spid in loader.list()]
         for sp in spiders:
-            runner.crawl(sp)
-        d = runner.join()
-        d.addBoth(lambda _: reactor.stop())
-
-        reactor.run()
+            yield runner.crawl(sp)
+        reactor.stop()
 
     run_spiders(settings)
+    reactor.run()
 
     return True
