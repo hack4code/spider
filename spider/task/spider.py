@@ -128,9 +128,20 @@ def gen_lxmlspider(spargs):
 def crawl(args):
     if len(args) == 0:
         return False
+
+    def init_logger():
+        import sys
+        from scrapy.utils.log import configure_logging
+
+        configure_logging(install_root_handler=False)
+        logging.basicConfig(
+            stream=sys.stdout,
+            format='%(asctime)s-%(levelname)s: %(message)s',
+            level=logging.INFO
+        )
+
+    init_logger()
     process = CrawlerProcess(settings)
-    for handler in logging.root.handlers:
-        handler.setLevel(settings['LOG_LEVEL'])
     loader = process.spider_loader
     if args[0] == 'all':
         crawl_spiders = [loader.load(spid) for spid in loader.list()]
