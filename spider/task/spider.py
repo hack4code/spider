@@ -168,8 +168,9 @@ def crawl(args):
 
     init_logger(settings)
 
+    from twisted.internet import reactor
+
     def run_spiders(settings):
-        from twisted.internet import reactor
         from scrapy.crawler import CrawlerRunner
 
         runner = CrawlerRunner(settings)
@@ -185,5 +186,5 @@ def crawl(args):
         d.addBoth(lambda _: reactor.stop())
 
     run_spiders(settings)
-
+    reactor.run()
     return True
