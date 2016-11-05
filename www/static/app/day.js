@@ -103,13 +103,19 @@ var FloatSide = React.createClass({
 		var style = {
 			display: "block",
 			float: "right",
-			width: "300px",
 			padding: "0 32px",
 			fontFamily: "sans-serif",
 			fontSize: "0.7em",
 			fontWeight: "bold",
 			color: "dimgray"
 		};
+
+		if (screen.width < 600){
+			style["width"] = "0px";
+		}
+		else {
+			style["width"] = "300px";
+		}
 
 		return (
 			<div style={style}>
