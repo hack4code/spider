@@ -8,6 +8,7 @@
 * mongo
 
 ## INIT
+ * mkdir ~/db/
  * docker-compose build
 
 ## RUN
