@@ -8,6 +8,7 @@ ADD ./spider/requirements.txt /spider/requirements.txt
 WORKDIR /spider
 
 RUN apt-get update
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN adduser --disabled-password --gecos '' gw
 RUN mkdir /var/log/gw
