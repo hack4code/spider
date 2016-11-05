@@ -540,6 +540,13 @@ var App = React.createClass({
 
 	componentDidMount: function() {
 		this.setDay(document.title);
+		if (this.state.data == null) {
+			var now = new Date(document.title).getDate();
+			var today = new Date().getDate();
+			if (now >= today && this.state.day_before != null) {
+				this.setState(this.state.day_before);
+			}
+		}
 	},
 
 	render: function() {
