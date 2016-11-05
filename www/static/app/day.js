@@ -101,8 +101,8 @@ var AddressSector = React.createClass({
 var FloatSide = React.createClass({
 	render: function() {
 		var style = {
-			display: "block",
 			float: "right",
+			width: "300px",
 			padding: "0 32px",
 			fontFamily: "sans-serif",
 			fontSize: "0.7em",
@@ -111,10 +111,10 @@ var FloatSide = React.createClass({
 		};
 
 		if (screen.width < 600){
-			style["width"] = "0px";
+			style["display"] = "hidden";
 		}
 		else {
-			style["width"] = "300px";
+			style["display"] = "block";
 		}
 
 		return (
