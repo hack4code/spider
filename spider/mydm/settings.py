@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
 BOT_NAME = 'mydm'
-
-# SPIDER_MODULES = ['mydm.spiders']
-# NEWSPIDER_MODULE = 'mydm.spiders'
 SPIDER_LOADER_CLASS = 'mydm.spiderloader.MongoSpiderLoader'
 
 DOWNLOAD_DELAY = 0.6
 CONCURRENT_REQUESTS_PER_DOMAIN = 5
+WEBSERVICE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
+
+LOG_ENABLED = True
+LOG_LEVEL = 'INFO'
+LOG_STDOUT = False
 
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
@@ -19,13 +22,9 @@ DOWNLOADER_MIDDLEWARES = {
     'mydm.middlewares.ETagMiddleware': 300
 }
 
-WEBSERVICE_ENABLED = False
-TELNETCONSOLE_ENABLED = False
+"""
 
-LOG_STDOUT = False
-LOG_ENABLED = True
-LOG_LEVEL = 'INFO'
-
+"""
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
 MONGODB_DB_NAME = 'articles'
@@ -33,10 +32,11 @@ MONGODB_ARTICLE_COLLECTION_NAME = 'article'
 MONGODB_FEED_COLLECTION_NAME = 'feed'
 MONGODB_SPIDER_COLLECTION_NAME = 'spider'
 MONGODB_USER = 'scrapy'
-MONGODB_PWD = 'hbsc=JK48=ts'
+MONGODB_PWD = 'scrapy'
 
 # config for celery
-BROKER_URL = 'redis://redis:6379/0'
+BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672//'
+
 # config for etag
 ETAG_URL = 'redis://redis:6379/1'
 # config for spider task
