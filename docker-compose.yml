@@ -1,5 +1,18 @@
 version: "2"
 services:
+        rabbitmq:
+                image: rabbitmq
+                container_name: rabbitmq
+                expose:
+                        - "5672"
+                        - "15672"
+                networks:
+                        - rabbitmq
+                environment:
+                        RABBITMQ_DEFAULT_USER: rabbitmq
+                        RABBITMQ_DEFAULT_PASS: rabbitmq
+                hostname: rabbitmq
+
         redis:
                 image: redis
                 container_name: redis
@@ -26,12 +39,15 @@ services:
                         dockerfile: Dockerfile-spider
                 container_name: spider
                 depends_on:
+                        - rabbitmq
                         - redis
                         - mongodb
                 networks:
+                        - rabbitmq
                         - redis
                         - mongodb
                 links:
+                        - rabbitmq
                         - redis
                         - mongodb
                 volumes:
@@ -46,13 +62,16 @@ services:
                 ports:
                         - "8001:8001"
                 depends_on:
+                        - rabbitmq
                         - redis
                         - mongodb
                 networks:
                         - gw
+                        - rabbitmq
                         - redis
                         - mongodb
                 links:
+                        - rabbitmq
                         - redis
                         - mongodb
                 volumes:
@@ -93,6 +112,8 @@ services:
 
 networks:
         gw:
+                driver: bridge
+        rabbitmq:
                 driver: bridge
         redis:
                 driver: bridge
