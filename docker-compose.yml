@@ -28,7 +28,6 @@ services:
                 volumes:
                         - ./mongo/script/:/script/
                         - ./mongo/data/:/data/db/
-                        - ~/db/:/back/
                 networks:
                         - mongodb
 
@@ -102,7 +101,6 @@ services:
                         - ./nginx/www.conf:/etc/nginx/www.conf:ro
                         - ./www/static/:/www/static/:ro
                         - ./www/fonts/:/www/fonts:ro
-                        - /etc/letsencrypt/archive/wartalker.me:/cert/:ro
                 networks:
                         - www
                 ports:
