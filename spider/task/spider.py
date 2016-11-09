@@ -125,37 +125,6 @@ def gen_lxmlspider(spargs):
 
 
 @app.task
-def crawl(args):
-    if len(args) == 0:
-        return False
-
-    def init_logger():
-        import sys
-        from scrapy.utils.log import configure_logging
-
-        configure_logging(install_root_handler=False)
-        logging.basicConfig(
-            stream=sys.stdout,
-            format='%(asctime)s-%(levelname)s: %(message)s',
-            level=logging.INFO
-        )
-
-    init_logger()
-    process = CrawlerProcess(settings)
-    loader = process.spider_loader
-    if args[0] == 'all':
-        crawl_spiders = [loader.load(spid) for spid in loader.list()]
-    else:
-        crawl_spiders = [loader.load(spid)
-                         for spid in args if spid in loader.list()]
-    for sp in crawl_spiders:
-        logger.info('spider: {}'.format(sp))
-        process.crawl(sp)
-    process.start()
-    return True
-
-
-@app.task
 def gen_blogspider(spargs):
     url = spargs['url']
     parser = urlparse(url)
@@ -180,3 +149,38 @@ def gen_blogspider(spargs):
         save_spider_settings(sp_setting)
         return True
     return False
+
+
+"""
+task for crawl
+"""
+
+@app.task
+def crawl(args):
+    if len(args) == 0:
+        return False
+
+    def init_logger():
+        import sys
+        from scrapy.utils.log import configure_logging
+
+        configure_logging(install_root_handler=False)
+        logging.basicConfig(
+            stream=sys.stdout,
+            format='%(asctime)s-%(levelname)s: %(message)s',
+            level=logging.ERROR
+        )
+
+    init_logger()
+    process = CrawlerProcess(settings)
+    loader = process.spider_loader
+    if args[0] == 'all':
+        crawl_spiders = [loader.load(spid) for spid in loader.list()]
+    else:
+        crawl_spiders = [loader.load(spid)
+                         for spid in args if spid in loader.list()]
+    for sp in crawl_spiders:
+        logger.info('spider: {}'.format(sp))
+        process.crawl(sp)
+    process.start()
+    return True
