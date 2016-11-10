@@ -87,7 +87,7 @@ var AddressSector = React.createClass({
 				<p>email: <a style={style} href="mailto:code4hack@gmail.com">code4hack@gmail.com</a></p>
 				</li>
 			</ul>
-			<p>github</p>
+			<p>项目地址</p>
 			<ul>
 				<li>
 				<p>github: <a style={style} href="https://github.com/alone-walker/BlogSpider" target="_blank">BlogSpider</a></p>
