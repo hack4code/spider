@@ -404,7 +404,7 @@ var ContentDiv = React.createClass({
 				"科技": 3,
 				"新闻": 4
 			};
-			return sortList[a] > sortList[b];
+			return (sortList[a] > sortList[b]) ? 1 : -1;
 		});
 	},
 
