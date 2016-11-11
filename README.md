@@ -1,10 +1,11 @@
 # Blog Spider
 
 ## IMAGES
-* mongo
+* rabbitmq
 * redis
 * python
 * nginx
+* mongo
 
 ## INIT
  * docker-compose build
