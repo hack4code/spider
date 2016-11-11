@@ -5,7 +5,6 @@ services:
                 container_name: rabbitmq
                 expose:
                         - "5672"
-                        - "15672"
                 networks:
                         - rabbitmq
                 environment:
