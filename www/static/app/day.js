@@ -111,7 +111,7 @@ var FloatSide = React.createClass({
 		};
 
 		if (screen.width < 600){
-			style["display"] = "hidden";
+			style["display"] = "none";
 		}
 		else {
 			style["display"] = "block";
