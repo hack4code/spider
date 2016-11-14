@@ -8,10 +8,10 @@ except ImportError:
 from datetime import datetime
 import inspect
 
-from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 
+from ..spider import ErrbackSpider
 from ..log import logger
 from ..items import ArticleItem
 from ..ai import TagExtractor
@@ -21,7 +21,7 @@ class BLOGSpiderException(Exception):
     pass
 
 
-class BLOGSpider(Spider):
+class BLOGSpider(ErrbackSpider):
     """
     tags item must contain
     """

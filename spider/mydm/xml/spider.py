@@ -9,14 +9,14 @@ from datetime import datetime
 from lxml import etree
 
 from scrapy import Request
-from scrapy.spiders import Spider
 
 from ..log import logger
 from .extractor import ItemExtractor
 from ..items import ArticleItem
+from ..spider import ErrbackSpider
 
 
-class LXMLSpider(Spider):
+class LXMLSpider(ErrbackSpider):
     """
     Tags item must contain
     """
