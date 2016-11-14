@@ -58,6 +58,7 @@ class LXMLSpider(ErrbackSpider):
                 if self.has_content_extractor():
                     yield Request(item['link'],
                                   callback=self.extract_content,
+                                  errback=self.errback,
                                   meta={'item': item})
                 else:
                     yield ArticleItem(item)

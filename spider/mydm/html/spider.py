@@ -71,7 +71,9 @@ class BLOGSpider(ErrbackSpider):
     def parse(self, response):
         try:
             prelink = response.xpath(self.link_pre_xpath).extract_first()
-            yield Request(prelink, callback=self.parse)
+            yield Request(prelink,
+                          callback=self.parse,
+                          errback=self.errback)
         except AttributeError:
             logger.info('{} has no prelink attr'.format(self.name))
 
@@ -89,6 +91,7 @@ class BLOGSpider(ErrbackSpider):
                 item['link'] = response.urljoin(link)
             yield Request(item['link'],
                           callback=self.extract_content,
+                          errback=self.errback,
                           meta={'item': item})
 
 
