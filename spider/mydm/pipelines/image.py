@@ -8,7 +8,10 @@ from lxml.html import fromstring, tostring, HTMLParser
 import StringIO
 from PIL import Image as ImageLib
 
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
