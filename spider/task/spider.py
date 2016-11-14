@@ -25,7 +25,6 @@ from mydm.spiderfactory import mk_spider_cls
 from mydm.util import parse_redis_url
 
 settings = get_project_settings()
-logger = get_task_logger(__name__)
 app = Celery('tasks', broker=settings['BROKER_URL'])
 app.conf.CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
 app.conf.CELERYD_MAX_TASKS_PER_CHILD = 1
@@ -71,6 +70,7 @@ def check_spider(sp_setting):
 
 
 def _gen_lxmlspider(url, args):
+    logger = get_task_logger(__name__)
     r = requests.get(url, headers=settings['DEFAULT_REQUEST_HEADERS'])
     if r.status_code != 200:
         logger.error('download {} error: status={}'.format(url, r.status_code))
@@ -106,8 +106,9 @@ def _gen_lxmlspider(url, args):
     return False
 
 
-@app.task
+@app.task(name='lxmlspider-creator')
 def gen_lxmlspider(spargs):
+    logger = get_task_logger(__name__)
     url = spargs['url']
     logger.info('gen_lxmlspider for {}'.format(url))
     parser = urlparse(url)
@@ -124,8 +125,9 @@ def gen_lxmlspider(spargs):
     return False
 
 
-@app.task
+@app.task(name='blogspider-creator')
 def gen_blogspider(spargs):
+    logger = get_task_logger(__name__)
     url = spargs['url']
     parser = urlparse(url)
     if parser.scheme == '' or parser.netloc == '':
@@ -156,23 +158,22 @@ task for crawl
 """
 
 
-@app.task
+@app.task(name='crawl-job')
 def crawl(args):
     if len(args) == 0:
         return False
 
     def init_logger(settings):
         import logging
-        from scrapy.utils.log import configure_logging
-
+        logger = get_task_logger(__name__)
         LEVELS = {'DEBUG': logging.DEBUG,
                   'INFO': logging.INFO,
                   'WARNING': logging.WARNING,
                   'ERROR': logging.ERROR,
                   'CRITICAL': logging.CRITICAL}
-
-        configure_logging(settings)
         logger.setLevel(LEVELS[settings['LOG_LEVEL']])
+        from scrapy.utils.log import configure_logging
+        configure_logging(settings, install_root_handler=False)
 
     init_logger(settings)
 
