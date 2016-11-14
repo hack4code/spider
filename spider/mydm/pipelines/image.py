@@ -8,7 +8,7 @@ from lxml.html import fromstring, tostring, HTMLParser
 import StringIO
 from PIL import Image as ImageLib
 
-from urlparse.urlparse import urljoin
+from urlparse import urlparse
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -72,7 +72,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if attr in e.attrib:
                 url = e.get(attr).strip()
                 if url.startswith('/'):
-                    url = urljoin(item['link'].strip(), url)
+                    url = urlparse.urljoin(item['link'].strip(), url)
                 urls.append((url, e))
 
         item._doc = doc
