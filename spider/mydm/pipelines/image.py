@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import base64
 
 from lxml.html import fromstring, tostring, HTMLParser
@@ -12,7 +11,7 @@ from PIL import Image as ImageLib
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
-logger = logging.getLogger(__name__)
+from ..log import logger
 
 
 class ImgException(Exception):

@@ -7,16 +7,13 @@ except ImportError:
     from urlparse import urlparse
 from datetime import datetime
 from lxml import etree
-import logging
 
 from scrapy import Request
 from scrapy.spiders import Spider
 
+from ..log import logger
 from .extractor import ItemExtractor
 from ..items import ArticleItem
-
-
-logger = logging.getLogger(__name__)
 
 
 class LXMLSpider(Spider):

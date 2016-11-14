@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
-
+from .log import logger
 from .xml import mk_lxmlspider_cls
 from .html import mk_blogspider_cls
 
@@ -10,7 +9,6 @@ from .html import mk_blogspider_cls
 class SpiderFactoryException(Exception):
     pass
 
-logger = logging.getLogger(__name__)
 
 spider_factory = {
     'xml': mk_lxmlspider_cls,

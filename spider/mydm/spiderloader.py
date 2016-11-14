@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 from zope.interface import implementer
 from scrapy.interfaces import ISpiderLoader
 
+from .log import logger
 from .spiderfactory import mk_spider_cls, SpiderFactoryException
 from .model import get_spider_settings
-
-
-logger = logging.getLogger(__name__)
 
 
 @implementer(ISpiderLoader)

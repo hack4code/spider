@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import re
 
 from lxml.html import fromstring, tostring, HTMLParser, defs
 from lxml.html.clean import Cleaner
 
-
-logger = logging.getLogger(__name__)
+from ..log import logger
 
 
 class ContentPipeline(object):

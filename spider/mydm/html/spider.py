@@ -7,17 +7,14 @@ except ImportError:
     from urlparse import urlparse
 from datetime import datetime
 import inspect
-import logging
 
 from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 
+from ..log import logger
 from ..items import ArticleItem
 from ..ai import TagExtractor
-
-
-logger = logging.getLogger(__name__)
 
 
 class BLOGSpiderException(Exception):

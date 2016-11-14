@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import redis
 
 from ..util import parse_redis_url
-
-
-logger = logging.getLogger(__name__)
 
 
 class ETagMiddleware(object):
