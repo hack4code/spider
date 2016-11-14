@@ -8,6 +8,8 @@ from lxml.html import fromstring, tostring, HTMLParser
 import StringIO
 from PIL import Image as ImageLib
 
+from urlparse.urlparse import urljoin
+
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
@@ -65,8 +67,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
             attr = self.spiderinfo.spider.image_url_attr
         except AttributeError:
             attr = 'src'
-        urls = [(e.get(attr).strip(), e)
-                for e in doc.xpath('//img') if attr in e.attrib]
+        urls = []
+        for e in doc.xpath('//img'):
+            if attr in e.attrib:
+                url = e.get(attr).strip()
+                if url.startswith('/'):
+                    url = urljoin(item['link'].strip(), url)
+                urls.append((url, e))
+
         item._doc = doc
         return [Request(url, meta={'img': e})
                 for (url, e) in urls if not url.startswith('data')]
@@ -106,8 +114,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 data = image.optimize()
             imgtype = image.type
         except:
-            # logger.exception('spider {} PIL open image failed: {}'.format(
-            #     self.spiderinfo.spider.name, src))
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
