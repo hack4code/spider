@@ -172,8 +172,8 @@ def crawl(args):
                   'ERROR': logging.ERROR,
                   'CRITICAL': logging.CRITICAL}
         logger.setLevel(LEVELS[settings['LOG_LEVEL']])
-        # from scrapy.utils.log import configure_logging
-        # configure_logging(None, install_root_handler=False)
+        from scrapy.utils.log import configure_logging
+        configure_logging(None, install_root_handler=False)
 
     init_logger(settings)
 
