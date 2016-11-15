@@ -46,6 +46,11 @@ class BLOGSpider(ErrbackSpider):
         tags = TagExtractor()(entry.xpath('.').extract_first())
         if tags is not None:
             item['tag'] = tags
+
+        def clean_link_url(url):
+            return url.strip('\t\n\r\s')
+        if 'link' in item:
+            item['link'] = clean_link_url(item['link'])
         return item
 
     def extract_content(self, response):
