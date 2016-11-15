@@ -47,7 +47,7 @@ class LinkTag(object):
         else:
             v = e.text
         if v is not None:
-            self.val = v.strip('\n ')
+            self.val = v.strip('\t\n ')
 
 
 @implementer(ITagExtractor)
