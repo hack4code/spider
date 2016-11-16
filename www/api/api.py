@@ -3,7 +3,7 @@
 
 import logging
 import requests
-from datetime import date
+from datetime import datetime, date
 from flask import Blueprint, jsonify, request, session
 
 from app import app
@@ -79,7 +79,7 @@ def day_entries():
     if day_begin is None or day_entry is None:
         return jsonify(err=1, msg='no articles')
 
-    if day_entry < day_begin or day_entry > date.today():
+    if day_entry < day_begin or day_entry > datetime.utcnow().date():
         return jsonify(err=1, msg='no articles')
 
     entries = get_entries(day_entry)
