@@ -230,7 +230,7 @@ var SubmitForm = React.createClass({
 				<form onSubmit={this.submit} style={style}>
 					<EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
 					<SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
-					<EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="content" value={this.state.content} />
+					<EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.content} />
 					<EditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
 					<Button ref="Submit"/>
 				</form>
