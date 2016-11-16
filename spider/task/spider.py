@@ -96,8 +96,8 @@ def _gen_lxmlspider(url, args):
     if sp_setting['category'] not in settings['ARTICLE_CATEGORIES']:
         logger.error(u'{} category error'.format(sp_setting['category']))
         return False
-    if 'item_content_xpath' in args:
-        sp_setting['item_content_xpath'] = args['item_content_xpath']
+    spattrs = ('item_content_xpath', 'removed_xpath_nodes')
+    sp_setting.update({k: args[k] for k in spattrs if k in args})
     sp_setting['type'] = 'xml'
     if check_spider(sp_setting):
         save_spider_settings(sp_setting)
@@ -118,7 +118,8 @@ def gen_lxmlspider(spargs):
     save_feed(url)
     spattrs = ('url', 'item_content_xpath', 'category')
     args = {k: v for k, v in spargs.items() if k in spattrs and v != ''}
-    if 'removed_xpath_nodes' in spargs and len(spargs['removed_xpath_nodes']) > 0:
+    if ('removed_xpath_nodes' in spargs
+       and len(spargs['removed_xpath_nodes']) > 0):
         nodes = [n.strip() for n in spargs['removed_xpath_nodes'].split(',')]
         args['item_content_xpath'] = nodes
     if not is_exists_spider(url):
