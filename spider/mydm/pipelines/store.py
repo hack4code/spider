@@ -19,11 +19,11 @@ class StorePipeline(object):
 
     def process_item(self, item, spider):
         if item is not None:
-            item2 = dict(item)
-            item2['lang'] = get_article_lang(item)
-            item2['spider'] = spider._id
-            item2['source'] = spider.title
-            item2['category'] = get_category(item2)
-            if not is_exists_article(item2):
-                save_article(item2)
+            item_ = dict(item)
+            item_['lang'] = get_article_lang(item)
+            item_['spider'] = spider._id
+            item_['source'] = spider.title
+            item_['category'] = get_category(item_)
+            if not is_exists_article(item_):
+                save_article(item_)
         return item
