@@ -116,7 +116,7 @@ def gen_lxmlspider(spargs):
         logger.error('{} invalid url'.format(url))
         return False
     save_feed(url)
-    spattrs = ('url', 'item_content_xpath', 'category')
+    spattrs = ('item_content_xpath', 'category')
     args = {k: v for k, v in spargs.items() if k in spattrs and v != ''}
     if ('removed_xpath_nodes' in spargs
        and len(spargs['removed_xpath_nodes']) > 0):
