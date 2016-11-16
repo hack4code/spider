@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from datetime import date
+from datetime import datetime
 from flask import Blueprint
 
 from d import show_entries
@@ -14,4 +14,5 @@ home_page = Blueprint('home_page',
 
 @home_page.route('/', methods=['GET'])
 def home():
-    return show_entries(str(date.today()))
+    today = str(datetime.utcnow().date())
+    return show_entries(today)
