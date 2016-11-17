@@ -8,7 +8,7 @@ db.auth(user, passwd);
 
 function find_feed_spider(url) {
 	var cursor = db.spider.find({start_urls: {$in: [url,]}});
-	return cursor.hasNext() ? true : false;
+	return cursor.hasNext();
 }
 
 var cursor = db.feed.find({});
