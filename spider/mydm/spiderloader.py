@@ -19,7 +19,7 @@ class MongoSpiderLoader(object):
         if self._spiders is None:
             spiders = {}
             for sp_setting in get_spider_settings():
-                spid = str(sp_setting['_id'])
+                spid = sp_setting['_id']
                 try:
                     spcls = mk_spider_cls(sp_setting)
                 except SpiderFactoryException:
