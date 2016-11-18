@@ -199,11 +199,11 @@ def crawl(args):
     flush_failed_spider_db()
     run_spiders(settings)
     reactor.run()
-    return True
+    return get_failed_spiders()
 
 
 @app.task(name='failed spiders')
-def recrawl():
+def recrawl(spids):
     from twisted.internet import reactor, defer
 
     @defer.inlineCallbacks
@@ -212,20 +212,11 @@ def recrawl():
 
         runner = CrawlerRunner(settings)
         loader = runner.spider_loader
-        spiders = [loader.load(spid) for spid in get_failed_spiders()]
+        spiders = [loader.load(spid) for spid in spids]
         for sp in spiders:
             yield runner.crawl(sp)
         reactor.stop()
 
     run_failed_spiders(settings)
     reactor.run()
-    return True
-
-
-@app.task(name="job for crawl")
-def crawl_job(args):
-    r = crawl.apply_async(args=args)
-    r.wait(timeout=None, interval=180)
-    r = recrawl.apply_async()
-    r.wait(timeout=None, interval=180)
     return True
