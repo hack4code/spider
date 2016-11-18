@@ -1,1 +1,1 @@
-from .spider import crawl, recrawl, gen_lxmlspider, gen_blogspider
+from .spider import crawl_job, gen_lxmlspider, gen_blogspider
