@@ -7,6 +7,7 @@ from scrapy.spiders import Spider
 from scrapy import Request
 
 from ..log import logger
+from ..util import save_failed_spider
 
 
 class ErrbackSpider(Spider):
@@ -23,3 +24,4 @@ class ErrbackSpider(Spider):
             logger.error('TimeoutError on {}'.format(request))
         else:
             logger.error(repr(failure))
+        save_failed_spider(self._id)

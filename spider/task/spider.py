@@ -22,7 +22,8 @@ from scrapy.utils.project import get_project_settings
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
-from mydm.util import parse_redis_url
+from mydm.util import parse_redis_url, flush_failed_spider_db, \
+    get_failed_spiders
 
 settings = get_project_settings()
 app = Celery('tasks', broker=settings['BROKER_URL'])
@@ -161,7 +162,7 @@ task for crawl
 """
 
 
-@app.task(name='crawl-job')
+@app.task(name='crawl job')
 def crawl(args):
     if len(args) == 0:
         return False
@@ -175,10 +176,8 @@ def crawl(args):
                   'ERROR': logging.ERROR,
                   'CRITICAL': logging.CRITICAL}
         logger.setLevel(LEVELS[settings['LOG_LEVEL']])
-        # from scrapy.utils.log import configure_logging
-        # configure_logging(None, install_root_handler=False)
-
-    init_logger(settings)
+        from scrapy.utils.log import configure_logging
+        configure_logging(None, install_root_handler=False)
 
     from twisted.internet import reactor
 
@@ -197,6 +196,26 @@ def crawl(args):
         d = runner.join()
         d.addBoth(lambda _: reactor.stop())
 
+    flush_failed_spider_db()
     run_spiders(settings)
+    reactor.run()
+
+
+@app.task(name='failed spider rerun job')
+def recrawl():
+    from twisted.internet import reactor, defer
+
+    @defer.inlineCallbacks
+    def run_failed_spiders(settings):
+        from scrapy.crawler import CrawlerRunner
+
+        runner = CrawlerRunner(settings)
+        loader = runner.spider_loader
+        spiders = [loader.load(spid) for spid in get_failed_spiders()]
+        for sp in spiders:
+            yield runner.crawl(sp)
+        reactor.stop()
+
+    run_failed_spiders(settings)
     reactor.run()
     return True
