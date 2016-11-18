@@ -162,7 +162,7 @@ task for crawl
 """
 
 
-@app.task(name='crawl job')
+@app.task(name='crawl')
 def crawl(args):
     if len(args) == 0:
         return False
@@ -199,9 +199,10 @@ def crawl(args):
     flush_failed_spider_db()
     run_spiders(settings)
     reactor.run()
+    return True
 
 
-@app.task(name='failed spider rerun job')
+@app.task(name='failed spiders')
 def recrawl():
     from twisted.internet import reactor, defer
 
@@ -218,4 +219,11 @@ def recrawl():
 
     run_failed_spiders(settings)
     reactor.run()
+    return True
+
+
+@app.task(name="job for crawl")
+def crawl_job(args):
+    crawl.apply(args)
+    recrawl.apply()
     return True

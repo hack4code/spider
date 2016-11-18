@@ -3,7 +3,7 @@
 
 from flask import Flask, request, jsonify
 
-from task import crawl, recrawl, gen_lxmlspider, gen_blogspider
+from task import crawl_job, gen_lxmlspider, gen_blogspider
 
 # DEBUG = True
 app = Flask(__name__)
@@ -13,16 +13,7 @@ app.config.from_object(__name__)
 @app.route("/crawl", methods=["POST"])
 def run_spider():
     spiders = [sp for sp in request.form["spiders"].split(",")]
-
-    def job(spiders):
-        crawl.apply(args=spiders)
-        recrawl.apply()
-        return True
-
-    from multiprocessing import Process
-
-    p = Process(target=job, args=(spiders,))
-    p.start()
+    crawl_job.delay(spiders)
     return jsonify(err=0, msg='ok')
 
 
