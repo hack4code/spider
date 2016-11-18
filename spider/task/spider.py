@@ -224,6 +224,8 @@ def recrawl():
 
 @app.task(name="job for crawl")
 def crawl_job(args):
-    crawl.apply(args)
-    recrawl.apply()
+    r = crawl.apply_async(args=args)
+    r.wait(timeout=None, interval=180)
+    r = recrawl.apply_async()
+    r.wait(timeout=None, interval=180)
     return True
