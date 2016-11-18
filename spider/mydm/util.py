@@ -38,4 +38,8 @@ def save_failed_spider(sp):
 def get_failed_spiders():
     conf = parse_redis_url(settings['RETRY_SPIDERS_URL'])
     r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
-    return r.get('spider')
+    l = r.llen('spider')
+    if l == 0:
+        return []
+    else:
+        return r.lrange('spider', 0, l)
