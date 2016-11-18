@@ -1,6 +1,6 @@
 
 clean:
-	find . -iname '*.pyc' -exec rm {} \;
+	find . -iname '*.pyc' -exec sudo rm {} \;
 
 update:
 	docker pull nginx
