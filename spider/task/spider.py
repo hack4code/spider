@@ -164,12 +164,15 @@ task for crawl
 
 @app.task(name='crawl')
 def crawl(args):
+    logger = get_task_logger(__name__)
+    logger.info('job crawl start ...')
+
     if len(args) == 0:
         return False
 
     def init_logger(settings):
         import logging
-        logger = get_task_logger(__name__)
+
         LEVELS = {'DEBUG': logging.DEBUG,
                   'INFO': logging.INFO,
                   'WARNING': logging.WARNING,
@@ -202,8 +205,13 @@ def crawl(args):
     return get_failed_spiders()
 
 
-@app.task(name='failed spiders')
+@app.task(name='recrawl failed spiders')
 def recrawl(spids):
+    logger = get_task_logger(__name__)
+    logger.info('job recrawl start ...')
+    for spid in spids:
+        logger.info('error spider id: {}'.format(spid))
+
     from twisted.internet import reactor, defer
 
     @defer.inlineCallbacks
