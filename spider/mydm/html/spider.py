@@ -49,7 +49,8 @@ class BLOGSpider(ErrbackSpider):
 
         def clean_link_url(url):
             return url.strip('\t\n\r\s')
-        if 'link' in item:
+
+        if 'link' in item and item['link'] is not None:
             item['link'] = clean_link_url(item['link'])
         return item
 
