@@ -22,6 +22,6 @@ class ErrbackSpider(Spider):
         if failure.check(TimeoutError):
             request = failure.request
             logger.error('TimeoutError on {}'.format(request))
+            save_failed_spider(self._id)
         else:
             logger.error(repr(failure))
-        save_failed_spider(self._id)
