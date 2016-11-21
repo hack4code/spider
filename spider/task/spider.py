@@ -118,7 +118,7 @@ def gen_lxmlspider(spargs):
         return False
     save_feed(url)
     spattrs = ('item_content_xpath', 'category')
-    args = {k: v for k, v in spargs.items() if k in spattrs and v != ''}
+    args = {k: v for k, v in spargs.items() if k in spattrs and len(v) > 0}
     if ('removed_xpath_nodes' in spargs
        and len(spargs['removed_xpath_nodes']) > 0):
         nodes = [n.strip() for n in spargs['removed_xpath_nodes'].split(',')]
@@ -142,8 +142,8 @@ def gen_blogspider(spargs):
     if any(spattr not in spargs for spattr in spattrs):
         return False
     sp_setting = {'{}_xpath'.format(k): v
-                  for k, v in spargs.items() if k in spattrs}
-    if 'removed_xpath_nodes' in spargs:
+                  for k, v in spargs.items() if k in spattrs and len(v) > 0}
+    if 'removed_xpath_nodes' in spargs and spargs['removed_xpath_nodes'] > 0:
         nodes = [n.strip() for n in spargs['removed_xpath_nodes'].split(',')]
         sp_setting['removed_xpath_nodes'] = nodes
     sp_setting['name'] = get_feed_name(url)

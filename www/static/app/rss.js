@@ -185,13 +185,20 @@ var SubmitForm = React.createClass({
 	getInitialState: function(){
 		return {category: "",
 						url: "",
-						content: ""}
+						item_content_xpath: "",
+						removed_xpath_nodes: ""}
 	},
 
 	submit: function(e) {
 		e.preventDefault();
 
-		var form = this.state;
+		var form = {}
+		for (var k in this.state) {
+			if (this.state[k].length > 0) {
+				form[k] = this.state[k];
+			}
+		}
+
 		if (form["url"] == "") {
 			$("span").text("需要网址数据").show().fadeOut(1500);
 		}
