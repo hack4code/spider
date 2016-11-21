@@ -9,9 +9,9 @@ import StringIO
 from PIL import Image as ImageLib
 
 try:
-    from urllib.parse import urlparse
+    from urllib.parse import urljoin
 except ImportError:
-    from urlparse import urlparse
+    from urlparse import urljoin
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -75,7 +75,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if attr in e.attrib:
                 url = e.get(attr).strip()
                 if url.startswith('/'):
-                    url = urlparse.urljoin(item['link'].strip(), url)
+                    url = urljoin(item['link'].strip(), url)
                 urls.append((url, e))
 
         item._doc = doc
