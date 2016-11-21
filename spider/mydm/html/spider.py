@@ -71,8 +71,6 @@ class BLOGSpider(ErrbackSpider):
             logger.error(
                 '{} extract content error, miss tags: {}'.format(self.name,
                                                                  miss_tags))
-            raise BLOGSpiderException(
-                '{} extract content error'.format(self.name))
 
     def parse(self, response):
         try:
