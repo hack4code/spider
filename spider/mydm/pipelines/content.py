@@ -5,6 +5,7 @@ import re
 
 from lxml.html import fromstring, tostring, HTMLParser, defs
 from lxml.html.clean import Cleaner
+from lxml.etree import ParserError
 
 from ..log import logger
 
@@ -76,8 +77,12 @@ class ContentPipeline(object):
             doc = fromstring(bytes(bytearray(item['content'],
                                    encoding=item['encoding'])),
                              parser=HTMLParser(encoding=item['encoding']))
-        except TypeError:
-            logger.error('{} lxml build doc failed'.format(spider.name))
+        except (TypeError, ParserError):
+            logger.error('{} build lxml doc failed'.format(spider.name))
+            return item
+        except:
+            logger.exception(
+                '{} unknown error for build doc'.format(spider.name))
             return item
 
         # clean element with class name
