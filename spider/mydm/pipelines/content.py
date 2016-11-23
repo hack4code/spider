@@ -34,7 +34,12 @@ class ContentPipeline(object):
         return re.sub(r'(\r|\n|\s)+', ' ', title)
 
     def make_abs_link(self, doc, link):
-        doc.make_links_absolute(link)
+        try:
+            doc.make_links_absolute(link)
+        except ValueError:
+            logger.error('make_abs_link error for ipv6 url')
+        else:
+            logger.exception('make_abs_link unknown error')
         return doc
 
     def remove_element_with_class(self, doc, removed_classes):
