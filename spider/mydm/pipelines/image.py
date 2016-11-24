@@ -76,7 +76,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         urls = []
         for e in doc.xpath('//img'):
             if attr in e.attrib:
-                url = e.get(attr).strip()
+                url = e.get(attr).strip(' \t\n')
                 if url.startswith('/'):
                     try:
                         url = urljoin(item['link'].strip(), url)
