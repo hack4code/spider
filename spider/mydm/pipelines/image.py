@@ -64,18 +64,26 @@ class ImagesDlownloadPipeline(MediaPipeline):
         try:
             doc = fromstring(item[self.ITEM_CONTENT_FIELD],
                              parser=HTMLParser(encoding=item['encoding']))
-        except TypeError:
+        except:
+            logger.error('Error in pipeline image build lxml doc')
             return []
+
         try:
             attr = self.spiderinfo.spider.image_url_attr
         except AttributeError:
             attr = 'src'
+
         urls = []
         for e in doc.xpath('//img'):
             if attr in e.attrib:
                 url = e.get(attr).strip()
                 if url.startswith('/'):
-                    url = urljoin(item['link'].strip(), url)
+                    try:
+                        url = urljoin(item['link'].strip(), url)
+                    except:
+                        logger.error(('Error in pipeline image urljoin'
+                                      '[{}: {}').format(item['link'], url))
+                        continue
                 urls.append((url, e))
 
         item._doc = doc

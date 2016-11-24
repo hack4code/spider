@@ -5,7 +5,6 @@ import re
 
 from lxml.html import fromstring, tostring, HTMLParser, defs
 from lxml.html.clean import Cleaner
-from lxml.etree import ParserError
 
 from ..log import logger
 
@@ -36,11 +35,10 @@ class ContentPipeline(object):
     def make_abs_link(self, doc, link):
         try:
             doc.make_links_absolute(link)
-        except ValueError:
-            logger.error('make_abs_link error for ipv6 url')
-        else:
-            logger.exception('make_abs_link unknown error')
-        return doc
+        except:
+            logger.error('Error in content pipeline make_abs_link')
+        finally:
+            return doc
 
     def remove_element_with_class(self, doc, removed_classes):
         for e in doc.xpath('//div[@class]'):
@@ -82,29 +80,29 @@ class ContentPipeline(object):
             doc = fromstring(bytes(bytearray(item['content'],
                                    encoding=item['encoding'])),
                              parser=HTMLParser(encoding=item['encoding']))
-        except (TypeError, ParserError):
-            logger.error('{} build lxml doc failed'.format(spider.name))
-            return item
         except:
-            logger.exception(
-                '{} unknown error for build doc'.format(spider.name))
+            logger.error(('{} got Error in content pipeline process_item'
+                          '[{}]').format(spider.name, item['link']))
             return item
 
-        # clean element with class name
+        """
+            remove element with class name for clean display
+        """
         removed_classes = getattr(spider,
                                   self.REMOVED_CLASSES_NAME,
                                   None)
         if removed_classes is not None:
             doc = self.remove_element_with_class(doc, removed_classes)
 
-        # clean element with xpath node
+        """
+            remove element with xpath for clean display
+        """
         removed_xpath_nodes = getattr(spider,
                                       self.REMOVED_XPATH_NODES_NAME,
                                       None)
         if removed_xpath_nodes is not None:
             doc = self.remove_element_with_xpath_nodes(doc,
                                                        removed_xpath_nodes)
-        # clean html
         allow_classes = getattr(spider,
                                 self.ALLOW_CLASSES_NAME,
                                 None)
