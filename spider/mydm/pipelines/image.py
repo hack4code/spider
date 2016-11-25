@@ -137,6 +137,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
         img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
-        item[self.ITEM_CONTENT_FIELD] = tostring(item._doc, pretty_print=True)
-        del item._doc
+        if hasattr(item, '_doc'):
+            item[self.ITEM_CONTENT_FIELD] = tostring(item._doc,
+                                                     pretty_print=True)
+            del item._doc
         return item
