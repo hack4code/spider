@@ -9,9 +9,9 @@ import StringIO
 from PIL import Image as ImageLib
 
 try:
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin, urlparse
 except ImportError:
-    from urlparse import urljoin
+    from urlparse import urljoin, urlparse
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -66,7 +66,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                              parser=HTMLParser(encoding=item['encoding']))
         except:
             logger.error('Error in pipeline image build lxml doc')
-            return []
+            return None
 
         try:
             attr = self.spiderinfo.spider.image_url_attr
@@ -84,6 +84,18 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         logger.error(('Error in pipeline image urljoin'
                                       '[{}: {}').format(item['link'], url))
                         continue
+                try:
+                    o = urlparse(url)
+                    if o.netloc is None or o.path is None:
+                        logger.error(('{} error url'
+                                      '[{}]').format(self.spider.name, url))
+                        continue
+                    if o.scheme is None:
+                        url = 'http://' + url
+                except:
+                    logger.error('{} error url[{}]'.format(self.spider.name,
+                                                           url))
+                    continue
                 urls.append((url, e))
 
         item._doc = doc
