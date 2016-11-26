@@ -9,9 +9,9 @@ import StringIO
 from PIL import Image as ImageLib
 
 try:
-    from urllib.parse import urljoin, urlparse
+    from urllib.parse import urljoin
 except ImportError:
-    from urlparse import urljoin, urlparse
+    from urlparse import urljoin
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -84,23 +84,21 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         logger.error(('Error in pipeline image urljoin'
                                       '[{}: {}').format(item['link'], url))
                         continue
-                try:
-                    o = urlparse(url)
-                    if o.netloc is None or o.path is None:
-                        logger.error(('{} error url'
-                                      '[{}]').format(self.spider.name, url))
-                        continue
-                    if o.scheme is None:
-                        url = 'http://' + url
-                except:
-                    logger.error('{} error url[{}]'.format(self.spider.name,
-                                                           url))
-                    continue
                 urls.append((url, e))
 
         item._doc = doc
-        return [Request(url, meta={'img': e})
-                for (url, e) in urls if not url.startswith('data')]
+
+        reqs = []
+        for url, e in urls:
+            if not url.startswith('data'):
+                try:
+                    r = Request(url, meta={'img': e})
+                except ValueError:
+                    logger.error(('Error in pipeline image '
+                                  'create Request[{}]').format(url))
+                else:
+                    reqs.append(r)
+        return reqs
 
     def media_failed(self, failure, request, info):
         logger.error('spider {} image download failed : {}'.format(
