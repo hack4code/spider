@@ -36,7 +36,8 @@ class ContentPipeline(object):
         try:
             doc.make_links_absolute(link)
         except:
-            logger.error('Error in content pipeline make_abs_link')
+            logger.error(('Error in content pipeline '
+                          'make_abs_link[{}]').format(link))
         finally:
             return doc
 
@@ -81,8 +82,9 @@ class ContentPipeline(object):
                                    encoding=item['encoding'])),
                              parser=HTMLParser(encoding=item['encoding']))
         except:
-            logger.error(('{} got Error in content pipeline process_item'
-                          '[{}]').format(spider.name, item['link']))
+            logger.error(('{} got Error in content pipeline '
+                          'process_item[{}]').format(spider.name,
+                                                     item['link']))
             return item
 
         """

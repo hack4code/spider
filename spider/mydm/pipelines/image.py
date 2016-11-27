@@ -65,7 +65,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
             doc = fromstring(item[self.ITEM_CONTENT_FIELD],
                              parser=HTMLParser(encoding=item['encoding']))
         except:
-            logger.error('Error in pipeline image build lxml doc')
+            logger.error(('Error in spider {} pipeline image '
+                         'build lxml doc').format(self.spiderinfo.spider.name))
             return None
 
         try:
@@ -101,8 +102,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
         return reqs
 
     def media_failed(self, failure, request, info):
-        logger.error('spider {} image download failed : {}'.format(
-            self.spiderinfo.spider.name, request.url))
+        logger.error(('Error in spider {} pipeline '
+                      'image download[{}]').format(self.spiderinfo.spider.name,
+                                                   request.url))
         try:
             attr = self.spiderinfo.spider.image_url_attr
             img = request.meta['img']
@@ -139,8 +141,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
                 logger.warning(
-                    'spider {} not found Content-Type: {}'.format(
-                        self.spiderinfo.spider.name, src))
+                    ('Error in spider {} pipeline image Content-Type[{}] '
+                     'not found').format(self.spiderinfo.spider.name,
+                                         src))
                 return
         img.set('source', src)
         data = base64.b64encode(data)
