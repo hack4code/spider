@@ -17,7 +17,7 @@ spider_factory = {
 
 
 def mk_spider_cls(sp_setting):
-    logger.info('create spider: {}'.format(sp_setting['name']))
+    logger.info('Factory create spider[{}]'.format(sp_setting['name']))
 
     try:
         sptype = sp_setting['type']

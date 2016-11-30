@@ -68,9 +68,9 @@ class BLOGSpider(ErrbackSpider):
         else:
             miss_tags = [tag for tag in self.TAGS
                          if tag not in item or item[tag] is None]
-            logger.error(
-                '{} extract content error, miss tags: {}'.format(self.name,
-                                                                 miss_tags))
+            logger.error(('Error in spider {} extract content, '
+                         'miss tags[{}]').format(self.name,
+                                                 miss_tags))
 
     def parse(self, response):
         try:
