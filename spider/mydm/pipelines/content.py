@@ -36,8 +36,9 @@ class ContentPipeline(object):
         try:
             doc.make_links_absolute(link)
         except:
-            logger.error(('Error in content pipeline '
-                          'make_abs_link[{}]').format(link))
+            logger.error((
+                'Error in content pipeline make_abs_link[{}]'
+                ).format(link))
         finally:
             return doc
 
@@ -82,23 +83,20 @@ class ContentPipeline(object):
                                    encoding=item['encoding'])),
                              parser=HTMLParser(encoding=item['encoding']))
         except:
-            logger.error(('{} got Error in content pipeline '
-                          'process_item[{}]').format(spider.name,
-                                                     item['link']))
+            logger.error((
+                'Error in spider {} pipeline content process_item[{}]'
+                ).format(spider.name,
+                         item['link']))
             return item
 
-        """
-            remove element with class name for clean display
-        """
+        # remove element with class name for clean display
         removed_classes = getattr(spider,
                                   self.REMOVED_CLASSES_NAME,
                                   None)
         if removed_classes is not None:
             doc = self.remove_element_with_class(doc, removed_classes)
 
-        """
-            remove element with xpath for clean display
-        """
+        # remove element with xpath for clean display
         removed_xpath_nodes = getattr(spider,
                                       self.REMOVED_XPATH_NODES_NAME,
                                       None)

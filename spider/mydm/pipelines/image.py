@@ -65,8 +65,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
             doc = fromstring(item[self.ITEM_CONTENT_FIELD],
                              parser=HTMLParser(encoding=item['encoding']))
         except:
-            logger.error(('Error in spider {} pipeline image '
-                         'build lxml doc').format(self.spiderinfo.spider.name))
+            logger.error((
+                'Error in spider {} pipeline image build lxml doc'
+                ).format(self.spiderinfo.spider.name))
             return None
 
         try:
@@ -82,8 +83,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     try:
                         url = urljoin(item['link'].strip(), url)
                     except:
-                        logger.error(('Error in pipeline image urljoin'
-                                      '[{}: {}').format(item['link'], url))
+                        logger.error((
+                            'Error in pipeline image urljoin [{}: {}]'
+                            ).format(item['link'],
+                                     url))
                         continue
                 urls.append((url, e))
 
@@ -95,16 +98,18 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 try:
                     r = Request(url, meta={'img': e})
                 except ValueError:
-                    logger.error(('Error in pipeline image '
-                                  'create Request[{}]').format(url))
+                    logger.error((
+                        'Error in pipeline image create Request[{}]'
+                        ).format(url))
                 else:
                     reqs.append(r)
         return reqs
 
     def media_failed(self, failure, request, info):
-        logger.error(('Error in spider {} pipeline '
-                      'image download[{}]').format(self.spiderinfo.spider.name,
-                                                   request.url))
+        logger.error((
+            'Error in spider {} pipeline image download[{}]'
+            ).format(self.spiderinfo.spider.name,
+                     request.url))
         try:
             attr = self.spiderinfo.spider.image_url_attr
             img = request.meta['img']
@@ -140,10 +145,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
-                logger.warning(
-                    ('Error in spider {} pipeline image Content-Type[{}] '
-                     'not found').format(self.spiderinfo.spider.name,
-                                         src))
+                logger.warning((
+                    'Error in spider {} pipeline image '
+                    'Content-Type[{}] not found'
+                ).format(self.spiderinfo.spider.name,
+                         src))
                 return
         img.set('source', src)
         data = base64.b64encode(data)
