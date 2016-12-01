@@ -7,7 +7,6 @@ from scrapy.spiders import Spider
 from scrapy import Request
 
 from ..log import logger
-from ..util import save_failed_spider
 
 
 class ErrbackSpider(Spider):
@@ -22,6 +21,5 @@ class ErrbackSpider(Spider):
         if failure.check(TimeoutError):
             request = failure.request
             logger.error('TimeoutError on {}'.format(request))
-            save_failed_spider(self._id)
         else:
             logger.error(repr(failure))
