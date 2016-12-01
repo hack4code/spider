@@ -22,8 +22,7 @@ from scrapy.utils.project import get_project_settings
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
-from mydm.util import parse_redis_url, flush_failed_spider_db, \
-    get_failed_spiders
+from mydm.util import parse_redis_url
 
 settings = get_project_settings()
 app = Celery('tasks', broker=settings['BROKER_URL'])
@@ -40,13 +39,6 @@ def get_feed_name(url):
         return ''.join([re.sub(r'[^a-z]', '', name.lower()).capitalize()
                         for name in names[:-1]
                         if name.lower() != 'www'])
-
-
-def get_stats(custom_settings):
-    conf = parse_redis_url(custom_settings['STATS_URL'])
-    r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
-    key = custom_settings['STATS_KEY']
-    return int(r.get(key))
 
 
 def check_spider(sp_setting):
@@ -66,6 +58,15 @@ def check_spider(sp_setting):
     p = CrawlerProcess(custom_settings)
     p.crawl(spcls)
     p.start()
+
+    def get_stats(custom_settings):
+        conf = parse_redis_url(custom_settings['STATS_URL'])
+        r = redis.Redis(host=conf.host,
+                        port=conf.port,
+                        db=conf.database)
+        key = custom_settings['STATS_KEY']
+        return int(r.get(key))
+
     n = get_stats(custom_settings)
     return True if n > 0 else False
 
@@ -182,33 +183,46 @@ def crawl(args):
         from scrapy.utils.log import configure_logging
         configure_logging(None, install_root_handler=False)
 
+    def flush_spider_stats_db():
+        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+        r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
+        r.flushdb()
+    flush_spider_stats_db()
+
     from twisted.internet import reactor
+    from scrapy.crawler import CrawlerRunner
 
-    def run_spiders(settings):
-        from scrapy.crawler import CrawlerRunner
+    runner = CrawlerRunner(settings)
+    loader = runner.spider_loader
+    if args[0] == 'all':
+        spiders = [loader.load(spid) for spid in loader.list()]
+    else:
+        spiders = [loader.load(spid)
+                   for spid in args if spid in loader.list()]
 
-        runner = CrawlerRunner(settings)
-        loader = runner.spider_loader
-        if args[0] == 'all':
-            spiders = [loader.load(spid) for spid in loader.list()]
-        else:
-            spiders = [loader.load(spid)
-                       for spid in args if spid in loader.list()]
-
-        map(lambda sp: runner.crawl(sp), spiders)
-        d = runner.join()
-        d.addBoth(lambda _: reactor.stop())
-
-    flush_failed_spider_db()
-    run_spiders(settings)
+    map(lambda sp: runner.crawl(sp), spiders)
+    d = runner.join()
+    d.addBoth(lambda _: reactor.stop())
     reactor.run()
-    return get_failed_spiders()
+
+    def get_recrawl_spiders():
+        spiders = []
+        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+        r = redis.Redis(host=conf.host,
+                        port=conf.port,
+                        db=conf.database)
+        for sp in loader.list():
+            n = int(r.get(sp))
+            if n == 0:
+                spiders.append(sp)
+        return spiders
+    return get_recrawl_spiders()
 
 
 @app.task(name='recrawl failed spiders')
 def recrawl(spids):
     logger = get_task_logger(__name__)
-    logger.info('job recrawl start ...')
+    logger.info('recrawl job start ...')
     for spid in spids:
         logger.info('error spider id: {}'.format(spid))
 
@@ -224,7 +238,7 @@ def recrawl(spids):
         for sp in spiders:
             yield runner.crawl(sp)
         reactor.stop()
-
     run_failed_spiders(settings)
+
     reactor.run()
     return True
