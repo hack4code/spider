@@ -38,7 +38,7 @@ MONGODB_PWD = 'scrapy'
 BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672//'
 
 # config for failed task
-RETRY_SPIDERS_URL = 'redis://redis:6379/0'
+SPIDER_STATS_URL = 'redis://redis:6379/0'
 # config for etag
 ETAG_URL = 'redis://redis:6379/1'
 # config for spider task
