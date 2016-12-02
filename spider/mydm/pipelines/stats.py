@@ -18,5 +18,5 @@ class StatsPipeline(object):
         return cls(settings)
 
     def process_item(self, item, spider):
-        self.r.incr(spider.name)
+        self.r.incr(spider._id)
         return item

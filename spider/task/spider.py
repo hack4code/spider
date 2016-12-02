@@ -212,7 +212,8 @@ def crawl(args):
                         port=conf.port,
                         db=conf.database)
         for sp in loader.list():
-            n = int(r.get(sp))
+            n = r.get(sp)
+            n = 0 if n is None else int(n)
             if n == 0:
                 spiders.append(sp)
         return spiders
