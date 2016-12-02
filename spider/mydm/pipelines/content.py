@@ -94,7 +94,8 @@ class ContentPipeline(object):
                                   self.REMOVED_CLASSES_NAME,
                                   None)
         if removed_classes is not None:
-            doc = self.remove_element_with_class(doc, removed_classes)
+            doc = self.remove_element_with_class(doc,
+                                                 removed_classes)
 
         # remove element with xpath for clean display
         removed_xpath_nodes = getattr(spider,
@@ -108,5 +109,8 @@ class ContentPipeline(object):
                                 None)
         doc = self.clean_html(doc, allow_classes=allow_classes)
         doc = self.make_abs_link(doc, item['link'])
-        item['content'] = tostring(doc, pretty_print=True)
+        item['content'] = tostring(doc,
+                                   encoding='UTF-8',
+                                   pretty_print=True,
+                                   method='html')
         return item
