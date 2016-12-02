@@ -5,7 +5,10 @@ import base64
 
 from lxml.html import fromstring, tostring, HTMLParser
 
-import StringIO
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
 from PIL import Image as ImageLib
 
 try:
