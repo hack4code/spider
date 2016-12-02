@@ -145,10 +145,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 data = image.optimize()
             imgtype = image.type
         except:
+            logger.error((
+                'Error in spider {} pipeline image Pillow failed'
+                ).format(self.spiderinfo.spider.name))
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
-                logger.warning((
+                logger.error((
                     'Error in spider {} pipeline image '
                     'Content-Type[{}] not found'
                 ).format(self.spiderinfo.spider.name,
