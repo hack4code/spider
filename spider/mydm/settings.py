@@ -1,20 +1,27 @@
 # -*- coding: utf-8 -*-
 
-BOT_NAME = 'mydm'
+# scrapy settings
+BOT_NAME = 'BlogSpider'
 SPIDER_LOADER_CLASS = 'mydm.spiderloader.MongoSpiderLoader'
 
-DOWNLOAD_DELAY = 0.6
+CONCURRENT_ITEMS = 128
+CONCURRENT_REQUESTS = 24
 CONCURRENT_REQUESTS_PER_DOMAIN = 5
+DNS_TIMEOUT = 180
+DOWNLOAD_DELAY = 1
+
 WEBSERVICE_ENABLED = False
 TELNETCONSOLE_ENABLED = False
 
 LOG_ENABLED = True
-LOG_LEVEL = 'INFO'
-LOG_STDOUT = False
+LOG_LEVEL = 'ERROR'
+LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
     'mydm.pipelines.ImagesDlownloadPipeline': 300,
+    'mydm.pipelines.StatsPipeline': 900,
     'mydm.pipelines.StorePipeline': 999
 }
 
@@ -23,7 +30,7 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 """
-
+spider settings
 """
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
@@ -32,13 +39,13 @@ MONGODB_ARTICLE_COLLECTION_NAME = 'article'
 MONGODB_FEED_COLLECTION_NAME = 'feed'
 MONGODB_SPIDER_COLLECTION_NAME = 'spider'
 MONGODB_USER = 'scrapy'
-MONGODB_PWD = 'scrapy'
+MONGODB_PWD = 'hbsc=JK48=ts'
 
 # config for celery
-BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672//'
+BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672'
 
-# config for failed task
-RETRY_SPIDERS_URL = 'redis://redis:6379/0'
+# 
+SPIDER_STATS_URL = 'redis://redis:6379/0'
 # config for etag
 ETAG_URL = 'redis://redis:6379/1'
 # config for spider task
