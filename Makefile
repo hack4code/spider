@@ -7,4 +7,3 @@ update:
 	docker pull redis
 	docker pull mongo
 	docker pull python
-	docker pull python:2.7
