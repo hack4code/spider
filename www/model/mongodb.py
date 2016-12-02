@@ -325,13 +325,17 @@ def get_article(aid):
     if cursor.count() == 0:
         return None
     r = cursor[0]
+    if type(r['content']) is bytes:
+        r['content'] = r['content'].decode('UTF-8')
+    if 'source' not in r:
+        r['source'] = None
     a = Article(r['_id'],
                 r['title'],
                 r['domain'],
                 r['link'],
                 r['content'],
                 r['lang'],
-                r['source'] if 'source' in r else None,
+                r['source'],
                 r['spider'])
     return a
 

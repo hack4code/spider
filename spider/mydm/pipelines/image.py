@@ -5,7 +5,10 @@ import base64
 
 from lxml.html import fromstring, tostring, HTMLParser
 
-import StringIO
+try:
+    import StringIO
+except ImportError:
+    from io import StringIO
 from PIL import Image as ImageLib
 
 try:
@@ -158,6 +161,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def item_completed(self, results, item, info):
         if hasattr(item, '_doc'):
             item[self.ITEM_CONTENT_FIELD] = tostring(item._doc,
-                                                     pretty_print=True)
+                                                     encoding='UTF-8',
+                                                     pretty_print=True,
+                                                     method='html')
             del item._doc
         return item

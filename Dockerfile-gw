@@ -1,7 +1,4 @@
-FROM python:2.7
-
-# ENV http_proxy http://103.55.27.122:8888
-# ENV https_proxy http://103.55.27.122:8888
+FROM python
 
 RUN mkdir /spider/
 ADD ./spider/requirements.txt /spider/requirements.txt
