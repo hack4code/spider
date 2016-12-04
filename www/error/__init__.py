@@ -1,2 +1,1 @@
-
-from error.exception import NotFound, BadRequest
+from werkzeug.exceptions import NotFound, BadRequest

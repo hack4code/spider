@@ -35,10 +35,10 @@ app.secret_key = 'qweasdzxcrty'
 @app.errorhandler(NotFound)
 @app.errorhandler(BadRequest)
 def error(error):
-    code = error.status_code
+    code = error.code
     return render_template("error.html",
                            status_code=code,
-                           message=error.message), code
+                           message=error.description), code
 
 
 from home import home_page
