@@ -42,30 +42,33 @@ def get_feed_name(url):
 
 
 def check_spider(sp_setting):
+    import uuid
     from scrapy.crawler import CrawlerProcess
 
+    spid = str(uuid.uuid4())
+    sp_setting['_id'] = spid
     spcls = mk_spider_cls(sp_setting)
-    custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.CountPipeline':
+    custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline':
                                           255},
                        'WEBSERVICE_ENABLED': False,
                        'TELNETCONSOLE_ENABLED': False,
                        'LOG_LEVEL': 'INFO',
                        'LOG_STDOUT': True,
                        'LOG_ENABLED': True,
-                       'STATS_URL': settings['TEMP_SPIDER_STATS_URL'],
-                       'STATS_KEY': str(id(spcls))}
+                       'SPIDER_STATS_URL': settings['TEMP_SPIDER_STATS_URL']}
 
     p = CrawlerProcess(custom_settings)
     p.crawl(spcls)
     p.start()
 
     def get_stats(custom_settings):
-        conf = parse_redis_url(custom_settings['STATS_URL'])
+        conf = parse_redis_url(custom_settings['SPIDER_STATS_URL'])
         r = redis.Redis(host=conf.host,
                         port=conf.port,
                         db=conf.database)
-        key = custom_settings['STATS_KEY']
-        return int(r.get(key))
+        n = r.get(spid)
+        r.delete(spid)
+        return 0 if n is None else int(n)
 
     n = get_stats(custom_settings)
     return True if n > 0 else False
