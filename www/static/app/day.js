@@ -1,3 +1,9 @@
+function decodeEntities(encodedString) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = encodedString;
+    return textArea.value;
+}
+
 var NavSector = React.createClass({
 	render: function() {
 		return (
@@ -160,7 +166,7 @@ var ArticleLink = React.createClass({
 			fontWeight: "normal",
 		};
 		var url = "/a/" + this.props.aid;
-		var title = decodeURIComponent(this.props.title);
+		var title = decodeEntities(this.props.title);
 
 		return (
 			<span className="articlelink">
