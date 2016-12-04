@@ -329,6 +329,10 @@ def get_article(aid):
         r['content'] = r['content'].decode('UTF-8')
     if 'source' not in r:
         r['source'] = None
+
+    import html
+    r['title'] = html.unescape(r['title'])
+
     a = Article(r['_id'],
                 r['title'],
                 r['domain'],
