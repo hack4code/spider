@@ -160,10 +160,11 @@ var ArticleLink = React.createClass({
 			fontWeight: "normal",
 		};
 		var url = "/a/" + this.props.aid;
+		var title = decodeURIComponent(this.props.title);
 
 		return (
 			<span className="articlelink">
-				<a style={style} href={url} target="_blank">{this.props.title}</a>
+				<a style={style} href={url} target="_blank">{title}</a>
 			</span>
 		)
 	}
