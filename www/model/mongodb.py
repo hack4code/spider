@@ -330,8 +330,8 @@ def get_article(aid):
     if 'source' not in r:
         r['source'] = None
 
-    import html
-    r['title'] = html.unescape(r['title'])
+    from html import unescape
+    r['title'] = unescape(r['title'])
 
     a = Article(r['_id'],
                 r['title'],
