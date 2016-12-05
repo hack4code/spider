@@ -27,8 +27,8 @@ class TitleTag(object):
 
     def extract(self, e):
         if e.text is not None:
-            import html
-            self.val = html.unescape(e.text)
+            from html import unescape
+            self.val = unescape(e.text)
 
 
 @implementer(ITagExtractor)

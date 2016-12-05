@@ -53,12 +53,9 @@ class BLOGSpider(ErrbackSpider):
         if 'link' in item and item['link'] is not None:
             item['link'] = clean_link_url(item['link'])
 
-        def unescape_title(title):
-            import html
-            return html.unescape(title)
-
         if 'title' in item and item['title'] is not None:
-            item['title'] = unescape_title(item['title'])
+            from html import unescape
+            item['title'] = unescape(item['title'])
 
         return item
 
