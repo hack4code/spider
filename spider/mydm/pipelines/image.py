@@ -146,8 +146,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
             imgtype = image.type
         except:
             logger.error((
-                'Error in spider {} pipeline image Pillow failed'
-                ).format(self.spiderinfo.spider.name))
+                'Error in spider {} pipeline image Pillow failed[{}]'
+                ).format(self.spiderinfo.spider.name,
+                         src))
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
