@@ -46,9 +46,12 @@ class Image():
         if w > self.IMAGE_MAX_WIDTH:
             h = int(float(h)/w*self.IMAGE_MAX_WIDTH)
             w = self.IMAGE_MAX_WIDTH
-            image = self._image.resize((w, h), ImageLib.ANTIALIAS)
+            image = self._image.resize((w, h),
+                                       ImageLib.ANTIALIAS)
         buf = StringIO.StringIO()
-        image.save(buf, format=self._image.format, quality=q)
+        image.save(buf,
+                   format=self._image.format,
+                   quality=q)
         return buf.getvalue()
 
 
@@ -87,7 +90,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 url = e.get(attr).strip(' \t\n')
                 if url.startswith('/'):
                     try:
-                        url = urljoin(item['link'].strip(), url)
+                        url = urljoin(item['link'].strip(),
+                                      url)
                     except:
                         logger.error((
                             'Error in pipeline image urljoin [{}: {}]'
@@ -100,7 +104,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
         for url, e in urls:
             if not url.startswith('data'):
                 try:
-                    r = Request(url, meta={'img': e})
+                    r = Request(url,
+                                meta={'img': e})
                 except ValueError:
                     logger.error((
                         'Error in pipeline image create Request[{}]'
@@ -118,7 +123,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
             attr = self.spiderinfo.spider.image_url_attr
             img = request.meta['img']
             src = img.get(attr)
-            img.set('src', src)
+            img.set('src',
+                    src)
         except AttributeError:
             pass
 
@@ -146,7 +152,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 data = image.optimize()
             imgtype = image.type
         except:
-            logger.error((
+            logger.exception((
                 'Error in spider {} pipeline image Pillow failed[{}]'
                 ).format(self.spiderinfo.spider.name,
                          src))
@@ -161,7 +167,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 return
         img.set('source', src)
         data = base64.b64encode(data)
-        img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
+        img.set('src',
+                'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
         return item
