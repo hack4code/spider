@@ -18,7 +18,16 @@ class StorePipeline(object):
         return cls()
 
     def process_item(self, item, spider):
+        doc = item['content']
         if item is not None:
+            if not (isinstance(doc, str) or isinstance(doc, bytes)):
+                from lxml.html import tostring
+
+                item['content'] = tostring(doc,
+                                           encoding='UTF-8',
+                                           pretty_print=True,
+                                           method='html')
+
             item_ = dict(item)
             item_['lang'] = get_article_lang(item)
             item_['spider'] = spider._id

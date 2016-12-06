@@ -3,7 +3,7 @@
 
 import re
 
-from lxml.html import fromstring, tostring, HTMLParser, defs
+from lxml.html import fromstring, HTMLParser, defs
 from lxml.html.clean import Cleaner
 
 from ..log import logger
@@ -78,16 +78,18 @@ class ContentPipeline(object):
 
     def process_item(self, item, spider):
         item['title'] = self.format_title(item['title'])
-        try:
-            doc = fromstring(bytes(bytearray(item['content'],
-                                   encoding=item['encoding'])),
-                             parser=HTMLParser(encoding=item['encoding']))
-        except:
-            logger.error((
-                'Error in spider {} pipeline content process_item[{}]'
-                ).format(spider.name,
-                         item['link']))
-            return item
+        doc = item['content']
+        if isinstance(doc, str) or isinstance(doc, bytes):
+            try:
+                doc = fromstring(bytes(bytearray(doc,
+                                       encoding=item['encoding'])),
+                                 parser=HTMLParser(encoding=item['encoding']))
+            except:
+                logger.error((
+                    'Error in spider {} pipeline content process_item[{}]'
+                    ).format(spider.name,
+                             item['link']))
+                return item
 
         # remove element with class name for clean display
         removed_classes = getattr(spider,
@@ -111,8 +113,5 @@ class ContentPipeline(object):
                               allow_classes=allow_classes)
         doc = self.make_abs_link(doc,
                                  item['link'])
-        item['content'] = tostring(doc,
-                                   encoding='UTF-8',
-                                   pretty_print=True,
-                                   method='html')
+        item['content'] = doc
         return item

@@ -3,7 +3,7 @@
 
 import base64
 
-from lxml.html import fromstring, tostring, HTMLParser
+from lxml.html import fromstring, HTMLParser
 
 try:
     import StringIO
@@ -64,14 +64,17 @@ class ImagesDlownloadPipeline(MediaPipeline):
         return cls()
 
     def get_media_requests(self, item, info):
-        try:
-            doc = fromstring(item[self.ITEM_CONTENT_FIELD],
-                             parser=HTMLParser(encoding=item['encoding']))
-        except:
-            logger.error((
-                'Error in spider {} pipeline image build lxml doc'
-                ).format(self.spiderinfo.spider.name))
-            return None
+        doc = item[self.ITEM_CONTENT_FIELD]
+        if isinstance(doc, str) or isinstance(doc, bytes):
+            try:
+                doc = fromstring(doc,
+                                 parser=HTMLParser(encoding=item['encoding']))
+                item[self.ITEM_CONTENT_FIELD] = doc
+            except:
+                logger.error((
+                    'Error in spider {} pipeline image build lxml doc'
+                    ).format(self.spiderinfo.spider.name))
+                return None
 
         try:
             attr = self.spiderinfo.spider.image_url_attr
@@ -92,8 +95,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
                                      url))
                         continue
                 urls.append((url, e))
-
-        item._doc = doc
 
         reqs = []
         for url, e in urls:
@@ -163,10 +164,4 @@ class ImagesDlownloadPipeline(MediaPipeline):
         img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
-        if hasattr(item, '_doc'):
-            item[self.ITEM_CONTENT_FIELD] = tostring(item._doc,
-                                                     encoding='UTF-8',
-                                                     pretty_print=True,
-                                                     method='html')
-            del item._doc
         return item
