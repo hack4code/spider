@@ -107,8 +107,9 @@ def save_article(item):
     t = _get_item_day_begin(item)
     result = db.article.update(
         {
-            'title': item['title'],
-            'crawl_date': {'$gte': t}
+            'spider': item['spider'],
+            'crawl_date': {'$gte': t},
+            'title': item['title']
         },
         item,
         upsert=True
