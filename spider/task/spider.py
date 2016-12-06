@@ -174,39 +174,26 @@ def crawl(args):
     if len(args) == 0:
         return False
 
-    def init_logger(settings):
-        import logging
+    from scrapy.crawler import CrawlerProcess
 
-        LEVELS = {'DEBUG': logging.DEBUG,
-                  'INFO': logging.INFO,
-                  'WARNING': logging.WARNING,
-                  'ERROR': logging.ERROR,
-                  'CRITICAL': logging.CRITICAL}
-        logger.setLevel(LEVELS[settings['LOG_LEVEL']])
-        from scrapy.utils.log import configure_logging
-        configure_logging(None, install_root_handler=False)
-
-    def flush_spider_stats_db():
-        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-        r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
-        r.flushdb()
-    flush_spider_stats_db()
-
-    from twisted.internet import reactor
-    from scrapy.crawler import CrawlerRunner
-
-    runner = CrawlerRunner(settings)
-    loader = runner.spider_loader
+    process = CrawlerProcess(settings)
+    loader = process.spider_loader
     if args[0] == 'all':
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
         spiders = [loader.load(spid)
                    for spid in args if spid in loader.list()]
 
-    map(lambda sp: runner.crawl(sp), spiders)
-    d = runner.join()
-    d.addBoth(lambda _: reactor.stop())
-    reactor.run()
+    for sp in spiders:
+        process.crawl(sp)
+
+    def flush_spider_stats_db():
+        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+        r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
+        r.flushdb()
+
+    flush_spider_stats_db()
+    process.start()
 
     def get_recrawl_spiders():
         spiders = []
