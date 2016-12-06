@@ -55,7 +55,7 @@ class ContentPipeline(object):
         return doc
 
     def clean_html(self, doc, allow_classes):
-        allow_classes = () if allow_classes is None else allow_classes
+        allow_classes = allow_classes or ()
         safe_attrs = set(defs.safe_attrs) | self.safe_attrs
         cleaner = Cleaner(safe_attrs_only=True,
                           safe_attrs=safe_attrs)
@@ -107,8 +107,10 @@ class ContentPipeline(object):
         allow_classes = getattr(spider,
                                 self.ALLOW_CLASSES_NAME,
                                 None)
-        doc = self.clean_html(doc, allow_classes=allow_classes)
-        doc = self.make_abs_link(doc, item['link'])
+        doc = self.clean_html(doc,
+                              allow_classes=allow_classes)
+        doc = self.make_abs_link(doc,
+                                 item['link'])
         item['content'] = tostring(doc,
                                    encoding='UTF-8',
                                    pretty_print=True,
