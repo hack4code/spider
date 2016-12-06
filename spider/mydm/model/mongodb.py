@@ -2,7 +2,7 @@
 
 
 from datetime import datetime
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
 from scrapy.utils.project import get_project_settings
 
 
@@ -14,16 +14,23 @@ class MongoDB(object):
 
     def __init__(self):
         self.db = None
-        self.client = MongoClient(settings['MONGODB_URI'], connect=False)
+        self.client = MongoClient(settings['MONGODB_URI'],
+                                  connect=False)
 
     def connect(self):
         db = self.client[settings['MONGODB_DB_NAME']]
-        db.authenticate(settings['MONGODB_USER'], settings['MONGODB_PWD'])
+        db.authenticate(settings['MONGODB_USER'],
+                        settings['MONGODB_PWD'])
+        # create indexes
         feed = db['feed']
-        feed.ensure_index('url', name='idx_url')
+        feed.create_index('url',
+                          name='idx_url')
         article = db['article']
-        article.ensure_index('crawl_date', name='idx_crawl_date')
-        article.ensure_index('spider', name='idx_spider')
+        article.create_index('crawl_date',
+                             name='idx_crawl_date')
+        article.create_index([('spider', ASCENDING),
+                              ('crawl_date', ASCENDING)],
+                             name='idx_spider_crawl_date')
         self.db = db
 
     def __getattr__(self, key):
@@ -33,7 +40,8 @@ class MongoDB(object):
             return self.db[key]
         else:
             raise AttributeError(
-                'articles db has no collection {}'.format(key))
+                'articles db has no collection {}'.format(key)
+            )
 
 
 db = MongoDB()
@@ -70,18 +78,20 @@ def is_exists_article(item):
     t = _get_item_day_begin(item)
     cursor = db.article.find(
         {
+            'spider': item['spider'],
+            'crawl_date': {'$lt': t},
             'title': item['title'],
             'domain': item['domain'],
-            'source': item['source'],
-            'crawl_date': {'$lt': t}
+            'source': item['source']
         }
     ).limit(1)
     if cursor.count() > 0:
         return True
     cursor = db.article.find(
         {
-            'title': item['title'],
-            'crawl_date': {'$gte': t}
+            'spider': item['spider'],
+            'crawl_date': {'$gte': t},
+            'title': item['title']
         },
         {
             'content': 1
