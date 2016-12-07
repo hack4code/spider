@@ -82,7 +82,7 @@ class ContentPipeline(object):
         if isinstance(doc, str) or isinstance(doc, bytes):
             try:
                 doc = fromstring(bytes(bytearray(doc,
-                                       encoding=item['encoding'])),
+                                                 encoding=item['encoding'])),
                                  parser=HTMLParser(encoding=item['encoding']))
             except:
                 logger.error((
