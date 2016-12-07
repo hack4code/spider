@@ -144,8 +144,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
             image = Image(data)
             w, _ = image.size
             if w < 400:
-                style = img.get('style').strip()
-                if style is None:
+                try:
+                    style = img.get('style').strip()
+                except AttributeError:
                     style = ''
                 style += 'float: right;'
                 img.set('style', style)
