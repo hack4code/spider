@@ -218,6 +218,10 @@ def crawl(args):
 def recrawl(spids):
     logger = get_task_logger(__name__)
     logger.info('recrawl job start ...')
+
+    if spids is None or len(spids) == 0:
+        return True
+
     for spid in spids:
         logger.info('error spider id: {}'.format(spid))
 
