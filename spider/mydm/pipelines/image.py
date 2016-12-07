@@ -6,9 +6,10 @@ import base64
 from lxml.html import fromstring, HTMLParser
 
 try:
-    from StringIO import StringIO
+    from io import BytesIO
 except ImportError:
-    from io import StringIO
+    from StringIO import StringIO as BytesIO
+
 from PIL import Image as ImageLib
 
 try:
@@ -30,7 +31,7 @@ class Image():
     IMAGE_MAX_WIDTH = 800
 
     def __init__(self, data):
-        self._image = ImageLib.open(StringIO(data))
+        self._image = ImageLib.open(BytesIO(data))
 
     @property
     def size(self):
@@ -48,7 +49,7 @@ class Image():
             w = self.IMAGE_MAX_WIDTH
             image = self._image.resize((w, h),
                                        ImageLib.ANTIALIAS)
-        buf = StringIO.StringIO()
+        buf = BytesIO()
         image.save(buf,
                    format=self._image.format,
                    quality=q)
