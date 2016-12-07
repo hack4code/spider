@@ -176,9 +176,11 @@ def crawl(args):
 
     from scrapy.crawler import CrawlerProcess
 
+    recrawl = False
     process = CrawlerProcess(settings)
     loader = process.spider_loader
     if args[0] == 'all':
+        recrawl = True
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
         spiders = [loader.load(spid)
@@ -196,6 +198,8 @@ def crawl(args):
     process.start()
 
     def get_recrawl_spiders():
+        if not recrawl:
+            return []
         spiders = []
         conf = parse_redis_url(settings['SPIDER_STATS_URL'])
         r = redis.Redis(host=conf.host,
