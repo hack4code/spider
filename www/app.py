@@ -40,6 +40,10 @@ def error(error):
                            status_code=code,
                            message=error.description), code
 
+# converter
+from util import DateConverter, IdConverter
+app.url_map.converters['date'] = DateConverter
+app.url_map.converters['id'] = IdConverter
 
 from home import home_page
 app.register_blueprint(home_page, url_prefix='/home')

@@ -13,18 +13,16 @@ spider_page = Blueprint('spider_page',
                         template_folder='template')
 
 
-def check_spider(spid):
-    spiders = get_spiders()
-    return True if spid in spiders else False
-
-
 Spider = namedtuple('Spider', ['id', 'source'])
 
 
-@spider_page.route('/<spid>', methods=['GET'])
+@spider_page.route('/<id:spid>', methods=['GET'])
 def sp_entries(spid):
+    if spid is None:
+        raise BadRequest('invalid spider id')
+    spid = str(spid)
     spiders = get_spiders()
     if spid not in spiders:
-        raise BadRequest('invalid spider id')
+        raise BadRequest('spider id not existed')
     return render_template('spentries.html',
                            spider=Spider(spid, spiders[spid]))

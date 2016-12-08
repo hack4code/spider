@@ -3,7 +3,7 @@
 
 import os
 from flask import render_template, Blueprint
-from model import get_article, format_aid
+from model import get_article
 from error import NotFound, BadRequest
 
 article_page = Blueprint('article_page',
@@ -17,11 +17,9 @@ def get_css(dom):
     return '{}.css'.format(dom) if os.path.isfile(path) else None
 
 
-@article_page.route('/<aid>', methods=['GET'])
+@article_page.route('/<id:aid>', methods=['GET'])
 def show_article(aid):
-    try:
-        aid = format_aid(aid)
-    except:
+    if aid is None:
         raise BadRequest('invalid article id')
 
     a = get_article(aid)

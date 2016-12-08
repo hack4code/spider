@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from datetime import date
 from flask import render_template, Blueprint
 
 from error import BadRequest
@@ -13,14 +12,10 @@ entry_page = Blueprint('entry_page',
                        template_folder='template')
 
 
-@entry_page.route('/<day>', methods=['GET'])
+@entry_page.route('/<date:day>', methods=['GET'])
 @need_uid
 def show_entries(day):
-    try:
-        y, m, d = [int(i) for i in day.split('-')]
-        day_entry = date(y, m, d)
-    except:
+    if day is None:
         raise BadRequest('invalid day')
-
     return render_template('day.html',
-                           day_entry=day_entry)
+                           day_entry=day)
