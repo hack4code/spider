@@ -169,8 +169,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 return
         img.set('source', src)
         data = base64.b64encode(data)
+        if isinstance(data, bytes):
+            data = data.decode('ascii')
         img.set('src',
-                'data:image/{};base64,{}'.format(imgtype, data))
+                'data:image/{};base64,{}'.format(imgtype,
+                                                 data))
 
     def item_completed(self, results, item, info):
         return item
