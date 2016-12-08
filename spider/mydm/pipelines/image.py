@@ -58,22 +58,19 @@ class Image():
 
 class ImagesDlownloadPipeline(MediaPipeline):
     MEDIA_NAME = 'image'
-    DEFAULT_ITEM_CONTENT_FIELD = 'content'
     IMAGE_MAX_SIZE = 1024*256
 
     @classmethod
     def from_settings(cls, settings):
-        cls.ITEM_CONTENT_FIELD = settings.get('ITEM_CONTENT_FIELD',
-                                              cls.DEFAULT_ITEM_CONTENT_FIELD)
         return cls()
 
     def get_media_requests(self, item, info):
-        doc = item[self.ITEM_CONTENT_FIELD]
+        doc = item['content']
         if isinstance(doc, str) or isinstance(doc, bytes):
             try:
                 doc = fromstring(doc,
                                  parser=HTMLParser(encoding=item['encoding']))
-                item[self.ITEM_CONTENT_FIELD] = doc
+                item['content'] = doc
             except:
                 logger.error((
                     'Error in spider {} pipeline image build lxml doc'
@@ -144,10 +141,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
             image = Image(data)
             w, _ = image.size
             if w < 400:
-                try:
-                    style = img.get('style').strip()
-                except AttributeError:
+                style = img.get('style')
+                if style is None:
                     style = ''
+                else:
+                    style = style.strip()
                 style += 'float: right;'
                 img.set('style', style)
             if imglen > self.IMAGE_MAX_SIZE:
