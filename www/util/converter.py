@@ -8,7 +8,7 @@ class DateConverter(BaseConverter):
     def to_python(self, value):
         from datetime import date
         try:
-            return date(*(int(v) for v in value.split('-')))
+            return date(*(int(_) for _ in value.split('-')))
         except ValueError:
             return None
 

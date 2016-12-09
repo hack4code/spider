@@ -3,12 +3,13 @@
 
 from collections import namedtuple, defaultdict
 from pymongo import MongoClient, ASCENDING, DESCENDING
-from bson.objectid import ObjectId
 from datetime import datetime, timedelta
 from app import app
 
 
-Entry = namedtuple('Entry', ['id', 'title'])
+Entry = namedtuple('Entry', ['id',
+                             'title'])
+
 Entry_Day = namedtuple('Entry_Day', ['id',
                                      'title',
                                      'category',
@@ -38,8 +39,10 @@ class MongoDB():
         try:
             return self.db[key]
         except KeyError:
-            raise AttributeError(
-                '{} db has no collection {}'.format(self.name, key))
+            raise AttributeError((
+                '{} db has no collection {}'
+                ).format(self.name,
+                         key))
 
 
 articledb = MongoDB(app.config['MONGODB_STOREDB_NAME'])
@@ -112,7 +115,13 @@ def get_score(el):
 
 
 def get_entries(day):
-    day_s = datetime(day.year, day.month, day.day, 0, 0, 0, 0)
+    day_s = datetime(day.year,
+                     day.month,
+                     day.day,
+                     0,
+                     0,
+                     0,
+                     0)
     day_n = day_s + timedelta(days=1)
     cursor = articledb.article.find(
         {
@@ -160,7 +169,9 @@ def get_before_day(day):
         {
             'crawl_date': 1
         }
-    ).sort('crawl_date', DESCENDING).limit(1)
+    ).sort('crawl_date',
+           DESCENDING
+           ).limit(1)
     return None if cursor.count() == 0 else cursor[0]['crawl_date'].date()
 
 
@@ -180,7 +191,9 @@ def get_after_day(day):
         {
             'crawl_date': 1
         }
-    ).sort('crawl_date', ASCENDING).limit(1)
+    ).sort('crawl_date',
+           ASCENDING
+           ).limit(1)
     return None if cursor.count() == 0 else cursor[0]['crawl_date'].date()
 
 
@@ -190,7 +203,8 @@ def get_after_day(day):
 
 
 def get_spiders():
-    cursor = articledb.spider.find({}, {'title': 1})
+    cursor = articledb.spider.find({},
+                                   {'title': 1})
     return {str(r['_id']): r['title'] for r in cursor}
 
 
@@ -202,7 +216,9 @@ def get_first_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id', ASCENDING).limit(1)
+    ).sort('_id',
+           ASCENDING
+           ).limit(1)
     return None if cursor.count() == 0 else cursor[0]['_id']
 
 
@@ -214,7 +230,9 @@ def get_last_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id', DESCENDING).limit(1)
+    ).sort('_id',
+           DESCENDING
+           ).limit(1)
     return None if cursor.count() == 0 else cursor[0]['_id']
 
 
@@ -246,12 +264,15 @@ def get_entries_next(spid, aid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id', DESCENDING).limit(100)
+    ).sort('_id',
+           DESCENDING
+           ).limit(100)
     if cursor.count() == 0:
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(str(a['_id']), a['title']))
+        entries.append(Entry(str(a['_id']),
+                             a['title']))
     return entries
 
 
@@ -265,12 +286,15 @@ def get_entries_pre(spid, aid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id', ASCENDING).limit(100)
+    ).sort('_id',
+           ASCENDING
+           ).limit(100)
     if cursor.count() == 0:
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(str(a['_id']), a['title']))
+        entries.append(Entry(str(a['_id']),
+                             a['title']))
     return list(reversed(entries))
 
 
@@ -283,17 +307,16 @@ def get_entries_spider(spid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id', DESCENDING).limit(100)
+    ).sort('_id',
+           DESCENDING
+           ).limit(100)
     if cursor.count() == 0:
         return None
     entries = []
     for a in cursor:
-        entries.append(Entry(str(a['_id']), a['title']))
+        entries.append(Entry(str(a['_id']),
+                             a['title']))
     return entries
-
-
-def format_aid(aid):
-    return ObjectId(aid)
 
 
 Article = namedtuple('Article',
@@ -322,14 +345,15 @@ def get_article(aid):
             'spider': 1
         }
     )
+
     if cursor.count() == 0:
         return None
+
     r = cursor[0]
     if type(r['content']) is bytes:
         r['content'] = r['content'].decode('UTF-8')
     if 'source' not in r:
         r['source'] = None
-
     from html import unescape
     r['title'] = unescape(r['title'])
 
@@ -392,7 +416,8 @@ def get_all_articles(c):
         {
             '_id': 1
         }
-    ).sort('_id', ASCENDING)
+    ).sort('_id',
+           ASCENDING)
     return None if cursor.count() == 0 else [Aid(r['_id']) for r in cursor]
 
 
