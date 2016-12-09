@@ -2,8 +2,10 @@
 
 
 from collections import namedtuple, defaultdict
-from pymongo import MongoClient, ASCENDING, DESCENDING
 from datetime import datetime, timedelta
+
+from pymongo import MongoClient, ASCENDING, DESCENDING
+
 from app import app
 
 
