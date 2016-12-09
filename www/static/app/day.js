@@ -298,7 +298,7 @@ var Entry = React.createClass({
 		var style = {
 			display: "flex",
 			alignItems: "center",
-			marginBottom: "16px"
+			marginBottom: "12px"
 		};
 
 		var index = this.props.index;
