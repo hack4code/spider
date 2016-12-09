@@ -12,6 +12,9 @@ def get_article_lang(item):
 
 
 class StorePipeline(object):
+    """
+        save content to mongodb
+    """
 
     @classmethod
     def from_settings(cls, settings):
@@ -22,11 +25,11 @@ class StorePipeline(object):
         if item is not None:
             if not (isinstance(doc, str) or isinstance(doc, bytes)):
                 from lxml.html import tostring
-
                 item['content'] = tostring(doc,
                                            encoding='UTF-8',
                                            pretty_print=True,
                                            method='html')
+                item['encoding'] = 'UTF-8'
 
             item_ = dict(item)
             item_['lang'] = get_article_lang(item)
