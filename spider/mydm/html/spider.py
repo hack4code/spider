@@ -18,13 +18,18 @@ from ..ai import TagExtractor
 
 
 class BLOGSpiderException(Exception):
+    """
+        exception for blog spider
+    """
     pass
 
 
 class BLOGSpider(ErrbackSpider):
     """
-    tags item must contain
+        spider crawl html with xpath
     """
+
+    # tags item must contain
     TAGS = ('title', 'link', 'content')
 
     def check_item(self, item):
@@ -73,9 +78,10 @@ class BLOGSpider(ErrbackSpider):
         else:
             miss_tags = [tag for tag in self.TAGS
                          if tag not in item or item[tag] is None]
-            logger.error(('Error in spider {} extract content, '
-                         'miss tags[{}]').format(self.name,
-                                                 miss_tags))
+            logger.error((
+                'Error in spider {} extract content, miss tags[{}]'
+                ).format(self.name,
+                         miss_tags))
 
     def parse(self, response):
         try:

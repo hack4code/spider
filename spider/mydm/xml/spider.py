@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 from datetime import datetime
 from lxml import etree
 
@@ -18,8 +15,10 @@ from ..spider import ErrbackSpider
 
 class LXMLSpider(ErrbackSpider):
     """
-    Tags item must contain
+        spider crawl rss|atom
     """
+
+    # Tags item must contain
     TAGS = ('title', 'link', 'content')
 
     def check_item(self, item):
