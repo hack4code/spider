@@ -127,10 +127,9 @@ def categories():
                   u'新闻'}
 
     from model import get_categories
-    categories_ = get_categories()
-    categories = list(categories.union(categories_))
+    categories.update(get_categories() or {})
     return jsonify(err=0,
-                   data=categories)
+                   data=list(categories))
 
 
 from collections import namedtuple
