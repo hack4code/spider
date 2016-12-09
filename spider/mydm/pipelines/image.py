@@ -5,17 +5,11 @@ import base64
 
 from lxml.html import fromstring, HTMLParser
 
-try:
-    from io import BytesIO
-except ImportError:
-    from StringIO import StringIO as BytesIO
+from io import BytesIO
 
 from PIL import Image as ImageLib
 
-try:
-    from urllib.parse import urljoin
-except ImportError:
-    from urlparse import urljoin
+from urllib.parse import urljoin
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -151,24 +145,29 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if imglen > self.IMAGE_MAX_SIZE:
                 data = image.optimize()
             imgtype = image.type
-        except:
-            logger.exception((
-                'Error in spider {} pipeline image Pillow failed[{}]'
-                ).format(self.spiderinfo.spider.name,
-                         src))
-            try:
-                imgtype = response.headers['Content-Type'].split('/')[-1]
-            except KeyError:
+        except Exception as e:
+            if isinstance(e, OSError):
                 logger.error((
-                    'Error in spider {} pipeline image '
-                    'Content-Type[{}] not found'
-                ).format(self.spiderinfo.spider.name,
-                         src))
-                return
+                    'Error in spider {} pipeline image Pillow '
+                    'image type not support[{}]'
+                    ).format(self.spiderinfo.spider.name,
+                             src))
+            else:
+                logger.exception((
+                    'Error in spider {} pipeline image Pillow failed[{}]'
+                    ).format(self.spiderinfo.spider.name,
+                             src))
+                try:
+                    imgtype = response.headers['Content-Type'].split('/')[-1]
+                except KeyError:
+                    logger.error((
+                        'Error in spider {} pipeline image '
+                        'Content-Type[{}] not found'
+                    ).format(self.spiderinfo.spider.name,
+                             src))
+                    return
         img.set('source', src)
-        data = base64.b64encode(data)
-        if isinstance(data, bytes):
-            data = data.decode('ascii')
+        data = base64.b64encode(data).decode('ascii')
         img.set('src',
                 'data:image/{};base64,{}'.format(imgtype,
                                                  data))
