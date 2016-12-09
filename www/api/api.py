@@ -120,13 +120,15 @@ def day_entries():
 
 @api_page.route('/categories', methods=['GET'])
 def categories():
-    ARTICLE_CATEGORIES = [u'技术',
-                          u'数据库',
-                          u'安全',
-                          u'科技',
-                          u'新闻']
+    categories = {u'技术',
+                  u'数据库',
+                  u'安全',
+                  u'科技',
+                  u'新闻'}
+
     from model import get_categories
-    categories = set(ARTICLE_CATEGORIES.append(get_categories()))
+    categories_ = get_categories()
+    categories = list(categories.union(categories_))
     return jsonify(err=0,
                    data=categories)
 
