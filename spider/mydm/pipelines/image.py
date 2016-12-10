@@ -74,6 +74,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 if url.startswith('/'):
                     url = urljoin(item['link'].strip(),
                                   url)
+                    if url.startswith('//'):
+                        url = 'http:' + url
                 urls.append((url, e))
 
         reqs = []
