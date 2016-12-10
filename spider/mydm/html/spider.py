@@ -79,7 +79,7 @@ class BLOGSpider(ErrbackSpider):
             miss_tags = [tag for tag in self.TAGS
                          if tag not in item or item[tag] is None]
             logger.error((
-                'Error in spider {} extract content, miss tags[{}]'
+                'Error in spider {} extract content, miss tags{}'
                 ).format(self.name,
                          miss_tags))
 

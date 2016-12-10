@@ -80,16 +80,9 @@ class ContentPipeline(object):
         item['title'] = self.format_title(item['title'])
         doc = item['content']
         if isinstance(doc, str) or isinstance(doc, bytes):
-            try:
-                doc = fromstring(bytes(bytearray(doc,
-                                                 encoding=item['encoding'])),
-                                 parser=HTMLParser(encoding=item['encoding']))
-            except:
-                logger.error((
-                    'Error in spider {} pipeline content process_item[{}]'
-                    ).format(spider.name,
-                             item['link']))
-                return item
+            doc = fromstring(bytes(bytearray(doc,
+                                             encoding=item['encoding'])),
+                             parser=HTMLParser(encoding=item['encoding']))
 
         # remove element with class name for clean display
         removed_classes = getattr(spider,

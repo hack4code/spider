@@ -2,14 +2,11 @@
 
 
 import base64
+from io import BytesIO
+from urllib.parse import urljoin
 
 from lxml.html import fromstring, HTMLParser
-
-from io import BytesIO
-
 from PIL import Image as ImageLib
-
-from urllib.parse import urljoin
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -61,15 +58,9 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def get_media_requests(self, item, info):
         doc = item['content']
         if isinstance(doc, str) or isinstance(doc, bytes):
-            try:
-                doc = fromstring(doc,
-                                 parser=HTMLParser(encoding=item['encoding']))
-                item['content'] = doc
-            except:
-                logger.error((
-                    'Error in spider {} pipeline image build lxml doc'
-                    ).format(self.spiderinfo.spider.name))
-                return None
+            doc = fromstring(doc,
+                             parser=HTMLParser(encoding=item['encoding']))
+            item['content'] = doc
 
         try:
             attr = self.spiderinfo.spider.image_url_attr
@@ -81,15 +72,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if attr in e.attrib:
                 url = e.get(attr).strip(' \t\n')
                 if url.startswith('/'):
-                    try:
-                        url = urljoin(item['link'].strip(),
-                                      url)
-                    except:
-                        logger.error((
-                            'Error in pipeline image urljoin [{}: {}]'
-                            ).format(item['link'],
-                                     url))
-                        continue
+                    url = urljoin(item['link'].strip(),
+                                  url)
                 urls.append((url, e))
 
         reqs = []
@@ -145,27 +129,21 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if imglen > self.IMAGE_MAX_SIZE:
                 data = image.optimize()
             imgtype = image.type
-        except Exception as e:
-            if isinstance(e, OSError):
+        except OSError:
+            logger.error((
+                'Error in spider {} pipeline image Pillow '
+                'image type not support[{}]'
+                ).format(self.spiderinfo.spider.name,
+                         src))
+            try:
+                imgtype = response.headers['Content-Type'].split('/')[-1]
+            except KeyError:
                 logger.error((
-                    'Error in spider {} pipeline image Pillow '
-                    'image type not support[{}]'
+                    'Error in spider {} pipeline image Content-Type[{}]'
+                    'not found'
                     ).format(self.spiderinfo.spider.name,
                              src))
-            else:
-                logger.exception((
-                    'Error in spider {} pipeline image Pillow failed[{}]'
-                    ).format(self.spiderinfo.spider.name,
-                             src))
-                try:
-                    imgtype = response.headers['Content-Type'].split('/')[-1]
-                except KeyError:
-                    logger.error((
-                        'Error in spider {} pipeline image '
-                        'Content-Type[{}] not found'
-                    ).format(self.spiderinfo.spider.name,
-                             src))
-                    return
+                return
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
         img.set('src',
