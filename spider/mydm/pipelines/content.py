@@ -36,7 +36,7 @@ class ContentPipeline(object):
         try:
             doc.make_links_absolute(link)
         except:
-            logger.error((
+            logger.exception((
                 'Error in content pipeline make_abs_link[{}]'
                 ).format(link))
         finally:
