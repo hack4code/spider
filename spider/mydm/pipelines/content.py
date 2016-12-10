@@ -6,8 +6,6 @@ import re
 from lxml.html import fromstring, HTMLParser, defs
 from lxml.html.clean import Cleaner
 
-from ..log import logger
-
 
 class ContentPipeline(object):
     DEFAULT_ALLOW_CLASSES_NAME = 'allow_classes'
@@ -30,17 +28,13 @@ class ContentPipeline(object):
         return cls()
 
     def format_title(self, title):
-        return re.sub(r'(\r|\n|\s)+', ' ', title)
+        return re.sub(r'(\r|\n|\s)+',
+                      ' ',
+                      title)
 
     def make_abs_link(self, doc, link):
-        try:
-            doc.make_links_absolute(link)
-        except:
-            logger.exception((
-                'Error in content pipeline make_abs_link[{}]'
-                ).format(link))
-        finally:
-            return doc
+        doc.make_links_absolute(link)
+        return doc
 
     def remove_element_with_class(self, doc, removed_classes):
         for e in doc.xpath('//div[@class]'):
