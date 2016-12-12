@@ -23,8 +23,9 @@ class MongoSpiderLoader(object):
                 try:
                     spcls = mk_spider_cls(sp_setting)
                 except SpiderFactoryException:
-                    logger.error('spider({}) class create error'.format(
-                        spid))
+                    logger.error((
+                        'spider({}) class create error'
+                        ).format(spid))
                 else:
                     spiders[spid] = spcls
             self._spiders = spiders
