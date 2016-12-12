@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from werkzeug.routing import BaseConverter
+from werkzeug.routing import BaseConverter, ValidationError
 
 
 class DateConverter(BaseConverter):
@@ -10,7 +10,7 @@ class DateConverter(BaseConverter):
         try:
             return date(*(int(_) for _ in value.split('-')))
         except ValueError:
-            return None
+            raise ValidationError('invalid date format')
 
     def to_url(self, value):
         return str(value)
@@ -23,7 +23,7 @@ class IdConverter(BaseConverter):
         try:
             return ObjectId(value)
         except InvalidId:
-            return None
+            raise ValidationError('invalid id')
 
     def to_url(self, value):
         return str(value)
