@@ -9,14 +9,17 @@ def verify_tags(tags):
 
 
 class ReExtractor:
-    PATTERN = re.compile(r'>\s*(t|T)ags?\s*:.*<')
+    PATTERN = re.compile(r'tags?\s*:.*')
 
     def extract(self, s):
         tags = [tag.strip() for tag in s[s.find(':')+1:-1].split(',')]
         return tags
 
     def __call__(self, doc):
-        matches = re.findall(self.PATTERN, doc)
+        txt = doc.text_content()
+        matches = re.findall(self.PATTERN,
+                             txt,
+                             re.IGNORECASE)
         if len(matches) == 1:
             stag = matches[0]
             tags = self.extract(stag)
@@ -44,7 +47,8 @@ class TagExtractor:
 
     def __call__(self, doc):
         for cls in self.EXTRACTORS:
-            tags = cls()(doc)
+            match = cls()
+            tags = match(doc)
             if tags is not None:
                 return tags
         return None
