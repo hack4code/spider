@@ -69,12 +69,16 @@ class LXMLSpiderMeta(type):
                  'category',
                  'name']
         if all(attr in attrs for attr in ATTRS):
-            return super(LXMLSpiderMeta, cls).__new__(cls, name, bases, attrs)
+            return super(LXMLSpiderMeta,
+                         cls).__new__(cls,
+                                      name,
+                                      bases,
+                                      attrs)
         else:
             raise AttributeError
 
 
 def mk_lxmlspider_cls(sp_setting):
-    return LXMLSpiderMeta('{}Spider'.format(sp_setting['name']),
+    return LXMLSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
                           (LXMLSpider,),
                           sp_setting)

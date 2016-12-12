@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 from datetime import datetime
 import inspect
 
@@ -124,6 +121,6 @@ class BLOGSpiderMeta(type):
 
 
 def mk_blogspider_cls(sp_setting):
-    return BLOGSpiderMeta('{}Spider'.format(sp_setting['name']),
+    return BLOGSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
                           (BLOGSpider,),
                           sp_setting)
