@@ -11,8 +11,14 @@ class ContentPipeline(object):
     DEFAULT_ALLOW_CLASSES_NAME = 'allow_classes'
     DEFAULT_REMOVED_CLASSES_NAME = 'removed_classes'
     DEFAULT_REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
-    removed_attrs = ('class', 'id')
-    safe_attrs = {'style', 'data-url', 'float', 'width', 'height', 'src'}
+    removed_attrs = ('class',
+                     'id')
+    safe_attrs = {'style',
+                  'data-url',
+                  'float',
+                  'width',
+                  'height',
+                  'src'}
 
     @classmethod
     def from_settings(cls, settings):
