@@ -52,8 +52,9 @@ def check_spider(sp_setting):
     from scrapy.crawler import CrawlerProcess
 
     spid = str(uuid.uuid4())
-    sp_setting['_id'] = spid
-    spcls = mk_spider_cls(sp_setting)
+    setting = list(sp_setting)
+    setting['_id'] = spid
+    spcls = mk_spider_cls(setting)
     custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline':
                                           255},
                        'WEBSERVICE_ENABLED': False,
@@ -158,7 +159,8 @@ def gen_blogspider(spargs):
         return False
     sp_setting = {'{}_xpath'.format(k): v
                   for k, v in spargs.items() if k in spattrs and len(v) > 0}
-    if 'removed_xpath_nodes' in spargs and len(spargs['removed_xpath_nodes']) > 0:
+    if ('removed_xpath_nodes' in spargs and
+            len(spargs['removed_xpath_nodes']) > 0):
         nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
         sp_setting['removed_xpath_nodes'] = nodes
     sp_setting['name'] = get_feed_name(url)
