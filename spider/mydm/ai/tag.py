@@ -49,10 +49,11 @@ class ReExtractor:
 class TagExtractor:
     EXTRACTORS = (ReExtractor,)
 
-    def __call__(self, doc):
+    def __call__(self, doc, encoding='UTF-8'):
         for cls in self.EXTRACTORS:
             match = cls()
-            tags = match(doc)
+            tags = match(doc,
+                         encoding=encoding)
             if tags is not None:
                 return tags
         return None
