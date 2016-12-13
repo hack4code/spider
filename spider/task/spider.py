@@ -158,7 +158,7 @@ def gen_blogspider(spargs):
         return False
     sp_setting = {'{}_xpath'.format(k): v
                   for k, v in spargs.items() if k in spattrs and len(v) > 0}
-    if 'removed_xpath_nodes' in spargs and spargs['removed_xpath_nodes'] > 0:
+    if 'removed_xpath_nodes' in spargs and len(spargs['removed_xpath_nodes']) > 0:
         nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
         sp_setting['removed_xpath_nodes'] = nodes
     sp_setting['name'] = get_feed_name(url)
