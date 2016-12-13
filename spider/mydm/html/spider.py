@@ -16,12 +16,12 @@ from ..ai import TagExtractor
 
 class BLOGSpiderException(Exception):
     """
-        exception for blog spider
+        Exception for blog spider
     """
     pass
 
 
-class BLOGSpider(ErrbackSpider):
+class BLOGSpider:
     """
         spider crawl html with xpath
     """
@@ -34,9 +34,12 @@ class BLOGSpider(ErrbackSpider):
                            for tag in self.TAGS) else False
 
     def extract_entries(self, response):
-        return Selector(response, type='html').xpath(self.entry_xpath)
+        return Selector(response,
+                        type='html'
+                        ).xpath(self.entry_xpath)
 
     def extract_item(self, entry):
+        # extract item
         attrs = inspect.getmembers(self.__class__,
                                    lambda a: not(inspect.isroutine(a)))
         extractors = [attr for attr in attrs
@@ -45,20 +48,18 @@ class BLOGSpider(ErrbackSpider):
                       attr[0] != 'item_content_xpath']
         item = {name.split('_')[1]: entry.xpath(xnode).extract_first()
                 for name, xnode in extractors}
-        tags = TagExtractor()(entry.xpath('.').extract_first())
+        # extract tag
+        extract_item = TagExtractor()
+        tags = extract_item(entry)
         if tags is not None:
             item['tag'] = tags
-
-        def clean_link_url(url):
-            return url.strip('\t\n\r\s')
-
+        # strip link
         if 'link' in item and item['link'] is not None:
-            item['link'] = clean_link_url(item['link'])
-
+            item['link'] = item['link'].strip('\t\n\r\s')
+        # unescape title
         if 'title' in item and item['title'] is not None:
             from html import unescape
             item['title'] = unescape(item['title'])
-
         return item
 
     def extract_content(self, response):
@@ -115,12 +116,16 @@ class BLOGSpiderMeta(type):
                  'item_link_xpath',
                  'item_content_xpath']
         if all(attr in attrs for attr in ATTRS):
-            return super(BLOGSpiderMeta, cls).__new__(cls, name, bases, attrs)
+            return super(BLOGSpiderMeta,
+                         cls).__new__(cls,
+                                      name,
+                                      bases,
+                                      attrs)
         else:
             raise AttributeError
 
 
 def mk_blogspider_cls(sp_setting):
     return BLOGSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
-                          (BLOGSpider,),
+                          (BLOGSpider, ErrbackSpider),
                           sp_setting)

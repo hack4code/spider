@@ -34,9 +34,15 @@ def get_feed_name(url):
     parser = urlparse(url)
     names = parser.hostname.split('.')
     if len(names) == 1:
-        return re.sub(r'[^a-zA-Z]', '', names[0]).capitalize()
+        return re.sub(r'[^a-zA-Z]',
+                      '',
+                      names[0]
+                      ).capitalize()
     else:
-        return ''.join([re.sub(r'[^a-z]', '', name.lower()).capitalize()
+        return ''.join([re.sub(r'[^a-z]',
+                               '',
+                               name.lower()
+                               ).capitalize()
                         for name in names[:-1]
                         if name.lower() != 'www'])
 
@@ -76,12 +82,17 @@ def check_spider(sp_setting):
 
 def _gen_lxmlspider(url, args):
     logger = get_task_logger(__name__)
-    r = requests.get(url, headers=settings['DEFAULT_REQUEST_HEADERS'])
+    r = requests.get(url,
+                     headers=settings['DEFAULT_REQUEST_HEADERS'])
     if r.status_code != 200:
-        logger.error('download {} error: status={}'.format(url, r.status_code))
+        logger.error((
+            'download {} error: status={}'
+            ).format(url,
+                     r.status_code))
         return False
     parser = etree.XMLParser(ns_clean=True)
-    root = etree.XML(r.content, parser)
+    root = etree.XML(r.content,
+                     parser)
     while len(root) == 1:
         root = root[0]
     sp_setting = {'start_urls': [url]}
@@ -125,7 +136,7 @@ def gen_lxmlspider(spargs):
     args = {k: v for k, v in spargs.items() if k in spattrs and len(v) > 0}
     if ('removed_xpath_nodes' in spargs
        and len(spargs['removed_xpath_nodes']) > 0):
-        nodes = [n.strip() for n in spargs['removed_xpath_nodes'].split(',')]
+        nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
         args['item_content_xpath'] = nodes
     if not is_exists_spider(url):
         if _gen_lxmlspider(url, args):
@@ -148,7 +159,7 @@ def gen_blogspider(spargs):
     sp_setting = {'{}_xpath'.format(k): v
                   for k, v in spargs.items() if k in spattrs and len(v) > 0}
     if 'removed_xpath_nodes' in spargs and spargs['removed_xpath_nodes'] > 0:
-        nodes = [n.strip() for n in spargs['removed_xpath_nodes'].split(',')]
+        nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
         sp_setting['removed_xpath_nodes'] = nodes
     sp_setting['name'] = get_feed_name(url)
     sp_setting['title'] = sp_setting['name']
@@ -191,7 +202,9 @@ def crawl(args):
 
     def flush_spider_stats_db():
         conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-        r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
+        r = redis.Redis(host=conf.host,
+                        port=conf.port,
+                        db=conf.database)
         r.flushdb()
 
     flush_spider_stats_db()

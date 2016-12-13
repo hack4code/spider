@@ -3,6 +3,7 @@
 
 from urllib.parse import urlparse
 from datetime import datetime
+
 from lxml import etree
 
 from scrapy import Request
@@ -13,9 +14,9 @@ from ..items import ArticleItem
 from ..spider import ErrbackSpider
 
 
-class LXMLSpider(ErrbackSpider):
+class LXMLSpider:
     """
-        spider crawl rss|atom
+        spider for crawl rss|atom
     """
 
     # Tags item must contain
@@ -26,7 +27,8 @@ class LXMLSpider(ErrbackSpider):
                            for k in self.TAGS) else False
 
     def has_content_extractor(self):
-        return True if hasattr(self, 'item_content_xpath') else False
+        return True if hasattr(self,
+                               'item_content_xpath') else False
 
     def extract_content(self, response):
         item = response.meta['item']
@@ -43,11 +45,13 @@ class LXMLSpider(ErrbackSpider):
         parser = etree.XMLParser(ns_clean=True,
                                  recover=True,
                                  encoding=response.encoding)
-        root = etree.XML(response.body, parser)
+        root = etree.XML(response.body,
+                         parser)
         while len(root) == 1:
             root = root[0]
         for entry in root:
-            item = ItemExtractor()(entry)
+            extract = ItemExtractor()
+            item = extract(entry)
             item['category'] = self.category
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc
@@ -80,5 +84,5 @@ class LXMLSpiderMeta(type):
 
 def mk_lxmlspider_cls(sp_setting):
     return LXMLSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
-                          (LXMLSpider,),
+                          (LXMLSpider, ErrbackSpider),
                           sp_setting)
