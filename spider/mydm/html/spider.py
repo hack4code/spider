@@ -11,7 +11,6 @@ from scrapy import Request
 from ..spider import ErrbackSpider
 from ..log import logger
 from ..items import ArticleItem
-from ..ai import TagExtractor
 
 
 class BLOGSpiderException(Exception):
@@ -21,7 +20,13 @@ class BLOGSpiderException(Exception):
     pass
 
 
-class BLOGSpider:
+def extract_tags(doc, encoding):
+    from ..ai import TagExtractor
+    extract = TagExtractor()
+    return extract(doc, encoding=encoding)
+
+
+class BLOGSpider(object):
     """
         spider crawl html with xpath
     """
@@ -38,7 +43,7 @@ class BLOGSpider:
                         type='html'
                         ).xpath(self.entry_xpath)
 
-    def extract_item(self, entry, encoding='UTF-8'):
+    def extract_item(self, entry, encoding):
         # extract item
         attrs = inspect.getmembers(self.__class__,
                                    lambda a: not(inspect.isroutine(a)))
@@ -49,9 +54,8 @@ class BLOGSpider:
         item = {name.split('_')[1]: entry.xpath(xnode).extract_first()
                 for name, xnode in extractors}
         # extract tag
-        extract_tag = TagExtractor()
-        tags = extract_tag(entry.xpath('.').extract_first(),
-                           encoding=encoding)
+        tags = extract_tags(entry.xpath('.').extract_first(),
+                            encoding)
         if tags is not None:
             item['tag'] = tags
         # strip link
@@ -69,6 +73,11 @@ class BLOGSpider:
         item['link'] = response.url
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
+        if 'tag' not in item:
+            tags = extract_tags(content,
+                                response.encoding)
+            if tags is not None:
+                item['tag'] = tags
         if self.check_item(item):
             return ArticleItem(item)
         else:
@@ -90,7 +99,7 @@ class BLOGSpider:
 
         for entry in self.extract_entries(response):
             item = self.extract_item(entry,
-                                     encoding=response.encoding)
+                                     response.encoding)
             item['category'] = self.category
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc
@@ -98,7 +107,7 @@ class BLOGSpider:
             link = item['link']
             if link is None:
                 continue
-            link = link.strip()
+            link = link.strip('\r\n\s\t')
             if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
             yield Request(item['link'],

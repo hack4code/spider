@@ -14,7 +14,13 @@ from ..items import ArticleItem
 from ..spider import ErrbackSpider
 
 
-class LXMLSpider:
+def extract_tags(doc, encoding):
+    from ..ai import TagExtractor
+    extract = TagExtractor()
+    return extract(doc, encoding=encoding)
+
+
+class LXMLSpider(object):
     """
         spider for crawl rss|atom
     """
@@ -37,9 +43,15 @@ class LXMLSpider:
             item['content'] = content
             item['encoding'] = response.encoding
             item['link'] = response.url
+            if 'tag' not in item:
+                tags = extract_tags(item['content'],
+                                    item['encoding'])
+                if tags is not None:
+                    item['tag'] = tags
+            return ArticleItem(item)
         else:
             logger.error('spider[{}] extract content failed'.format(self.name))
-        return ArticleItem(item)
+            return None
 
     def parse(self, response):
         parser = etree.XMLParser(ns_clean=True,
@@ -64,6 +76,11 @@ class LXMLSpider:
                                   errback=self.errback,
                                   meta={'item': item})
                 else:
+                    if 'tag' not in item:
+                        tags = extract_tags(item['content'],
+                                            item['encoding'])
+                        if tags is not None:
+                            item['tag'] = tags
                     yield ArticleItem(item)
 
 
