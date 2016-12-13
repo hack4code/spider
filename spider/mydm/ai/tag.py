@@ -9,7 +9,7 @@ def verify_tags(tags):
 
 
 class ReExtractor:
-    PATTERN = re.compile(r'tags?\s*:.*')
+    PATTERN = r'tags?\s*:.*'
 
     def extract(self, s):
         tags = [tag.strip() for tag in s[s.find(':')+1:-1].split(',')]
