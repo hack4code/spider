@@ -79,7 +79,8 @@ class ContentPipeline(object):
     def process_item(self, item, spider):
         item['title'] = self.format_title(item['title'])
         doc = item['content']
-        if isinstance(doc, str) or isinstance(doc, bytes):
+        if isinstance(doc,
+                      (str, bytes)):
             doc = fromstring(bytes(bytearray(doc,
                                              encoding=item['encoding'])),
                              parser=HTMLParser(encoding=item['encoding']))

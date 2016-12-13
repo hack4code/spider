@@ -16,7 +16,8 @@ class ReExtractor:
         return tags
 
     def __call__(self, doc, encoding='UTF-8'):
-        if not (isinstance(doc, str) or isinstance(doc, bytes)):
+        if not isinstance(doc,
+                          (str, bytes)):
             return None
         from lxml.html import fromstring, HTMLParser
         doc = fromstring(bytes(bytearray(doc,

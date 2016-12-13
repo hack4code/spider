@@ -57,7 +57,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def get_media_requests(self, item, info):
         doc = item['content']
-        if isinstance(doc, str) or isinstance(doc, bytes):
+        if isinstance(doc,
+                      (str, bytes)):
             doc = fromstring(doc,
                              parser=HTMLParser(encoding=item['encoding']))
             item['content'] = doc
