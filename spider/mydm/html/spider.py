@@ -38,7 +38,7 @@ class BLOGSpider:
                         type='html'
                         ).xpath(self.entry_xpath)
 
-    def extract_item(self, entry):
+    def extract_item(self, entry, encoding='UTF-8'):
         # extract item
         attrs = inspect.getmembers(self.__class__,
                                    lambda a: not(inspect.isroutine(a)))
@@ -49,8 +49,9 @@ class BLOGSpider:
         item = {name.split('_')[1]: entry.xpath(xnode).extract_first()
                 for name, xnode in extractors}
         # extract tag
-        extract_item = TagExtractor()
-        tags = extract_item(entry)
+        extract_tag = TagExtractor()
+        tags = extract_tag(entry.xpath('.').extract_first(),
+                           encoding=encoding)
         if tags is not None:
             item['tag'] = tags
         # strip link
@@ -64,9 +65,6 @@ class BLOGSpider:
 
     def extract_content(self, response):
         item = response.meta['item']
-        tags = TagExtractor()(response.text)
-        if tags is not None:
-            item['tag'] = tags
         item['encoding'] = response.encoding
         item['link'] = response.url
         content = response.xpath(self.item_content_xpath).extract_first()
@@ -91,7 +89,8 @@ class BLOGSpider:
             logger.info('{} has no prelink attr'.format(self.name))
 
         for entry in self.extract_entries(response):
-            item = self.extract_item(entry)
+            item = self.extract_item(entry,
+                                     encoding=response.encoding)
             item['category'] = self.category
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc

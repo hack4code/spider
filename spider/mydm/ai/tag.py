@@ -15,7 +15,11 @@ class ReExtractor:
         tags = [tag.strip() for tag in s[s.find(':')+1:-1].split(',')]
         return tags
 
-    def __call__(self, doc):
+    def __call__(self, doc, encoding='UTF-8'):
+        from lxml.html import fromstring, HTMLParser
+        doc = fromstring(bytes(bytearray(doc,
+                                         encoding=encoding)),
+                         parser=HTMLParser(encoding=encoding))
         txt = doc.text_content()
         matches = re.findall(self.PATTERN,
                              txt,
