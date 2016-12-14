@@ -52,7 +52,7 @@ def check_spider(sp_setting):
     from scrapy.crawler import CrawlerProcess
 
     spid = str(uuid.uuid4())
-    setting = list(sp_setting)
+    setting = sp_setting.copy()
     setting['_id'] = spid
     spcls = mk_spider_cls(setting)
     custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline':
