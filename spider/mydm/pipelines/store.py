@@ -21,8 +21,8 @@ class StorePipeline(object):
         return cls()
 
     def process_item(self, item, spider):
-        doc = item['content']
         if item is not None:
+            doc = item['content']
             if not isinstance(doc,
                               (str, bytes)):
                 from lxml.html import tostring
