@@ -101,6 +101,7 @@ services:
                         - ./nginx/www.conf:/etc/nginx/www.conf:ro
                         - ./www/static/:/www/static/:ro
                         - ./www/fonts/:/www/fonts:ro
+                        - /var/cache/:/var/cache/
                 networks:
                         - www
                 ports:
