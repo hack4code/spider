@@ -26,4 +26,4 @@ First time, should create users of mongodb
 
 ## Todo
 ### spider
-  * tag: html2txt
+  * tag: html2txt [finished]
