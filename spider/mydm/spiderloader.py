@@ -23,8 +23,8 @@ class MongoSpiderLoader(object):
                 try:
                     spcls = mk_spider_cls(sp_setting)
                 except SpiderFactoryException:
-                    logger.error((
-                        'spider({}) class create error'
+                    logger.exception((
+                        'Error in SpiderFactory for spider[{}]'
                         ).format(spid))
                 else:
                     spiders[spid] = spcls
@@ -40,7 +40,9 @@ class MongoSpiderLoader(object):
         try:
             return self.spiders[spid]
         except KeyError:
-            raise KeyError('spider({}) not found'.format(spid))
+            raise KeyError((
+                'Error in loader, spider[{}] not found'
+                ).format(spid))
 
     def find_by_request(self, request):
         return [name

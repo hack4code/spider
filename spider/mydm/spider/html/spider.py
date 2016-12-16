@@ -9,8 +9,8 @@ from scrapy.selector import Selector
 from scrapy import Request
 
 from ..spider import ErrbackSpider
-from ..log import logger
-from ..items import ArticleItem
+from ...items import ArticleItem
+from ...log import logger
 
 
 class BLOGSpiderException(Exception):

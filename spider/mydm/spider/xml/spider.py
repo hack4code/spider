@@ -8,10 +8,10 @@ from lxml import etree
 
 from scrapy import Request
 
-from ..log import logger
 from .extractor import ItemExtractor
-from ..items import ArticleItem
 from ..spider import ErrbackSpider
+from ...items import ArticleItem
+from ...log import logger
 
 
 def extract_tags(doc, encoding):
@@ -96,7 +96,7 @@ class LXMLSpiderMeta(type):
                                       bases,
                                       attrs)
         else:
-            raise AttributeError
+            raise AttributeError('Error in LXMLSpiderMeta')
 
 
 def mk_lxmlspider_cls(sp_setting):
