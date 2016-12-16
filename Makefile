@@ -7,3 +7,4 @@ update:
 	docker pull redis
 	docker pull mongo
 	docker pull python
+	docker pull rabbitmq
