@@ -21,7 +21,7 @@ class BLOGSpiderException(Exception):
 
 
 def extract_tags(doc, encoding):
-    from ..ai import TagExtractor
+    from ...ai import TagExtractor
     extract = TagExtractor()
     return extract(doc, encoding=encoding)
 
