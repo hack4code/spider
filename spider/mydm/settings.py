@@ -34,7 +34,7 @@ spider settings
 """
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
-MONGODB_DB_NAME = 'articles'
+MONGODB_DB_NAME = 'scrapy'
 MONGODB_ARTICLE_COLLECTION_NAME = 'article'
 MONGODB_FEED_COLLECTION_NAME = 'feed'
 MONGODB_SPIDER_COLLECTION_NAME = 'spider'
