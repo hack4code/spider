@@ -11,7 +11,7 @@ db = conn.getDB("admin")
 db.auth("admin", "admin")
 
 /* articles db user */
-db = conn.getDB("articles");
+db = conn.getDB("scrapy");
 db.createUser({user: "scrapy",
 	       pwd: scrapy_pwd,
 	       roles: [ { role: "readWrite", db: "articles" } ]})

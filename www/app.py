@@ -8,7 +8,7 @@ from error import NotFound, BadRequest
 
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
-MONGODB_STOREDB_NAME = 'articles'
+MONGODB_STOREDB_NAME = 'scrapy'
 MONGODB_SCOREDB_NAME = 'score'
 MONGODB_USER = 'flask'
 MONGODB_PWD = 'flask'
