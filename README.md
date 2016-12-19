@@ -19,7 +19,7 @@ First time, should create users of mongodb
  * docker-compose exec mongodb mongo /script/init_db.js
 
 ## Cron job
- * curl -X POST -d "spiders=all" http://127.0.0.1:8001/crawl
+ * curl -X POST -d "spiders=all" "http://127.0.0.1:8001/crawl"
 
 ## Notice
  * iptables: after updating rules, should restart docker
