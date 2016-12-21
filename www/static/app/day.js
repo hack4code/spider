@@ -13,7 +13,6 @@ class App extends React.Component {
   setDay(day) {
     $.getJSON("/api/day", {day: day}).done(function(data) {
       var err = data["err"];
-      console.log(data);
 
       if (!err) {
         var nstate = {day_before: data["day_before"],
