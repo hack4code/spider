@@ -14,9 +14,13 @@
  * docker-compose up -d
 
 ## Mongodb
-First time, should create users of mongodb
- * docker-compose exec mongodb mongo /script/init_admin.js
- * docker-compose exec mongodb mongo /script/init_db.js
+### First time, should create users of mongodb
+  * docker-compose exec mongodb mongo /script/init_admin.js
+  * docker-compose exec mongodb mongo /script/init_db.js
+### Pack js with webpack
+  * cd www/static/app/
+  * docker pull node
+  * make build
 
 ## Cron job
  * curl -X POST -d "spiders=all" http://<i></i>127.0.0.1:8001/crawl
