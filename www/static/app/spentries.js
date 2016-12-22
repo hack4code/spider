@@ -1,180 +1,123 @@
-var Title = React.createClass({
-	render: function() {
-		var style = {
-			fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
-			fontSize: "normal",
-			fontWeight: "bold",
-			textAlign: "center"
-		};
+import React from "react";
+import { render } from "react-dom";
+import {Title, Hr, Entries} from "./entry_component";
 
-		return (
-			<div>
-				<p style={style}>{this.props.name}</p>
-			</div>
-		)
-	}
-});
+class AidLink extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
 
-var Entry = React.createClass({
-	render: function() {
-		var style = {
-			fontWeight: "600",
-			fontSize: "0.8em",
-			fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
-			lineHeight: "2em",
-			textDecoration: "none"
-		};
-		var url = "/a/" + this.props.aid;
+  onClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-		return (
-			<li>
-				<a style={style} href={url} target="_blank">{this.props.title}</a>
-			</li>
-		)
-	}
-});
+    this.props.onAidClick();
+  }
 
-var Entries = React.createClass({
-	render: function() {
-		var style = {
-			listStyle: "square",
-			color: "red",
-			marginLeft: "4em"
-		};
-		var entries = this.props.entries;
+  render() {
+    var cn;
+    var style;
 
-		return (
-			<ul style={style}>
-				{entries.map(function(entry, index) {return <Entry key={index} aid={entry[0]} title={entry[1]} />;})}
-			</ul>
-		)
-	}
-});
+    if (this.props.handType == "handright") {
+      cn = "fa fa-hand-o-right";
+      style = {
+        float: "right"
+      }
+    }
+    else {
+      cn = "fa fa-hand-o-left";
+      style = {
+        float: "left"
+      }
+    }
 
-var Hr = React.createClass({
-	render: function() {
-		var style = {
-			border: "none",
-			height: 1,
-			color: "#EEE",
-			backgroundColor: "#EEE",
-			marginBottom: "1em",
-			clear: "both"
-		};
+    return (
+      <span style={style}>
+        <a href="#" onClick={this.onClick}>
+          <i className={cn} aria-hidden="true"></i>
+        </a>
+      </span>
+    )
+  }
+}
 
-		return (
-			<hr style={style} />
-		)
-	}
-});
+class AidLinkDiv extends React.Component {
+  render() {
+    var style = {
+      paddingLeft: "40%",
+      paddingRight: "40%"
+    };
 
-var AidLink = React.createClass({
-	onClick: function(e) {
-		e.preventDefault();
-		e.stopPropagation();
+    return (
+      <div style={style}>
+        <AidLink handType="handleft" onAidClick={this.props.onLeftClick} />
+        <AidLink handType="handright" onAidClick={this.props.onRightClick} />
+      </div>
+    )
+  }
+}
 
-		this.props.onAidClick();
-	},
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.getEntries = this.getEntries.bind(this);
+    this.onLeftClick = this.onLeftClick.bind(this);
+    this.onRightClick = this.onRightClick.bind(this);
+    var spid = $("#content").attr("spid");
+    var name = $("#content").attr("name");
+    this.state = {spid: spid, name: name, entries: []};
+  }
 
-	render: function() {
-		var cn;
-		var style;
+  getEntries(aid, q) {
+    var spid = this.state.spid;
+    var args = {spid: spid};
+    if (aid != null) {
+      args['aid'] = aid;
+      args['q'] = q;
+    }
 
-		if (this.props.handType == "handright") {
-			cn = "fa fa-hand-o-right";
-			style = {
-				float: "right"
-			}
-		}
-		else {
-			cn = "fa fa-hand-o-left";
-			style = {
-				float: "left"
-			}
-		}
+    $.getJSON("/api/spider", args).done(function(data){
+      var err = data["err"];
+      if (!err) {
+        this.setState({entries: data["entries"]});
+      }
+    }.bind(this));
+  }
 
-		return (
-			<span style={style}>
-				<a href="#" onClick={this.onClick}>
-					<i className={cn} aria-hidden="true"></i>
-		  	</a>
-			</span>
-		)
-	}
-});
+  onLeftClick() {
+    var entries = this.state.entries;
+    if (entries.length == 0) {
+      return;
+    }
+    var aid = entries[0][0];
+    this.getEntries(aid, "p");
+  }
 
-var AidLinkDiv = React.createClass({
-	render: function() {
-		var style = {
-			paddingLeft: "40%",
-			paddingRight: "40%"
-		};
+  onRightClick() {
+    var entries = this.state.entries;
+    if (entries.length == 0) {
+      return;
+    }
+    var aid = entries[entries.length-1][0];
+    this.getEntries(aid, "n");
+  }
 
-		return (
-			<div style={style}>
-				<AidLink handType="handleft" onAidClick={this.props.onLeftClick} />
-				<AidLink handType="handright" onAidClick={this.props.onRightClick} />
-			</div>
-		)
-	}
-});
+  componentDidMount() {
+    this.getEntries();
+  }
 
-var App = React.createClass({
-	getEntries: function(aid, q) {
-		var spid = this.state.spid;
-		var args = {spid: spid};
-		if (aid != null) {
-			args['aid'] = aid;
-			args['q'] = q;
-		}
+  render() {
+    return (
+      <div>
+        <Title name={this.state.name} />
+        <Hr />
+        <Entries prefix="/a/" entries={this.state.entries} />
+        <Hr />
+        <AidLinkDiv onLeftClick={this.onLeftClick} onRightClick={this.onRightClick} />
+      </div>
+    )
+  }
+}
 
-		$.getJSON("/api/spider", args).done(function(data){
-			var err = data["err"];
-			if (!err) {
-				this.setState({entries: data["entries"]});
-			}
-		}.bind(this));
-	},
-
-	onLeftClick: function() {
-		var entries = this.state.entries;
-		if (entries.length == 0) {
-			return;
-		}
-		var aid = entries[0][0];
-		this.getEntries(aid, "p");
-	},
-
-	onRightClick: function() {
-		var entries = this.state.entries;
-		if (entries.length == 0) {
-			return;
-		}
-		var aid = entries[entries.length-1][0];
-		this.getEntries(aid, "n");
-	},
-
-	getInitialState: function() {
-		var spid = $("#content").attr("spid");
-		var name = $("#content").attr("name");
-		return {spid: spid, name: name, entries: []}
-	},
-
-	componentDidMount: function() {
-		this.getEntries();
-	},
-
-	render: function() {
-		return (
-			<div>
-				<Title name={this.state.name} />
-				<Hr />
-				<Entries entries={this.state.entries} />
-				<Hr />
-				<AidLinkDiv onLeftClick={this.onLeftClick} onRightClick={this.onRightClick} />
-			</div>
-		)
-	}
-});
-
-ReactDOM.render(<App />, document.getElementById("content"));
+render(<App />, document.getElementById("content"));

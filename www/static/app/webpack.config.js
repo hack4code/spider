@@ -1,5 +1,5 @@
+var webpack = require("webpack");
 var path = require("path");
-
 var jspath = path.resolve(__dirname);
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
     spentries: jspath + "/spentries.js",
     vote: jspath + "/vote.js",
     rss: jspath + "/rss.js",
-    spider: jspath + "/spiders.js"
+    spiders: jspath + "/spiders.js"
   },
 
   output: {
@@ -22,8 +22,12 @@ module.exports = {
           { test: /\.js/,
 	    loader: "babel-loader",
 	    exclude: /node_modules/,
-      	    query: { presets:["es2015", "react"]}
+      	    query: { presets:["react", "es2015", "stage-0"] }
 	  }
       ]
-  }
+  },
+
+  plugins: [
+      new webpack.ProvidePlugin({$: "jquery", jQuery: "jquery", "window.jQuery": "jquery"}),
+  ],
 };

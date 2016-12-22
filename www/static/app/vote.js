@@ -1,91 +1,97 @@
-var Voter = React.createClass({
-	getInitialState: function(){
-		var s = window.localStorage;
-		var aid = this.props.aid;
-		if (s.getItem(aid) != null) {
-			return {voted: 1};
-		}
-		else {
-			return {voted: 0};
-		}
-	},
+import React from "react";
+import { render } from "react-dom";
 
-	onClick(e) {
-		e.preventDefault();
-		e.stopPropagation();
+class Voter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+    var s = window.localStorage;
+    var aid = this.props.aid;
+    if (s.getItem(aid) != null) {
+      this.state =  {voted: 1};
+    }
+    else {
+      this.state = {voted: 0};
+    }
+  }
 
-		var s = window.localStorage;
-		var aid = this.props.aid;
+  onClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-		if (s.getItem(aid) != null) {
-			return;
-		}
-		else {
-			this.setState({voted: 1});
-			$.post("/api/vote", {aid: aid}).done(function(data){
-				if (!data['err']) {
-					s.setItem(aid, 1);
-				}
-				else {
-					this.setState({voted: 0});
-				}
-			}.bind(this));
-		}
-	},
+    var s = window.localStorage;
+    var aid = this.props.aid;
 
-	render: function() {
-		var style = {
-			fontSize: "1em",
-			fontWeight: "bold"
-		};
-		style["color"] = this.state.voted ? "#004276" : "#999999";
+    if (s.getItem(aid) != null) {
+      return;
+    }
+    else {
+      this.setState({voted: 1});
+      $.post("/api/vote", {aid: aid}).done(function(data){
+        if (!data['err']) {
+          s.setItem(aid, 1);
+        }
+        else {
+          this.setState({voted: 0});
+        }
+      }.bind(this));
+    }
+  }
 
-		return (
-			<div>
-				<a style={style} href="#" onClick={this.onClick}>
-					<i className="fa fa-thumbs-o-up"></i>
-				</a>
-			</div>
-		)
-	}
-});
+  render() {
+    var style = {
+      fontSize: "1em",
+      fontWeight: "bold"
+    };
+    style["color"] = this.state.voted ? "#004276" : "#999999";
 
-var Footer = React.createClass({
-	render: function() {
-		var style = {
-			color: "#888",
-			fontSize: "x-small",
-		};
-		var url = "/p/" + this.props.spid;
+    return (
+      <div>
+        <a style={style} href="#" onClick={this.onClick}>
+          <i className="fa fa-thumbs-o-up"></i>
+        </a>
+      </div>
+    )
+  }
+}
 
-		return (
-			<p style={style}>
-				本文章来自
-				<span>[<a href={url} target="_blank">{this.props.spname}</a>]</span>
-				, 您可以对文章点赞
-			</p>
-		)
-	}
-});
+class Footer extends React.Component {
+  render() {
+    var style = {
+      color: "#888",
+      fontSize: "x-small",
+    };
+    var url = "/p/" + this.props.spid;
 
-var App = React.createClass({
-	render: function() {
-		var style = {
-			display: "flex",
-			flexDirection: "column",
-			alignItems: "center"
-		};
-		var aid = $("#content").attr("aid");
-		var spid = $("#content").attr("spid");
-		var spname = $("#content").attr("spname");
+    return (
+      <p style={style}>
+        本文章来自
+        <span>[<a href={url} target="_blank">{this.props.spname}</a>]</span>
+        , 您可以对文章点赞
+      </p>
+    )
+  }
+}
 
-		return (
-			<div style={style}>
-				<Voter aid={aid} />
-				<Footer spid={spid} spname={spname} />
-			</div>
-		)
-	}
-});
+class App extends React.Component {
+  render() {
+    var style = {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center"
+    };
 
-ReactDOM.render(<App />, document.getElementById('content'));
+    var aid = $("#content").attr("aid");
+    var spid = $("#content").attr("spid");
+    var spname = $("#content").attr("spname");
+
+    return (
+      <div style={style}>
+        <Voter aid={aid} />
+        <Footer spid={spid} spname={spname} />
+      </div>
+    )
+  }
+}
+
+render(<App />, document.getElementById('content'));

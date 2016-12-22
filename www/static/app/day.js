@@ -54,7 +54,7 @@ class App extends React.Component {
       return (
         <div>
           <ContentDiv data={this.state.data} />
-	  <DayLinkDiv day_after={this.state.day_after} day_before={this.state.day_before} onDayLinkClick={this.onDayLinkClick} />
+          <DayLinkDiv day_after={this.state.day_after} day_before={this.state.day_before} onDayLinkClick={this.onDayLinkClick} />
         </div>
       )
     }
