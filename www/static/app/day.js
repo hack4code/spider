@@ -11,33 +11,40 @@ class App extends React.Component {
   }
 
   setDay(day) {
-    $.getJSON("/api/day", {day: day}).done(function(data) {
-      var err = data["err"];
-
-      if (!err) {
-        var nstate = {day_before: data["day_before"],
-                      day_after: data["day_after"]};
-
-        if (data["data"]) {
-          nstate["data"] = data["data"];
-        }
-
-        if (nstate["data"] == null) {
-          var now = new Date(document.title);
-          var t = new Date();
-          var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-          if (now >= today && nstate["day_before"] != null) {
-            this.setDay(nstate["day_before"]);
-            return;
+    var url = new URL(window.location.origin+"/api/day");
+    var params = {day: day};
+    Object.keys(params).forEach(
+      key => url.searchParams.append(key, params[key])
+    );
+    var this_ = this;
+    fetch(url).then(function(response) {
+      response.json().then(function(data) {
+        var err = data["err"];
+        if (!err) {
+          var nstate = {day_before: data["day_before"],
+                        day_after: data["day_after"]};
+          if (data["data"]) {
+            nstate["data"] = data["data"];
+          }
+          if (nstate["data"] == null) {
+            var now = new Date(document.title);
+            var t = new Date();
+            var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+            if (now >= today && nstate["day_before"] != null) {
+              this_.setDay(nstate["day_before"]);
+              return;
+            }
+          }
+          else {
+            document.title = day;
+            window.history.pushState(day, day, "/d/" + day);
+            this_.setState(nstate);
           }
         }
-        else {
-          document.title = day;
-          window.history.pushState(day, day, "/d/" + day);
-          this.setState(nstate);
-        }
-      }
-    }.bind(this));
+      })
+    }).catch(function(err) {
+      console.log("error in fetch json data");
+    });
   }
 
   componentWillMount(){

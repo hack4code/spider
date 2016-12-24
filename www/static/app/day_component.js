@@ -425,10 +425,12 @@ class ContentDiv extends React.Component {
 
   getCategories(data) {
     var categories = [];
-    $.each(data,
-    	   function(key, val) {categories.push(key);}
-    );
 
+    for (var key in data) {
+      if (data.hasOwnProperty(key)) {
+        categories.push(key);
+      }
+    };
     return categories.sort(function(a, b) {
       var sortList = {
         "技术": 0,
