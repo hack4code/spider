@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 
+from zope.interface import Interface, implementer
 from dateutil.parser import parse as get_date
 from lxml.etree import QName
-from zope.interface import Interface, implementer
 
 
 class ITagExtractor(Interface):
@@ -28,7 +28,7 @@ class TitleTag(object):
     def extract(self, e):
         if e.text is not None:
             from html import unescape
-            self.val = unescape(e.text)
+            self.val = unescape(e.text.strip('\t\n '))
 
 
 @implementer(ITagExtractor)
@@ -43,6 +43,7 @@ class LinkTag(object):
         return name == 'link'
 
     def extract(self, e):
+        v = None
         if 'href' in e.attrib:
             v = e.attrib['href']
         else:
@@ -73,6 +74,7 @@ class PubDateTag(object):
 @implementer(ITagExtractor)
 class CategoryTag(object):
     tag = 'tag'
+    attrs = ['term', ]
 
     def __init__(self):
         self.val = None
@@ -82,11 +84,19 @@ class CategoryTag(object):
         return name == 'category'
 
     def extract(self, e):
+        v = None
         if e.text is None:
+            for e in self.attrs:
+                if e in e.attrib:
+                    v = e.attrib[e]
+                    break
+        else:
+            v = e.text
+        if v is None:
             return
         if self.val is None:
             self.val = []
-        self.val.append(e.text)
+        self.val.append(v.strip('\t\n '))
 
 
 @implementer(ITagExtractor)
