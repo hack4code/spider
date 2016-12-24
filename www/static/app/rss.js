@@ -5,6 +5,7 @@ import {SelectBox, EditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
 class SubmitForm extends React.Component {
   constructor(props) {
     super(props);
+    this.err = null;
     this.submit = this.submit.bind(this);
     this.updateField = this.updateField.bind(this);
     this.state = {category: "",
@@ -22,26 +23,41 @@ class SubmitForm extends React.Component {
         form[k] = this.state[k];
       }
     }
-
-    if (form["url"] == "") {
-      $("span").text("需要网址数据").show().fadeOut(1500);
+    if (form["url"] == null || form["url"] == "") {
+      this.err.fadeIn("需要网址数据");
+      setTimeout(() => {this.err.fadeOut()}, 800);
     }
     else {
-      $("span").text("正在提交 .....").show();
-      $.ajax({type: "post",
-              url: "/api/feed/rss",
-              data: form,
-              success: function(r){
-                 if (r['err'] == 0) {
-                  $("span").text("成功").show().fadeOut(1500);
-                 }
-                else {
-                  $("span").text("失败: " + r["msg"]).show().fadeOut(1500);
-                }
-                this.setState({url: "", content: ""});
-              }.bind(this)}
-      );
+      this.err.fadeIn("正在提交 .....");
+
+      var data  = new FormData();
+      for (var k in form) {
+        data.append(k, form[k]);
+      }
+
+      var that = this;
+      fetch("/api/feed/rss", {method: "post",
+                              body: data}
+      )
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(r) {
+        if (r['err'] == 0) {
+	  that.err.fadeIn("成功");
+          setTimeout(() => {that.err.fadeOut()}, 800);
+        }
+        else {
+	  that.err.fadeIn("失败: " + r["msg"]);
+          setTimeout(() => {that.err.fadeOut()}, 800);
+        }
+        that.setState({url: "", content: ""});
+      })
+      .catch(function(err) {
+        console.log("Error in fetch post function");
+      })
     }
+
     findDOMNode(this.refs.Submit).blur();
   }
 
@@ -57,7 +73,7 @@ class SubmitForm extends React.Component {
 
     return (
       <div>
-        <ErrMsg />
+        <ErrMsg ref={(com) => this.err = com} />
         <form onSubmit={this.submit} style={style}>
           <EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
           <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />

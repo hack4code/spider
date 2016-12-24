@@ -1,4 +1,5 @@
 import React from "react";
+import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 class Title extends React.Component {
   render() {
@@ -35,17 +36,41 @@ class Hr extends React.Component {
 }
 
 class ErrMsg extends React.Component {
+  constructor(props) {
+    super(props);
+    this.fadeIn = this.fadeIn.bind(this);
+    this.fadeOut = this.fadeOut.bind(this);
+    this.state = {show: false, msg: ""};
+  }
+
+  fadeIn(msg) {
+    this.setState({show: true, message: msg});
+  }
+
+  fadeOut() {
+    this.setState({show: false});
+  }
+
   render() {
     var style = {
       textAlign: "center",
       fontSize: "0.5em",
-      color: "#888",
-      marginBottom: "1em"
+      marginBottom: "1em",
+      color: "#aaa"
     };
+
+    if (this.state.show) {
+      var items = [<span>{this.state.message}</span>,];
+    }
+    else {
+      var items = [];
+    }
 
     return (
       <div style={style}>
-        <span></span>
+        <ReactCSSTransitionGroup component="span" transitionName="err">
+          {items}
+        </ReactCSSTransitionGroup>
       </div>
     )
   }
@@ -116,14 +141,23 @@ class Select extends React.Component {
   }
 
   componentDidMount() {
-    $.getJSON(this.props.url).done(function(data) {
+    var that = this;
+
+    fetch(this.props.url)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
       var err = data["err"];
       if (!err) {
         var list = data["data"];
-        this.setState({list: list});
-        this.props.updateField(this.props.field, list[0]);
+        that.setState({list: list});
+        that.props.updateField(that.props.field, list[0]);
       }
-    }.bind(this));
+    })
+    .catch(function(err) {
+      console.log("Error in get category list");
+    })
   }
 
   handleChange(e) {

@@ -249,3 +249,26 @@ th {
 .spiders a:visited {
 	color: #aaa;
 }
+
+/* Error message */
+.err-enter {
+	opacity: 0.01;
+	color: #fff;
+}
+
+.err-enter.err-enter-active {
+	opacity: 1;
+	transition: opacity 500ms ease-in;
+	color: #aaa;
+}
+
+.err-leave {
+	opacity: 1;
+	color: #aaa;
+}
+
+.err-leave.err-leave-active {
+	opacity: 0.01;
+	transition: opacity 300ms ease-in;
+	color: #fff;
+}
