@@ -78,12 +78,12 @@ def vote():
                    aid=str(aid))
 
 
-@api_page.route('/day', methods=['GET'])
-def day_entries():
+@api_page.route('/day', methods=['POST'])
+def get_entries_byday():
     from model import get_begin_day, get_entries, \
         get_before_day, get_after_day
 
-    day = request.args.get('day',
+    day = request.form.get('day',
                            None)
     try:
         day_entry = date(*(int(_) for _ in day.split('-')))
@@ -136,16 +136,17 @@ from collections import namedtuple
 Spider = namedtuple('Spider', ['id', 'source'])
 
 
-@api_page.route('/spider', methods=['GET'])
-def show_entries():
+@api_page.route('/entries', methods=['POST'])
+def get_entries_byspider():
     from model import get_spiders, get_last_aid, get_first_aid, \
         get_entries_next, get_entries_pre, get_entries_spider, \
         check_aid
-    spid = request.args.get('spid',
+    spid = request.form.get('spid',
                             None)
     if spid is None:
         return jsonify(err=1,
                        msg='no spider id')
+
     spiders = get_spiders()
     if spid not in spiders:
         return jsonify(err=2,
@@ -154,7 +155,8 @@ def show_entries():
     aid_last = get_last_aid(spid)
     aid_first = get_first_aid(spid)
     aid = request.args.get('aid',
-                           None)
+                           None) or request.form.get('aid',
+                                                     None)
     if aid:
         from bson.objectid import ObjectId
         from bson.errors import InvalidId
@@ -169,14 +171,16 @@ def show_entries():
                          aid_last):
             return jsonify(err=4,
                            msg='aid not found')
-        q = request.args.get('q',
-                             'n')
-        if q == 'n':
-            entries = get_entries_next(spid,
-                                       aid)
-        elif q == 'p':
+
+        q = request.form.get('q',
+                             None)
+        if q == 'p':
             entries = get_entries_pre(spid,
                                       aid)
+        else:
+            entries = get_entries_next(spid,
+                                       aid)
+
     else:
         entries = get_entries_spider(spid)
 
