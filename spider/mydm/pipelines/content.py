@@ -71,9 +71,13 @@ class ContentPipeline(object):
                     it.attrib.pop(attr)
         while (len(doc) == 1):
             doc = doc[0]
-        for e in doc.xpath('//div'):
-            if len(e) == 0:
-                e.drop_tree()
+        while True:
+            for e in doc.xpath('//div'):
+                if len(e) == 0:
+                    e.drop_tree()
+                    break
+            else:
+                break
         return doc
 
     def process_item(self, item, spider):
