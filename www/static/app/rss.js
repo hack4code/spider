@@ -17,8 +17,8 @@ class SubmitForm extends React.Component {
   submit(e) {
     e.preventDefault();
 
-    var form = {}
-    for (var k in this.state) {
+    let form = {}
+    for (let k in this.state) {
       if (this.state[k].length > 0) {
         form[k] = this.state[k];
       }
@@ -30,12 +30,12 @@ class SubmitForm extends React.Component {
     else {
       this.err.fadeIn("正在提交 .....");
 
-      var data  = new FormData();
-      for (var k in form) {
+      let data  = new FormData();
+      for (let k in form) {
         data.append(k, form[k]);
       }
 
-      var that = this;
+      let that = this;
       fetch("/api/feed/rss", {method: "post",
                               body: data}
       )
@@ -66,7 +66,7 @@ class SubmitForm extends React.Component {
   }
 
   render() {
-    var style = {
+    const style = {
       borderWidth: 0,
       paddingLeft: "36px"
     };

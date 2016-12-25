@@ -1,7 +1,7 @@
 import React from "react";
 
 function decodeEntities(encodedString) {
-    var textArea = document.createElement('textarea');
+    let textArea = document.createElement('textarea');
     textArea.innerHTML = encodedString;
     return textArea.value;
 }
@@ -38,7 +38,7 @@ class DeclareSector extends React.Component  {
 
 class SpiderButton extends React.Component  {
   render() {
-    var style = {
+    const style = {
       backgroundColor: "#eff6fa",
       border: "0.1em solid #eff6fa",
       borderRadius: "0.4em",
@@ -82,7 +82,7 @@ class SubmitSector extends React.Component  {
 
 class AddressSector extends React.Component  {
   render() {
-    var style = {
+    const style = {
       color: "#888",
       textDecoration: "none"
     };
@@ -108,7 +108,7 @@ class AddressSector extends React.Component  {
 
 class FloatSide extends React.Component  {
   render() {
-    var style = {
+    let style = {
       float: "right",
       width: "300px",
       padding: "0 32px",
@@ -141,7 +141,7 @@ class FloatSide extends React.Component  {
 
 class Rank extends React.Component  {
   render() {
-    var style = {
+    const style = {
      color: "#c6c6c6",
      textAlign: "right",
      fontFamily: "arial",
@@ -162,13 +162,13 @@ class Rank extends React.Component  {
 
 class ArticleLink extends React.Component  {
   render() {
-    var style = {
+    const style = {
       fontFamily: "verdana, helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
       fontSize: "0.9em",
       fontWeight: "normal",
     };
-    var url = "/a/" + this.props.aid;
-    var title = decodeEntities(this.props.title);
+    let url = "/a/" + this.props.aid;
+    let title = decodeEntities(this.props.title);
 
     return (
       <span className="articlelink">
@@ -180,7 +180,7 @@ class ArticleLink extends React.Component  {
 
 class OrginalLink extends React.Component  {
   render() {
-    var style = {
+    const style = {
       padding: "0 6px",
       fontSize: "x-small",
     };
@@ -197,13 +197,13 @@ class OrginalLink extends React.Component  {
 
 class DomainLink extends React.Component  {
   render() {
-    var style = {
+    const style = {
       color: "#888",
       fontSize: "x-small",
       whiteSpace: "nowrap",
       textDecoration: "none"
     };
-    var url = "http://" + this.props.domain;
+    let url = "http://" + this.props.domain;
 
     return (
       <span>
@@ -215,7 +215,7 @@ class DomainLink extends React.Component  {
 
 class EntryTitle extends React.Component  {
   render() {
-    var style = {
+    const style = {
       margin: 0,
       padding: 0,
       lineHeight: 1
@@ -233,7 +233,7 @@ class EntryTitle extends React.Component  {
 
 class SpiderTag extends React.Component  {
   render() {
-    var style = {
+    const style = {
       color: "#999",
       fontSize: "x-small",
       fontWeight: "bold",
@@ -241,9 +241,9 @@ class SpiderTag extends React.Component  {
       marginBottom: "2px",
       textDecoration: "none"
     };
-    var spid = this.props.spider.spid;
-    var spname = this.props.spider.spname;
-    var url = "/p/" + spid;
+    let spid = this.props.spider.spid;
+    let spname = this.props.spider.spname;
+    let url = "/p/" + spid;
 
     return (
       <span>
@@ -255,7 +255,7 @@ class SpiderTag extends React.Component  {
 
 class ArticleTag extends React.Component  {
   render() {
-    var style = {
+    const style = {
       fontWeight: "normal",
       fontSize: "x-small",
       color: "#999",
@@ -277,14 +277,14 @@ class ArticleTag extends React.Component  {
 
 class EntryTags extends React.Component {
   render() {
-    var style = {
+    const style = {
       display: "flex",
       flexDirection: "row",
       flexWrap: "wrap",
       alignItems: "baseline"
     };
-    var spider = this.props.spider;
-    var tags = this.props.tags;
+    let spider = this.props.spider;
+    let tags = this.props.tags;
 
     return (
       <div style={style}>
@@ -297,16 +297,16 @@ class EntryTags extends React.Component {
 
 class Entry extends React.Component {
   render() {
-    var style = {
+    const style = {
       display: "flex",
       alignItems: "center",
       marginBottom: "12px"
     };
 
-    var index = this.props.index;
-    var entry = this.props.entry;
-    var spider = {spid: entry[5], spname: entry[3]};
-    var tags = (entry[4] == null) ? [] : entry[4];
+    let index = this.props.index;
+    let entry = this.props.entry;
+    let spider = {spid: entry[5], spname: entry[3]};
+    let tags = (entry[4] == null) ? [] : entry[4];
 
     return (
         <div style={style}>
@@ -322,7 +322,7 @@ class Entry extends React.Component {
 
 class Entries extends React.Component {
   render() {
-    var entries = this.props.entries;
+    let entries = this.props.entries;
     return (
       <div>
         {entries.map(function(entry, index) {
@@ -342,12 +342,12 @@ class Category extends React.Component {
   }
 
   render() {
-    var listyle = {
+    const listyle = {
       display: "inline-block",
       marginRight: "1.6em"
     };
 
-    var astyle = {
+    const astyle = {
       fontFamily: "Pingfang SC, Microsoft YaHei",
       fontWeight: "bold",
       fontSize: "1.0em",
@@ -369,20 +369,20 @@ class Category extends React.Component {
 
 class CategoryDiv extends React.Component {
   render() {
-    var style = {
+    const style = {
       listStyle: "none",
       marginBottom: 0,
       marginLeft: "2em"
     };
-    var categories = this.props.categories;
-    var onCategoryClick = this.props.onCategoryClick;
-    var categoryFocused = this.props.categoryFocused;
+    let categories = this.props.categories;
+    let onCategoryClick = this.props.onCategoryClick;
+    let categoryFocused = this.props.categoryFocused;
 
     return (
       <div>
         <ul style={style}>
           {categories.map(function(category, index) {
-            var focus = (categoryFocused == category);
+            let focus = (categoryFocused == category);
             return <Category key={index} focus={focus} category={category} onCategoryClick={onCategoryClick} />;
           })}
         </ul>
@@ -393,7 +393,7 @@ class CategoryDiv extends React.Component {
 
 class Hr extends React.Component {
   render() {
-    var style = {
+    const style = {
       border: "none",
       height: 1,
       color: "#EEE",
@@ -419,20 +419,20 @@ class ContentDiv extends React.Component {
 
   constructor(props) {
     super(props);
-    var categories = this.getCategories(props.data);
+    let categories = this.getCategories(props.data);
     this.state = {category: categories[0]};
   };
 
   getCategories(data) {
-    var categories = [];
+    let categories = [];
 
-    for (var key in data) {
+    for (let key in data) {
       if (data.hasOwnProperty(key)) {
         categories.push(key);
       }
     };
     return categories.sort(function(a, b) {
-      var sortList = {
+      const sortList = {
         "技术": 0,
         "数据库": 1,
         "安全": 2,
@@ -452,9 +452,9 @@ class ContentDiv extends React.Component {
   }
 
   render() {
-    var data = this.props.data;
-    var categories = this.getCategories(data);
-    var entries = data[this.state.category];
+    let data = this.props.data;
+    let categories = this.getCategories(data);
+    let entries = data[this.state.category];
 
     return (
       <div>
@@ -477,8 +477,8 @@ class DayLink extends React.Component {
   }
 
   render() {
-    var cn;
-    var style;
+    let cn = "";
+    let style = {};
 
     if (this.props.handType == "handright") {
       cn = "fa fa-hand-o-right";
@@ -505,7 +505,7 @@ class DayLink extends React.Component {
 
 class DayLinkDiv extends React.Component {
   render() {
-    var style = {
+    const style = {
       paddingLeft: "40%",
       paddingRight: "40%"
     };

@@ -4,6 +4,7 @@ npm init
 
 npm install react --save-dev
 npm install react-dom --save-dev
+npm install react-addons-css-transition-group --save-dev
 npm install jquery --save-dev
 npm install babel-core --save-dev
 npm install babel-preset-es2015 --save-dev

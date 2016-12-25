@@ -6,7 +6,7 @@ module.exports = {
   entry: {
     day: jspath + "/day.js",
     blog: jspath + "/blog.js",
-    spentries: jspath + "/spentries.js",
+    entries: jspath + "/entries.js",
     vote: jspath + "/vote.js",
     rss: jspath + "/rss.js",
     spiders: jspath + "/spiders.js"
@@ -28,8 +28,9 @@ module.exports = {
   },
 
   plugins: [
+  /*
       new webpack.ProvidePlugin({$: "jquery", jQuery: "jquery", "window.jQuery": "jquery"}),
-
+  */
       new webpack.DefinePlugin({
         "process.env": {
            NODE_ENV: JSON.stringify("production")

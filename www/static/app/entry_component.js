@@ -2,7 +2,7 @@ import React from "react";
 
 class Hr extends React.Component {
   render() {
-    var style = {
+    const style = {
       border: "none",
       height: 1,
       color: "#EEE",
@@ -19,7 +19,7 @@ class Hr extends React.Component {
 
 class Title extends React.Component {
   render() {
-    var style = {
+    const style = {
       fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
       fontSize: "normal",
       fontWeight: "bold",
@@ -36,14 +36,14 @@ class Title extends React.Component {
 
 class Entry extends React.Component {
   render() {
-    var style = {
+    const style = {
       fontWeight: "600",
       fontSize: "0.8em",
       fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
       lineHeight: "2em",
       textDecoration: "none"
     };
-    var url = this.props.url;
+    let url = this.props.url;
 
     return (
       <li>
@@ -60,13 +60,13 @@ class Entries extends React.Component {
   };
 
   render() {
-    var style = {
+    const style = {
       listStyle: "square",
       color: "red",
       marginLeft: "4em"
     };
-    var prefix = this.props.prefix;
-    var entries = this.props.entries;
+    let prefix = this.props.prefix;
+    let entries = this.props.entries;
 
     return (
       <ul style={style}>

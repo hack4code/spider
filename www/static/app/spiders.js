@@ -9,12 +9,18 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    $.getJSON("/api/spiders").done(function(data){
-      var err = data["err"];
+    let that = this;
+    fetch("/api/spiders").then(function(response) {
+    	return response.json();
+    })
+    .then(function(data) {
+      let err = data["err"];
       if (!err) {
-        this.setState({entries: data["entries"]});
+        that.setState({entries: data["entries"]});
       }
-    }.bind(this))
+    })
+    .catch(function(err) {
+    })
   }
 
   render() {

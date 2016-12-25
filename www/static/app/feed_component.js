@@ -3,7 +3,7 @@ import ReactCSSTransitionGroup from "react-addons-css-transition-group";
 
 class Title extends React.Component {
   render() {
-    var style = {
+    const style = {
       fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
       fontSize: "1.6em",
       fontWeight: "normal",
@@ -20,7 +20,7 @@ class Title extends React.Component {
 
 class Hr extends React.Component {
   render() {
-    var style = {
+    const style = {
       border: "none",
       height: 1,
       color: "#EEE",
@@ -52,18 +52,16 @@ class ErrMsg extends React.Component {
   }
 
   render() {
-    var style = {
+    const style = {
       textAlign: "center",
       fontSize: "0.5em",
       marginBottom: "1em",
       color: "#aaa"
     };
 
+    let items = [];
     if (this.state.show) {
-      var items = [<span>{this.state.message}</span>,];
-    }
-    else {
-      var items = [];
+      items.push(<span>{this.state.message}</span>);
     }
 
     return (
@@ -83,12 +81,12 @@ class Input extends React.Component {
   }
 
   handleChange(e) {
-    var v = e.target.value;
+    let v = e.target.value;
     this.props.updateField(this.props.field, v);
   }
 
   render() {
-    var style = {
+    const style = {
       backgroundColor: "transparent",
       border: "0.1rem solid #d1d1d1",
       borderRadius: "1px",
@@ -108,8 +106,8 @@ class Input extends React.Component {
 
 class Label extends React.Component {
   render() {
-    var style = {
-       fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
+    const style = {
+      fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
       fontSize: "1.0em",
       fontWeight: "normal",
       marginBottom: "0.5em",
@@ -141,16 +139,16 @@ class Select extends React.Component {
   }
 
   componentDidMount() {
-    var that = this;
+    let that = this;
 
     fetch(this.props.url)
     .then(function(response) {
       return response.json();
     })
     .then(function(data) {
-      var err = data["err"];
+      let err = data["err"];
       if (!err) {
-        var list = data["data"];
+        let list = data["data"];
         that.setState({list: list});
         that.props.updateField(that.props.field, list[0]);
       }
@@ -161,12 +159,12 @@ class Select extends React.Component {
   }
 
   handleChange(e) {
-    var v = e.target.value;
+    let v = e.target.value;
     this.props.updateField(this.props.field, v);
   }
 
   render() {
-    var style = {
+    const style = {
       backgroundColor: "transparent",
       border: "0.1rem solid #d1d1d1",
       borderRadius: "1px",
@@ -177,7 +175,7 @@ class Select extends React.Component {
       margin: "0em 0em 1.2em 0em",
       display: "block"
     };
-    var list = this.state.list;
+    let list = this.state.list;
 
     return (
       <select style={style} value={this.props.value} onChange={this.handleChange}>
@@ -200,7 +198,7 @@ class SelectBox extends React.Component {
 
 class Button extends React.Component {
   render() {
-    var style = {
+    const style = {
       backgroundColor: "transparent",
       border: "0.1rem solid #d1d1d1",
       borderRadius: "0.4rem",

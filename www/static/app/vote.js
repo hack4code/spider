@@ -5,8 +5,8 @@ class Voter extends React.Component {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
-    var s = window.localStorage;
-    var aid = this.props.aid;
+    let s = window.localStorage;
+    let aid = this.props.aid;
     if (s.getItem(aid) != null) {
       this.state =  {voted: 1};
     }
@@ -19,27 +19,41 @@ class Voter extends React.Component {
     e.preventDefault();
     e.stopPropagation();
 
-    var s = window.localStorage;
-    var aid = this.props.aid;
+    let s = window.localStorage;
+    let aid = this.props.aid;
 
     if (s.getItem(aid) != null) {
       return;
     }
     else {
       this.setState({voted: 1});
-      $.post("/api/vote", {aid: aid}).done(function(data){
-        if (!data['err']) {
+
+      let form = new FormData();
+      form.append("aid", aid);
+      let that = this;
+      fetch("/api/vote", {method: "POST",
+                          credentials: "same-origin",
+                          body: form}
+      )
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        console.log(data);
+        if (!data["err"]) {
           s.setItem(aid, 1);
         }
         else {
-          this.setState({voted: 0});
+          that.setState({voted: 0});
         }
-      }.bind(this));
+      })
+      .catch(function(err) {
+      })
     }
   }
 
   render() {
-    var style = {
+    let style = {
       fontSize: "1em",
       fontWeight: "bold"
     };
@@ -57,11 +71,11 @@ class Voter extends React.Component {
 
 class Footer extends React.Component {
   render() {
-    var style = {
+    const style = {
       color: "#888",
       fontSize: "x-small",
     };
-    var url = "/p/" + this.props.spid;
+    let url = "/p/" + this.props.spid;
 
     return (
       <p style={style}>
@@ -75,16 +89,16 @@ class Footer extends React.Component {
 
 class App extends React.Component {
   render() {
-    var style = {
+    const style = {
       display: "flex",
       flexDirection: "column",
       alignItems: "center"
     };
 
-    var aid = $("#content").attr("aid");
-    var spid = $("#content").attr("spid");
-    var spname = $("#content").attr("spname");
-
+    let node = document.getElementById("content");
+    let aid = node.getAttribute("aid");
+    let spid = node.getAttribute("spid");
+    let spname = node.getAttribute("spname");
     return (
       <div style={style}>
         <Voter aid={aid} />
@@ -94,4 +108,4 @@ class App extends React.Component {
   }
 }
 
-render(<App />, document.getElementById('content'));
+render(<App />, document.getElementById("content"));

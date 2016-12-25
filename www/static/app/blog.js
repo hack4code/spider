@@ -19,33 +19,49 @@ class SubmitForm extends React.Component {
   submit(e) {
     e.preventDefault();
 
-    var form = this.state;
+    let form = this.state;
     if (form["url"] == "" || form["entry"] == "" || form["item_title"] == "" || form["item_link"] == "" || form["item_content"] == "") {
-      $("span").text("数据不能为空").show().fadeOut(2000);
+      this.err.fadeIn("数据不能为空");
+      setTimeout(() => {this.err.fadeOut()}, 1000);
     }
     else {
-      $("span").text("正在提交 .....").show();
-      $.ajax({type: "post",
-              url: "/api/feed/blog",
-              data: form,
-              success: function(r){
-                 if (r['err'] == 0) {
-                  this.setState({url: "",
-                                 entry:"",
-                                 item_title: "",
-                                 item_link: "",
-                                 item_content: "",
-                                 removed_xpath_nodes: ""
-                                 });
-                  $("span").text("成功").show().fadeOut(1500);
-                 }
-                else {
-                  $("span").text("失败: " + r["msg"]).show().fadeOut(1500);
-                }
-              }.bind(this)}
-            );
+      this.err.fadeIn("正在提交 .....");
+
+      let data  = new FormData();
+      for (let k in form) {
+        if (form[k] != "") {
+          data.append(k, form[k]);
+	}
+      }
+
+      let that = this;
+      fetch("/api/feed/blog", {method: "POST",
+                               body: data}
+      )
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(r) {
+        if (r['err'] == 0) {
+          that.setState({url: "",
+                         entry:"",
+                         item_title: "",
+                         item_link: "",
+                         item_content: "",
+                         removed_xpath_nodes: ""});
+          that.err.fadeIn("成功");
+          setTimeout(() => {that.err.fadeOut()}, 1000);
+        }
+        else {
+          that.err.fadeIn("失败: " + r["msg"]);
+          setTimeout(() => {that.err.fadeOut()}, 1000);
+        }
+      })
+      .catch(function(err) {
+        this.err.fadeOut();
+      })
     }
-    findDOMNode(this.refs.Submit).blur();
+    findDOMNode(this.button).blur();
   }
 
   updateField(k, v) {
@@ -53,7 +69,7 @@ class SubmitForm extends React.Component {
   }
 
   render() {
-    var style = {
+    const style = {
       borderWidth: 0,
       padding: 0,
       paddingLeft: "36px"
@@ -61,7 +77,7 @@ class SubmitForm extends React.Component {
 
     return (
       <div>
-        <ErrMsg />
+        <ErrMsg ref={(com) => this.err = com} />
         <form style={style} onSubmit={this.submit}>
           <EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
           <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
@@ -70,7 +86,7 @@ class SubmitForm extends React.Component {
           <EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link" value={this.state.item_link} />
           <EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content" value={this.state.item_content} />
           <EditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
-          <Button ref="Submit" />
+          <Button ref={(com) => this.button = com} />
         </form>
       </div>
     )

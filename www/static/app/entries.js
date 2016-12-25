@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import {render, findDOMNode} from "react-dom";
 import {Title, Hr, Entries} from "./entry_component";
 
 class AidLink extends React.Component {
@@ -16,8 +16,8 @@ class AidLink extends React.Component {
   }
 
   render() {
-    var cn;
-    var style;
+    let cn = "";
+    let style = {};
 
     if (this.props.handType == "handright") {
       cn = "fa fa-hand-o-right";
@@ -44,7 +44,7 @@ class AidLink extends React.Component {
 
 class AidLinkDiv extends React.Component {
   render() {
-    var style = {
+    const style = {
       paddingLeft: "40%",
       paddingRight: "40%"
     };
@@ -64,42 +64,54 @@ class App extends React.Component {
     this.getEntries = this.getEntries.bind(this);
     this.onLeftClick = this.onLeftClick.bind(this);
     this.onRightClick = this.onRightClick.bind(this);
-    var spid = $("#content").attr("spid");
-    var name = $("#content").attr("name");
+    let node = document.getElementById("content");
+    let spid = node.getAttribute("spid");
+    let name = node.getAttribute("name");
     this.state = {spid: spid, name: name, entries: []};
   }
 
   getEntries(aid, q) {
-    var spid = this.state.spid;
-    var args = {spid: spid};
+    let form  = new FormData();
+    let spid = this.state.spid;
+    form.append("spid", spid)
     if (aid != null) {
-      args['aid'] = aid;
-      args['q'] = q;
+      form.append("apid", aid);
+      form.append("q", q);
     }
-
-    $.getJSON("/api/spider", args).done(function(data){
-      var err = data["err"];
+    let that = this;
+    fetch("/api/entries", {method: "POST",
+                           body: form})
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      let err = data["err"];
       if (!err) {
-        this.setState({entries: data["entries"]});
+        that.setState({entries: data["entries"]});
       }
-    }.bind(this));
+      else {
+        console.log(data);
+      }
+    })
+    .catch(function(err) {
+    })
   }
 
   onLeftClick() {
-    var entries = this.state.entries;
+    let entries = this.state.entries;
     if (entries.length == 0) {
       return;
     }
-    var aid = entries[0][0];
+    let aid = entries[0][0];
     this.getEntries(aid, "p");
   }
 
   onRightClick() {
-    var entries = this.state.entries;
+    let entries = this.state.entries;
     if (entries.length == 0) {
       return;
     }
-    var aid = entries[entries.length-1][0];
+    let aid = entries[entries.length-1][0];
     this.getEntries(aid, "n");
   }
 

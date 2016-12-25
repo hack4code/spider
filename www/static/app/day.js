@@ -11,36 +11,36 @@ class App extends React.Component {
   }
 
   setDay(day) {
-    var url = new URL(window.location.origin+"/api/day");
-    var params = {day: day};
-    Object.keys(params).forEach(
-      key => url.searchParams.append(key, params[key])
-    );
-    var this_ = this;
-    fetch(url).then(function(response) {
+    let form  = new FormData();
+    form.append("day", day);
+    let that = this;
+    fetch("/api/day", {method: "POST",
+                       credentials: "same-origin",
+    		       body: form})
+    .then(function(response) {
       return response.json();
     })
     .then(function(data) {
-      var err = data["err"];
+      let err = data["err"];
       if (!err) {
-        var nstate = {day_before: data["day_before"],
+        let nstate = {day_before: data["day_before"],
                       day_after: data["day_after"]};
         if (data["data"]) {
           nstate["data"] = data["data"];
         }
         if (nstate["data"] == null) {
-          var now = new Date(document.title);
-          var t = new Date();
-          var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+          let now = new Date(document.title);
+          let t = new Date();
+          let today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
           if (now >= today && nstate["day_before"] != null) {
-            this_.setDay(nstate["day_before"]);
+            that.setDay(nstate["day_before"]);
             return;
           }
         }
         else {
           document.title = day;
           window.history.pushState(day, day, "/d/" + day);
-          this_.setState(nstate);
+          that.setState(nstate);
         }
       }
     })
@@ -69,4 +69,4 @@ class App extends React.Component {
     }
 };
 
-render(<App />, document.getElementById('content'));
+render(<App />, document.getElementById("content"));
