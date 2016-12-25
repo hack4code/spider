@@ -17,12 +17,13 @@ Spider = namedtuple('Spider', ['id', 'source'])
 
 
 @spider_page.route('/<id:spid>', methods=['GET'])
-def sp_entries(spid):
+def show_entries_byspider(spid):
     if spid is None:
         raise BadRequest('invalid spider id')
     spid = str(spid)
     spiders = get_spiders()
     if spid not in spiders:
         raise BadRequest('spider id not existed')
-    return render_template('spentries.html',
-                           spider=Spider(spid, spiders[spid]))
+    return render_template('entries.html',
+                           spider=Spider(spid,
+                                         spiders[spid]))
