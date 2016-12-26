@@ -512,8 +512,8 @@ class DayLink extends React.Component {
 class DayLinkDiv extends React.Component {
   render() {
     const style = {
-      paddingLeft: "40%",
-      paddingRight: "40%"
+      paddingLeft: "20%",
+      paddingRight: "20%"
     };
 
     return (
