@@ -87,6 +87,10 @@ a {
   line-height: 1em;
   font-weight: normal;
  }
+
+ #article img {
+  max-width: 96%;
+ }
 }
 		 
 /*
