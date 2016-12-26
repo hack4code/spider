@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm init
+# npm init
 
 npm install react --save-dev
 npm install react-dom --save-dev
