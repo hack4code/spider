@@ -108,21 +108,19 @@ class AddressSector extends React.Component  {
 
 class FloatSide extends React.Component  {
   render() {
-    let style = {
+    const style = {
       float: "right",
       width: "300px",
       padding: "0 32px",
       fontFamily: "sans-serif",
       fontSize: "0.7em",
       fontWeight: "bold",
-      color: "dimgray"
+      color: "dimgray",
+      display: "block"
     };
 
     if (screen.width < 600){
       style["display"] = "none";
-    }
-    else {
-      style["display"] = "block";
     }
 
     return (
@@ -151,6 +149,10 @@ class Rank extends React.Component  {
      paddingRight: "25px",
      flexShrink: 0
     };
+    if (screen.width < 600){
+      style["width"] = "30px";
+      style["paddingRight"] = "15px";
+    }
 
     return (
       <span style={style}>
@@ -374,6 +376,10 @@ class CategoryDiv extends React.Component {
       marginBottom: 0,
       marginLeft: "2em"
     };
+    if (screen.width < 600){
+      style["marginLeft"] = "0";
+    }
+
     let categories = this.props.categories;
     let onCategoryClick = this.props.onCategoryClick;
     let categoryFocused = this.props.categoryFocused;
