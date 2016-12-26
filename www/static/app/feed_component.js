@@ -1,5 +1,6 @@
 import React from "react";
 import ReactCSSTransitionGroup from "react-addons-css-transition-group";
+import "whatwg-fetch";
 
 class Title extends React.Component {
   render() {

@@ -1,6 +1,7 @@
 import React from "react";
 import {render, findDOMNode } from "react-dom";
 import {SelectBox, EditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
+import "whatwg-fetch";
 
 class SubmitForm extends React.Component {
   constructor(props) {

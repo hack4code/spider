@@ -1,5 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
+import "whatwg-fetch";
 
 class Voter extends React.Component {
   constructor(props) {

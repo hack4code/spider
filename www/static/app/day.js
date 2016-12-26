@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import {ContentDiv, DayLinkDiv} from "./day_component";
+import "whatwg-fetch";
 
 class App extends React.Component {
   constructor(props) {

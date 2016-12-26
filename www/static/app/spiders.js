@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import {Title, Hr, Entries} from "./entry_component";
+import "whatwg-fetch";
 
 class App extends React.Component {
   constructor(props) {
