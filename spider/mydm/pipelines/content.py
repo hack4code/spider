@@ -14,11 +14,15 @@ class ContentPipeline(object):
     removed_attrs = ('class',
                      'id')
     safe_attrs = {'style',
-                  'data-url',
                   'float',
                   'width',
                   'height',
-                  'src'}
+                  'src',
+                  'font-size',
+                  'font-family',
+                  'align',
+                  # cntimes
+                  'data-url'}
 
     @classmethod
     def from_settings(cls, settings):
