@@ -85,10 +85,10 @@ class CategoryTag(object):
 
     def extract(self, e):
         v = None
-        if e.text is None:
-            for e in self.attrs:
-                if e in e.attrib:
-                    v = e.attrib[e]
+        if e.text is None and e.attrib:
+            for _, d in e.attrib.items():
+                if d is not None and len(d) > 0:
+                    v = d
                     break
         else:
             v = e.text
