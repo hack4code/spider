@@ -13,7 +13,8 @@ article_page = Blueprint('article_page',
 
 
 def get_css(dom):
-    path = '{}/css/{}.css'.format(article_page.static_folder, dom)
+    path = '{}/css/{}.css'.format(article_page.static_folder,
+                                  dom)
     return '{}.css'.format(dom) if os.path.isfile(path) else None
 
 
