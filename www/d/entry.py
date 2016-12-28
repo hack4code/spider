@@ -14,7 +14,7 @@ entry_page = Blueprint('entry_page',
 
 @entry_page.route('/<date:day>', methods=['GET'])
 @need_uid
-def show_entries(day):
+def show_entries_byday(day):
     if day is None:
         raise BadRequest('invalid day')
     return render_template('day.html',
