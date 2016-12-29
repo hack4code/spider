@@ -11,6 +11,8 @@ class ContentPipeline(object):
     DEFAULT_ALLOW_CLASSES_NAME = 'allow_classes'
     DEFAULT_REMOVED_CLASSES_NAME = 'removed_classes'
     DEFAULT_REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
+    DEFAULT_SAFE_ATTRS = 'safe_attrs'
+
     removed_attrs = ('class',
                      'id')
     safe_attrs = {'style',
@@ -35,6 +37,9 @@ class ContentPipeline(object):
         cls.REMOVED_XPATH_NODES_NAME = settings.get(
             'SPIDER_REMOVED_XPATH_NODES_NAME',
             cls.DEFAULT_REMOVED_XPATH_NODES_NAME)
+        cls.SAFE_ATTRS_NAME = settings.get(
+            'SPIDER_SAFE_ATTRS_NAME',
+            cls.DEFAULT_SAFE_ATTRS)
         return cls()
 
     def format_title(self, title):
@@ -58,9 +63,9 @@ class ContentPipeline(object):
                 e.drop_tree()
         return doc
 
-    def clean_html(self, doc, allow_classes):
+    def clean_html(self, doc, allow_classes=None, safe_attrs=None):
         allow_classes = allow_classes or ()
-        safe_attrs = set(defs.safe_attrs) | self.safe_attrs
+        safe_attrs = set(defs.safe_attrs) | self.safe_attrs | safe_attrs
         cleaner = Cleaner(safe_attrs_only=True,
                           safe_attrs=safe_attrs)
         doc = cleaner.clean_html(doc)
@@ -111,8 +116,12 @@ class ContentPipeline(object):
         allow_classes = getattr(spider,
                                 self.ALLOW_CLASSES_NAME,
                                 None)
+        safe_attrs = getattr(spider,
+                             self.SAFE_ATTRS_NAME,
+                             None)
         doc = self.clean_html(doc,
-                              allow_classes=allow_classes)
+                              allow_classes=allow_classes,
+                              safe_attrs=safe_attrs)
         doc = self.make_abs_link(doc,
                                  item['link'])
         item['content'] = doc
