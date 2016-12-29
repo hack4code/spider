@@ -22,9 +22,7 @@ class ContentPipeline(object):
                   'src',
                   'font-size',
                   'font-family',
-                  'align',
-                  # cntimes
-                  'data-url'}
+                  'align'}
 
     @classmethod
     def from_settings(cls, settings):
