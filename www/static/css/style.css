@@ -68,12 +68,13 @@ a {
 
  #article img {
   max-width: 34em !important;
+  height: auto !important;
  }
 }
 
 @media screen and (max-device-width: 599px) {
  .page {
-  width: 100%;
+  width: 100% !important;
  }
 
  h1#atitle a {
@@ -88,8 +89,13 @@ a {
   font-weight: normal;
  }
 
+ #article figure {
+  max-width: 92% !important;
+ }
+
  #article img {
-  max-width: 96% !important;
+  max-width: 92% !important;
+  height: auto !important;
  }
 }
 		 
