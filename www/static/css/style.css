@@ -67,7 +67,7 @@ a {
  }
 
  #article img {
-  max-width: 34em;
+  max-width: 34em !important;
  }
 }
 
@@ -89,7 +89,7 @@ a {
  }
 
  #article img {
-  max-width: 96%;
+  max-width: 96% !important;
  }
 }
 		 
@@ -160,10 +160,6 @@ article #article {
  color: #33290A;
  margin-left: 1em;
  margin-right: 1em;
-}
-
-#article img {
- height: auto;
 }
 
 #article h1 {
@@ -239,7 +235,6 @@ th {
 /*
  * feed
  */
-
 .feedpage {
 	width: 40em;
  	margin: 0em auto;
@@ -256,7 +251,7 @@ th {
 
 /* Error message */
 .err-enter {
-	opacity: 0.01;
+	opacity: 0.1;
 	color: #fff;
 }
 
@@ -272,7 +267,7 @@ th {
 }
 
 .err-leave.err-leave-active {
-	opacity: 0.01;
-	transition: opacity 600ms ease-in;
+	opacity: 0.1;
+	transition: opacity 800ms ease-in;
 	color: #fff;
 }
