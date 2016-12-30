@@ -63,7 +63,9 @@ class ContentPipeline(object):
 
     def clean_html(self, doc, allow_classes=None, safe_attrs=None):
         allow_classes = allow_classes or ()
-        safe_attrs = set(defs.safe_attrs) | self.safe_attrs | set(safe_attrs)
+        safe_attrs = (set(defs.safe_attrs) |
+                      self.safe_attrs |
+                      set(safe_attrs or []))
         cleaner = Cleaner(safe_attrs_only=True,
                           safe_attrs=safe_attrs)
         doc = cleaner.clean_html(doc)
