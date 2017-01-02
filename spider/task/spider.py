@@ -82,7 +82,7 @@ def check_spider(sp_setting):
 
 
 def _gen_lxmlspider(url, args):
-    logger = get_task_logger(__name__)
+    logger = get_task_logger(settings['LOGGER_NAME'])
     r = requests.get(url,
                      headers=settings['DEFAULT_REQUEST_HEADERS'])
     if r.status_code != 200:
@@ -125,7 +125,7 @@ def _gen_lxmlspider(url, args):
 
 @app.task(name='lxmlspider-creator')
 def gen_lxmlspider(spargs):
-    logger = get_task_logger(__name__)
+    logger = get_task_logger(settings['LOGGER_NAME'])
     url = spargs['url']
     logger.info('gen_lxmlspider for {}'.format(url))
     parser = urlparse(url)
@@ -147,7 +147,7 @@ def gen_lxmlspider(spargs):
 
 @app.task(name='blogspider-creator')
 def gen_blogspider(spargs):
-    logger = get_task_logger(__name__)
+    logger = get_task_logger(settings['LOGGER_NAME'])
     url = spargs['url']
     parser = urlparse(url)
     if parser.scheme == '' or parser.netloc == '':
@@ -181,7 +181,8 @@ task for crawl
 
 @app.task(name='crawl')
 def crawl(args):
-    logger = get_task_logger(__name__)
+    logger = get_task_logger(settings['LOGGER_NAME'])
+    logger.setLevel(settings['LOG_LEVEL'])
     logger.info('job crawl start ...')
 
     if len(args) == 0:
@@ -231,7 +232,8 @@ def crawl(args):
 
 @app.task(name='recrawl failed spiders')
 def recrawl(spids):
-    logger = get_task_logger(__name__)
+    logger = get_task_logger(settings['LOGGER_NAME'])
+    logger.setLevel(settings['LOG_LEVEL'])
     logger.info('recrawl job start ...')
 
     if spids is None or len(spids) == 0:
