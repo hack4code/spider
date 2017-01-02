@@ -6,6 +6,7 @@ from datetime import datetime
 
 from lxml import etree
 
+from scrapy.spiders import Spider
 from scrapy import Request
 
 from .extractor import ItemExtractor
@@ -20,7 +21,7 @@ def extract_tags(doc, encoding):
     return extract(doc, encoding=encoding)
 
 
-class LXMLSpider(object):
+class LXMLSpider(Spider):
     """
         spider for crawl rss|atom
     """
@@ -31,10 +32,6 @@ class LXMLSpider(object):
     def check_item(self, item):
         return True if all(k in item and item[k] is not None
                            for k in self.TAGS) else False
-
-    def has_content_extractor(self):
-        return True if hasattr(self,
-                               'item_content_xpath') else False
 
     def extract_content(self, response):
         item = response.meta['item']
@@ -70,7 +67,8 @@ class LXMLSpider(object):
             item['data_type'] = 'html'
             item['encoding'] = response.encoding
             if self.check_item(item):
-                if self.has_content_extractor():
+                if hasattr(self,
+                           'item_content_xpath'):
                     yield Request(item['link'],
                                   callback=self.extract_content,
                                   errback=self.errback,
@@ -99,7 +97,7 @@ class LXMLSpiderMeta(type):
             raise AttributeError('Error in LXMLSpiderMeta')
 
 
-def mk_lxmlspider_cls(sp_setting):
-    return LXMLSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
+def mk_lxmlspider_cls(setting):
+    return LXMLSpiderMeta('{}Spider'.format(setting['name'].capitalize()),
                           (LXMLSpider, ErrbackSpider),
-                          sp_setting)
+                          setting)

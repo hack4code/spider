@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 import inspect
 
+from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 
@@ -26,9 +27,9 @@ def extract_tags(doc, encoding):
     return extract(doc, encoding=encoding)
 
 
-class BLOGSpider(object):
+class BLOGSpider(Spider):
     """
-        spider crawl html with xpath
+        spider crawl blog with xpath
     """
 
     # tags item must contain
@@ -95,7 +96,7 @@ class BLOGSpider(object):
                           callback=self.parse,
                           errback=self.errback)
         except AttributeError:
-            logger.info('{} has no prelink attr'.format(self.name))
+            logger.info('{} has no prelink attribute'.format(self.name))
 
         for entry in self.extract_entries(response):
             item = self.extract_item(entry,
@@ -133,7 +134,7 @@ class BLOGSpiderMeta(type):
             raise AttributeError
 
 
-def mk_blogspider_cls(sp_setting):
-    return BLOGSpiderMeta('{}Spider'.format(sp_setting['name'].capitalize()),
+def mk_blogspider_cls(setting):
+    return BLOGSpiderMeta('{}Spider'.format(setting['name'].capitalize()),
                           (BLOGSpider, ErrbackSpider),
-                          sp_setting)
+                          setting)
