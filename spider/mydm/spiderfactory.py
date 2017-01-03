@@ -22,10 +22,10 @@ class SpiderFactory(object):
             'xml': mk_lxmlspider_cls,
             'blog': mk_blogspider_cls
         }
-        if 'name' not in setting:
-            raise SpiderFactoryException((
-                'Error in SpiderFactory, no name attr found'
-                ))
+        if 'name' not in setting or 'type' not in setting:
+            raise SpiderFactoryException(
+                'Error in SpiderFactory, no name|type attr found'
+                )
         t = setting['type']
         try:
             return _factory_func[t](setting)
@@ -36,8 +36,8 @@ class SpiderFactory(object):
 
 
 def mk_spider_cls(setting):
-    logger.info('Factory create spider[{}]'.format(setting['name']))
     try:
         return SpiderFactory.make_spider(setting)
     except AttributeError:
         raise SpiderFactoryException('Error in mk_spider_cls, attr error')
+    logger.info('Factory create spider[{}]'.format(setting['name']))
