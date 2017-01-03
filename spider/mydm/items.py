@@ -17,4 +17,5 @@ class ArticleItem(scrapy.Item):
     encoding = scrapy.Field()
 
     def __repr__(self):
-        return u'[{} : {}]'.format(self['title'], self['link'])
+        return u'[{} : {}]'.format(self['title'],
+                                   self['link'])
