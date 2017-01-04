@@ -2,6 +2,7 @@
 
 
 from zope.interface import implementer
+
 from scrapy.interfaces import ISpiderLoader
 
 from .log import logger
