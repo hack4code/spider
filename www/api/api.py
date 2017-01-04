@@ -102,7 +102,7 @@ def get_entries_byday():
                        msg='no articles')
 
     entries = get_entries(day_entry)
-    if len(entries) == 0:
+    if not entries:
         entries = None
 
     day_before = get_before_day(day_entry)

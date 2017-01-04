@@ -82,7 +82,7 @@ class ContentPipeline(object):
             doc = doc[0]
         while True:
             for e in doc.xpath('//div'):
-                if len(e) == 0:
+                if not e:
                     e.drop_tree()
                     break
             else:

@@ -185,7 +185,7 @@ def crawl(args):
     logger.setLevel(settings['LOG_LEVEL'])
     logger.info('job crawl start ...')
 
-    if len(args) == 0:
+    if not args:
         return False
 
     from scrapy.crawler import CrawlerProcess

@@ -102,9 +102,9 @@ def get_score(el):
     sp_scores = get_spider_score(list(spids))
     a_scores = get_article_score(list(aids))
     max_sp_score = max(sp_scores.items(),
-                       key=lambda i: i[1])[1] if len(sp_scores) > 0 else 1.0
+                       key=lambda i: i[1])[1] if sp_scores else 1.0
     max_a_score = max(a_scores.items(),
-                      key=lambda i: i[1])[1] if len(a_scores) > 0 else 1.0
+                      key=lambda i: i[1])[1] if a_scores else 1.0
     scores = {}
     for e in el:
         spid = e.spider
