@@ -32,6 +32,9 @@ DOWNLOADER_MIDDLEWARES = {
 """
 spider settings
 """
+
+LOGGER_NAME = 'SPIDERLOGGER'
+
 # config for mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
 MONGODB_DB_NAME = 'scrapy'
