@@ -76,7 +76,7 @@ class App extends React.Component {
     let spid = this.state.spid;
     form.append("spid", spid)
     if (aid != null) {
-      form.append("apid", aid);
+      form.append("aid", aid);
       form.append("q", q);
     }
     let that = this;
