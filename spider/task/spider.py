@@ -96,80 +96,90 @@ def _gen_lxmlspider(url, args):
                      parser)
     while len(root) == 1:
         root = root[0]
-    sp_setting = {'start_urls': [url]}
+    setting = {'start_urls': [url]}
     for e in root:
         try:
             en = QName(e.tag).localname.lower()
         except ValueError:
             continue
         if en == 'title':
-            sp_setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
-                                         '',
-                                         e.text)
-    sp_setting['name'] = get_feed_name(url)
-    if 'title' not in sp_setting:
-        sp_setting['title'] = sp_setting['name']
-    sp_setting['category'] = args['category']
-    if sp_setting['category'] not in settings['ARTICLE_CATEGORIES']:
-        logger.error(u'{} category error'.format(sp_setting['category']))
+            setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
+                                      '',
+                                      e.text)
+    setting['name'] = get_feed_name(url)
+    if 'title' not in setting:
+        setting['title'] = setting['name']
+    setting['category'] = args['category']
+    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
+        logger.error(u'{} category error'.format(setting['category']))
         return False
-    spattrs = ('item_content_xpath', 'removed_xpath_nodes')
-    sp_setting.update({k: args[k] for k in spattrs if k in args})
-    sp_setting['type'] = 'xml'
-    if check_spider(sp_setting):
-        save_spider_settings(sp_setting)
+    attrs = ('item_content_xpath', 'removed_xpath_nodes')
+    setting.update({k: args[k] for k in attrs if k in args})
+    setting['type'] = 'xml'
+    if check_spider(setting):
+        save_spider_settings(setting)
         return True
     logger.error('gen_lxmlspider error for {}'.format(url))
     return False
 
 
 @app.task(name='lxmlspider-creator')
-def gen_lxmlspider(spargs):
+def gen_lxmlspider(args):
     logger = get_task_logger(settings['LOGGER_NAME'])
-    url = spargs['url']
+    url = args['url']
     logger.info('gen_lxmlspider for {}'.format(url))
     parser = urlparse(url)
     if parser.scheme == '' or parser.netloc == '':
         logger.error('{} invalid url'.format(url))
         return False
     save_feed(url)
-    spattrs = ('item_content_xpath', 'category')
-    args = {k: v for k, v in spargs.items() if k in spattrs and len(v) > 0}
-    if ('removed_xpath_nodes' in spargs
-       and len(spargs['removed_xpath_nodes']) > 0):
-        nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
-        args['item_content_xpath'] = nodes
+    attrs = ('item_content_xpath', 'category')
+    setting = {k: v for k, v in args.items() if k in attrs and v}
+    xn = args.get('removed_xpath_nodes')
+    if xn:
+        nodes = []
+        for sn in xn.split(','):
+            node = sn.strip(' \t')
+            if node:
+                nodes.append(node)
+        if nodes:
+            setting['removed_xpath_nodes'] = nodes
     if not is_exists_spider(url):
-        if _gen_lxmlspider(url, args):
+        if _gen_lxmlspider(url, setting):
             return True
     return False
 
 
 @app.task(name='blogspider-creator')
-def gen_blogspider(spargs):
+def gen_blogspider(args):
     logger = get_task_logger(settings['LOGGER_NAME'])
-    url = spargs['url']
+    url = args['url']
     parser = urlparse(url)
     if parser.scheme == '' or parser.netloc == '':
         logger.error('{} invalid url'.format(url))
         return False
     save_feed(url)
-    spattrs = ('entry', 'item_title', 'item_link', 'item_content')
-    if any(spattr not in spargs for spattr in spattrs):
+    attrs = ('entry', 'item_title', 'item_link', 'item_content')
+    if any(spattr not in args for spattr in attrs):
         return False
-    sp_setting = {'{}_xpath'.format(k): v
-                  for k, v in spargs.items() if k in spattrs and len(v) > 0}
-    if ('removed_xpath_nodes' in spargs and
-            len(spargs['removed_xpath_nodes']) > 0):
-        nodes = [_.strip() for _ in spargs['removed_xpath_nodes'].split(',')]
-        sp_setting['removed_xpath_nodes'] = nodes
-    sp_setting['name'] = get_feed_name(url)
-    sp_setting['title'] = sp_setting['name']
-    sp_setting['category'] = spargs['category']
-    sp_setting['type'] = 'blog'
-    sp_setting['start_urls'] = [spargs['url']]
-    if check_spider(sp_setting):
-        save_spider_settings(sp_setting)
+    setting = {'{}_xpath'.format(k): v
+               for k, v in args.items() if k in attrs and v}
+    xn = args.get('removed_xpath_nodes')
+    if xn:
+        nodes = []
+        for sn in xn.split(','):
+            node = sn.strip(' \t')
+            if node:
+                nodes.append(node)
+        if nodes:
+            setting['removed_xpath_nodes'] = nodes
+    setting['name'] = get_feed_name(url)
+    setting['title'] = setting['name']
+    setting['category'] = args['category']
+    setting['type'] = 'blog'
+    setting['start_urls'] = [args['url']]
+    if check_spider(setting):
+        save_spider_settings(setting)
         return True
     return False
 
@@ -236,7 +246,7 @@ def recrawl(spids):
     logger.setLevel(settings['LOG_LEVEL'])
     logger.info('recrawl job start ...')
 
-    if spids is None or len(spids) == 0:
+    if not spids:
         return True
 
     for spid in spids:
