@@ -88,9 +88,9 @@ class ContentPipeline(object):
 
         def clean_div(doc):
             while True:
-                for e in doc.xpath('//div[not(text()) and not(img)]'):
+                for e in doc.xpath(
+                        '//div[not(div) and not(img) and not(text())]'):
                     e.drop_tree()
-                    # break for
                     break
                 else:
                     # break while
