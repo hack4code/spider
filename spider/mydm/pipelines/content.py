@@ -69,24 +69,34 @@ class ContentPipeline(object):
         cleaner = Cleaner(safe_attrs_only=True,
                           safe_attrs=safe_attrs)
         doc = cleaner.clean_html(doc)
-        for it in doc.iter():
-            if it.tag == 'article':
-                it.tag = 'div'
-            for attr in self.removed_attrs:
-                if attr in it.attrib:
-                    if (attr == 'class' and
-                            it.get(attr).strip() in allow_classes):
-                        continue
-                    it.attrib.pop(attr)
+
+        def clean_attrs(doc):
+            for it in doc.iter():
+                if it.tag == 'article':
+                    it.tag = 'div'
+                for attr in self.removed_attrs:
+                    if attr in it.attrib:
+                        if (attr == 'class' and
+                                it.get(attr).strip('\n\t ') in allow_classes):
+                            continue
+                        it.attrib.pop(attr)
+
+        clean_attrs(doc)
+
         while (len(doc) == 1):
             doc = doc[0]
-        while True:
-            for e in doc.xpath('//div'):
-                if not e:
+
+        def clean_div(doc):
+            while True:
+                for e in doc.xpath('//div[not(text()) and not(img)]'):
                     e.drop_tree()
+                    # break for
                     break
-            else:
-                break
+                else:
+                    # break while
+                    break
+
+        clean_div(doc)
         return doc
 
     def process_item(self, item, spider):
