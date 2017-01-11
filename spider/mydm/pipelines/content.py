@@ -70,7 +70,7 @@ class ContentPipeline(object):
                           safe_attrs=safe_attrs)
         doc = cleaner.clean_html(doc)
 
-        def clean_attrs(doc):
+        def remove_attr(doc):
             for it in doc.iter():
                 if it.tag == 'article':
                     it.tag = 'div'
@@ -81,22 +81,25 @@ class ContentPipeline(object):
                             continue
                         it.attrib.pop(attr)
 
-        clean_attrs(doc)
+        remove_attr(doc)
 
         while (len(doc) == 1):
             doc = doc[0]
 
-        def clean_div(doc):
+        def remove_empty_tag(doc):
+            for e in doc.xpath('//i[not(text())]'):
+                e.getparent().remove(e)
+
             while True:
                 for e in doc.xpath(
                         '//div[not(div) and not(img) and not(text())]'):
-                    e.drop_tree()
+                    e.getparent().remove(e)
                     break
                 else:
                     # break while
                     break
 
-        clean_div(doc)
+        remove_empty_tag(doc)
         return doc
 
     def process_item(self, item, spider):
