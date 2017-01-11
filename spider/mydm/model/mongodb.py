@@ -6,7 +6,7 @@ from pymongo import MongoClient, ASCENDING
 from scrapy.utils.project import get_project_settings
 
 
-settings = get_project_settings()
+PSettings = get_project_settings()
 
 
 class MongoDB(object):
@@ -14,13 +14,13 @@ class MongoDB(object):
 
     def __init__(self):
         self.db = None
-        self.client = MongoClient(settings['MONGODB_URI'],
+        self.client = MongoClient(PSettings['MONGODB_URI'],
                                   connect=False)
 
     def connect(self):
-        db = self.client[settings['MONGODB_DB_NAME']]
-        db.authenticate(settings['MONGODB_USER'],
-                        settings['MONGODB_PWD'])
+        db = self.client[PSettings['MONGODB_DB_NAME']]
+        db.authenticate(PSettings['MONGODB_USER'],
+                        PSettings['MONGODB_PWD'])
         # create indexes
         feed = db['feed']
         feed.create_index('url',
@@ -41,7 +41,7 @@ class MongoDB(object):
         else:
             raise AttributeError(
                 'articles db has no collection {}'.format(key)
-            )
+                )
 
 
 db = MongoDB()
@@ -128,13 +128,13 @@ def save_spider_settings(settings):
 
 
 def get_spider_settings():
-    sp_settings = []
+    settings = []
     cursor = db.spider.find()
     for r in cursor:
         setting = dict(r)
         setting['_id'] = str(r['_id'])
-        sp_settings.append(setting)
-    return sp_settings
+        settings.append(setting)
+    return settings
 
 
 def get_category_tags():
