@@ -40,7 +40,6 @@ class Voter extends React.Component {
         return response.json();
       })
       .then(function(data) {
-        console.log(data);
         if (!data["err"]) {
           s.setItem(aid, 1);
         }
@@ -96,7 +95,7 @@ class App extends React.Component {
       alignItems: "center"
     };
 
-    let node = document.getElementById("content");
+    let node = document.getElementById("vote");
     let aid = node.getAttribute("aid");
     let spid = node.getAttribute("spid");
     let spname = node.getAttribute("spname");
@@ -109,4 +108,4 @@ class App extends React.Component {
   }
 }
 
-render(<App />, document.getElementById("content"));
+render(<App />, document.getElementById("vote"));

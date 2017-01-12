@@ -99,4 +99,4 @@ class App extends React.Component {
   }
 }
 
-render(<App />, document.getElementById('content'));
+render(<App />, document.getElementById("content"));
