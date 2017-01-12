@@ -88,13 +88,14 @@ class ContentPipeline(object):
 
         def remove_empty_tag(doc):
             for e in doc.xpath('//i[not(text())]'):
-                e.getparent().remove(e)
+                e.drop_tree()
 
             while True:
-                for e in doc.xpath(
-                        '//div[not(div) and not(img) and not(text())]'):
-                    e.getparent().remove(e)
-                    break
+                for e in doc.xpath('//div[not(descendant::div) and not(img)]'):
+                    if len(e.text_content().strip(' \n\r\t')) == 0:
+                        e.drop_tree()
+                        # break for
+                        break
                 else:
                     # break while
                     break
