@@ -67,8 +67,8 @@ a {
  }
 
  #article img {
-  max-width: 34em !important;
-  height: auto !important;
+  max-width: 34em;
+  height: auto;
  }
 }
 
