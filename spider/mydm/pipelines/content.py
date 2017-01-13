@@ -91,7 +91,10 @@ class ContentPipeline(object):
                 e.drop_tree()
 
             while True:
-                for e in doc.xpath('//div[not(descendant::div) and not(img)]'):
+                for e in doc.xpath((
+                        '//div[not(descendant::div) and '
+                        'not(descendant::img) and not(text())]'
+                        )):
                     if len(e.text_content().strip(' \n\r\t')) == 0:
                         e.drop_tree()
                         # break for
