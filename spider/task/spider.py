@@ -47,14 +47,14 @@ def get_feed_name(url):
                         if name.lower() != 'www'])
 
 
-def check_spider(sp_setting):
+def check_spider(setting_):
     import uuid
     from scrapy.crawler import CrawlerProcess
 
+    setting = setting_.copy()
     spid = str(uuid.uuid4())
-    setting = sp_setting.copy()
     setting['_id'] = spid
-    spcls = mk_spider_cls(setting)
+    cls = mk_spider_cls(setting)
     custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline':
                                           255},
                        'WEBSERVICE_ENABLED': False,
@@ -65,7 +65,7 @@ def check_spider(sp_setting):
                        'SPIDER_STATS_URL': settings['TEMP_SPIDER_STATS_URL']}
 
     p = CrawlerProcess(custom_settings)
-    p.crawl(spcls)
+    p.crawl(cls)
     p.start()
 
     def get_stats(custom_settings):
@@ -213,14 +213,14 @@ def crawl(args):
     for sp in spiders:
         process.crawl(sp)
 
-    def flush_spider_stats_db():
+    def flush_db():
         conf = parse_redis_url(settings['SPIDER_STATS_URL'])
         r = redis.Redis(host=conf.host,
                         port=conf.port,
                         db=conf.database)
         r.flushdb()
 
-    flush_spider_stats_db()
+    flush_db()
     process.start()
 
     def get_recrawl_spiders():
