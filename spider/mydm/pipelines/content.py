@@ -5,6 +5,9 @@ import re
 
 from lxml.html import fromstring, HTMLParser, defs
 from lxml.html.clean import Cleaner
+from lxml.etree import XPathEvalError
+
+from ..log import logger
 
 
 class ContentPipeline(object):
@@ -57,8 +60,14 @@ class ContentPipeline(object):
 
     def remove_element_with_xpath_nodes(self, doc, removed_xpath_nodes):
         for xpath_node in removed_xpath_nodes:
-            for e in doc.xpath(xpath_node):
-                e.drop_tree()
+            try:
+                nodes = doc.xpath(xpath_node)
+            except XPathEvalError:
+                logger.error((
+                    'Error in pipeline content invalid xpath[{}]'
+                    ).format(xpath_node))
+            for node in nodes:
+                node.drop_tree()
         return doc
 
     def clean_html(self, doc, allow_classes=None, safe_attrs=None):
