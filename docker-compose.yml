@@ -30,6 +30,7 @@ services:
                         - ./mongo/data/:/data/db/
                 networks:
                         - mongodb
+                command: ["--auth", "--storageEngine", "wiredTiger"]
 
         spider:
                 build:
