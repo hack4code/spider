@@ -87,7 +87,7 @@ def _gen_lxmlspider(url, args):
                      headers=settings['DEFAULT_REQUEST_HEADERS'])
     if r.status_code != 200:
         logger.error((
-            'download {} error: status={}'
+            'Error in _gen_lxmlspider requests[{},status={}]'
             ).format(url,
                      r.status_code))
         return False
@@ -119,7 +119,7 @@ def _gen_lxmlspider(url, args):
     if check_spider(setting):
         save_spider_settings(setting)
         return True
-    logger.error('gen_lxmlspider error for {}'.format(url))
+    logger.error('Error in gen_lxmlspider[{}]'.format(url))
     return False
 
 
@@ -129,21 +129,21 @@ def gen_lxmlspider(args):
     url = args['url']
     logger.info('gen_lxmlspider for {}'.format(url))
     parser = urlparse(url)
-    if parser.scheme == '' or parser.netloc == '':
-        logger.error('{} invalid url'.format(url))
+    if not parser.scheme or not parser.netloc:
+        logger.error('Error in gen_lxmlspider invalid url[{}]'.format(url))
         return False
     save_feed(url)
     attrs = ('item_content_xpath', 'category')
     setting = {k: v for k, v in args.items() if k in attrs and v}
-    xn = args.get('removed_xpath_nodes')
-    if xn:
-        nodes = []
-        for sn in xn.split(','):
-            node = sn.strip(' \t')
-            if node:
-                nodes.append(node)
-        if nodes:
-            setting['removed_xpath_nodes'] = nodes
+    removed_xpath_nodes = args.get('removed_xpath_nodes', None)
+    if removed_xpath_nodes:
+        xnodes = []
+        for xpath_node in removed_xpath_nodes.split(','):
+            x = xpath_node.strip(' \t\r')
+            if x:
+                xnodes.append(x)
+        if xnodes:
+            setting['removed_xpath_nodes'] = xnodes
     if not is_exists_spider(url):
         if _gen_lxmlspider(url, setting):
             return True
@@ -155,8 +155,8 @@ def gen_blogspider(args):
     logger = get_task_logger(settings['LOGGER_NAME'])
     url = args['url']
     parser = urlparse(url)
-    if parser.scheme == '' or parser.netloc == '':
-        logger.error('{} invalid url'.format(url))
+    if not parser.scheme or not parser.netloc:
+        logger.error('Error in gen_blogspider invalid url[{}]'.format(url))
         return False
     save_feed(url)
     attrs = ('entry', 'item_title', 'item_link', 'item_content')
@@ -164,15 +164,15 @@ def gen_blogspider(args):
         return False
     setting = {'{}_xpath'.format(k): v
                for k, v in args.items() if k in attrs and v}
-    xn = args.get('removed_xpath_nodes')
-    if xn:
-        nodes = []
-        for sn in xn.split(','):
-            node = sn.strip(' \t')
-            if node:
-                nodes.append(node)
-        if nodes:
-            setting['removed_xpath_nodes'] = nodes
+    removed_xpath_nodes = args.get('removed_xpath_nodes', None)
+    if removed_xpath_nodes:
+        xnodes = []
+        for xpath_node in removed_xpath_nodes.split(','):
+            x = xpath_node.strip(' \t\r\n')
+            if x:
+                xnodes.append(x)
+        if xnodes:
+            setting['removed_xpath_nodes'] = xnodes
     setting['name'] = get_feed_name(url)
     setting['title'] = setting['name']
     setting['category'] = args['category']
