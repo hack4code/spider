@@ -83,14 +83,22 @@ def check_spider(setting_):
 
 def _gen_lxmlspider(url, args):
     logger = get_task_logger(settings['LOGGER_NAME'])
-    r = requests.get(url,
-                     headers=settings['DEFAULT_REQUEST_HEADERS'])
+
+    try:
+        r = requests.get(url,
+                         headers=settings['DEFAULT_REQUEST_HEADERS'])
+    except ConnectionError:
+        logger.error((
+            'Error in _gen_lxmlspider connection error[{}]'
+            ).format(url))
+        return False
     if r.status_code != 200:
         logger.error((
             'Error in _gen_lxmlspider requests[{},status={}]'
             ).format(url,
                      r.status_code))
         return False
+
     parser = etree.XMLParser(ns_clean=True)
     root = etree.XML(r.content,
                      parser)
@@ -138,8 +146,8 @@ def gen_lxmlspider(args):
     removed_xpath_nodes = args.get('removed_xpath_nodes', None)
     if removed_xpath_nodes:
         xnodes = []
-        for xpath_node in removed_xpath_nodes.split(','):
-            x = xpath_node.strip(' \t\r')
+        for xpath_node in removed_xpath_nodes:
+            x = xpath_node.strip(' \t\r\n')
             if x:
                 xnodes.append(x)
         if xnodes:
@@ -167,7 +175,7 @@ def gen_blogspider(args):
     removed_xpath_nodes = args.get('removed_xpath_nodes', None)
     if removed_xpath_nodes:
         xnodes = []
-        for xpath_node in removed_xpath_nodes.split(','):
+        for xpath_node in removed_xpath_nodes:
             x = xpath_node.strip(' \t\r\n')
             if x:
                 xnodes.append(x)

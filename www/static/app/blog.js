@@ -1,27 +1,35 @@
 import React from "react";
 import {render, findDOMNode} from "react-dom";
-import {SelectBox, EditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
+import {SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
 import "whatwg-fetch";
 
 class SubmitForm extends React.Component {
+  getInitialState() {
+    return {
+      url: "",
+      category: "",
+      entry: "",
+      item_title: "",
+      item_link: "",
+      item_content: "",
+      removed_xpath_nodes: ["", ]
+    }
+  }
+
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
     this.updateField = this.updateField.bind(this);
-    this.state = {category: "",
-                  url: "",
-                  entry: "",
-                  item_title: "",
-                  item_link: "",
-                  item_content: "",
-                  removed_xpath_nodes: ""}
+    this.state = this.getInitialState();
   }
 
   submit(e) {
     e.preventDefault();
 
     let form = this.state;
-    if (form["url"] == "" || form["entry"] == "" || form["item_title"] == "" || form["item_link"] == "" || form["item_content"] == "") {
+    if (form["url"] == "" || form["entry"] == "" ||
+        form["item_title"] == "" || form["item_link"] == "" ||
+        form["item_content"] == "") {
       this.err.fadeIn("数据不能为空");
       setTimeout(() => {this.err.fadeOut()}, 1000);
     }
@@ -32,7 +40,7 @@ class SubmitForm extends React.Component {
       for (let k in form) {
         if (form[k] != "") {
           data.append(k, form[k]);
-	}
+        }
       }
 
       let that = this;
@@ -44,14 +52,11 @@ class SubmitForm extends React.Component {
       })
       .then(function(r) {
         if (r['err'] == 0) {
-          that.setState({url: "",
-                         entry:"",
-                         item_title: "",
-                         item_link: "",
-                         item_content: "",
-                         removed_xpath_nodes: ""});
           that.err.fadeIn("成功");
           setTimeout(() => {that.err.fadeOut()}, 1000);
+          let state = that.getInitialState();
+          state["category"] = that.state.category;
+          that.setState(state);
         }
         else {
           that.err.fadeIn("失败: " + r["msg"]);
@@ -86,7 +91,7 @@ class SubmitForm extends React.Component {
           <EditBox desc="标题Selector:" updateField={this.updateField} type="text" field="item_title" value={this.state.item_title} />
           <EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link" value={this.state.item_link} />
           <EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content" value={this.state.item_content} />
-          <EditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
+          <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
           <Button ref={(com) => this.button = com} />
         </form>
       </div>

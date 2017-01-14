@@ -263,8 +263,8 @@ th {
 
 .err-enter.err-enter-active {
 	opacity: 1;
-	transition: opacity 1500ms ease-in;
 	color: #aaa;
+	transition: opacity 1000ms ease-in;
 }
 
 .err-leave {
@@ -274,6 +274,6 @@ th {
 
 .err-leave.err-leave-active {
 	opacity: 0.1;
-	transition: opacity 800ms ease-in;
 	color: #fff;
+	transition: opacity 800ms ease-in;
 }

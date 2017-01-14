@@ -363,7 +363,7 @@ class Category extends React.Component {
 
     return (
       <li style={listyle}>
-        <a href="#" style={astyle} onClick={(event)=>this.onClick(event, this.props.category)}>{this.props.category}</a>
+        <a href="#" style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
       </li>
     )
   }

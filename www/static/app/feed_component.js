@@ -67,7 +67,7 @@ class ErrMsg extends React.Component {
 
     return (
       <div style={style}>
-        <ReactCSSTransitionGroup component="span" transitionName="err">
+        <ReactCSSTransitionGroup component="span" transitionName="err" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
           {items}
         </ReactCSSTransitionGroup>
       </div>
@@ -96,11 +96,44 @@ class Input extends React.Component {
       height: "3.2em",
       width: "42em",
       margin: "0em 0em 1.2em 0em",
-      display: "block"
     };
 
     return (
       <input style={style} value={this.props.value} onChange={this.handleChange} type={this.props.type}/>
+    )
+  }
+}
+
+class IButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(e) {
+    this.props.onClick(e);
+  }
+
+  render() {
+    const style = {
+      backgroundColor: "transparent",
+      border: "0rem",
+      borderRadius: "0.4rem",
+      boxSizing: "borderBox",
+      cursor: "pointer",
+      display: "inlineBlock",
+      fontSize: "0.4rem",
+      fontWeight: "700",
+      height: "3.2em",
+      width: "1em",
+      textAlign: "center",
+      textDecoration: "none",
+      whiteSpace: "nowrap",
+      display: this.props.show ? "inline" : "none"
+    };
+
+    return (
+      <button style={style} type="button" onClick={this.onClick}>+</button>
     )
   }
 }
@@ -132,6 +165,56 @@ class EditBox extends React.Component {
   }
 }
 
+class MEditBox extends React.Component {
+  constructor(props) {
+    super(props);
+    this.addField = this.addField.bind(this);
+    this.updateValues = this.updateValues.bind(this);
+  }
+
+  addField(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    let arr = this.props.value;
+    arr.length = arr.length + 1;
+    arr[arr.length-1] = "";
+    this.props.updateField(this.props.field, arr);
+  }
+
+  updateValues(index, v) {
+    let arr = this.props.value;
+    arr[index] = v;
+    this.props.updateField(this.props.field, arr);
+  }
+
+  render() {
+    const style = {
+      display: "inlineBlock",
+    };
+    let arr = this.props.value;
+    let n = arr.length;
+    let type = this.props.type;
+    let updateValues = this.updateValues;
+    let onClick = this.addField;
+
+    return (
+      <div>
+        <Label desc={this.props.desc} />
+        {
+          arr.map(function(value, index) {
+            return (
+            <div key={index.toString()} style={style}>
+              <Input type={type} updateField={updateValues} field={index} value={value} />
+              <IButton show={index == n-1} onClick={onClick} />
+            </div>
+            )
+          })
+        }
+      </div>
+    )
+  }
+}
 class Select extends React.Component {
   constructor(props) {
     super(props);
@@ -180,7 +263,9 @@ class Select extends React.Component {
 
     return (
       <select style={style} value={this.props.value} onChange={this.handleChange}>
-        {list.map(function(v, index) { return <option key={index} value={v}>{v}</option>; })}
+      {
+        list.map(function(v, index) {return <option key={index} value={v}>{v}</option>;})
+      }
       </select>
     )
   }
@@ -222,4 +307,4 @@ class Button extends React.Component {
   }
 }
 
-export {SelectBox, EditBox, Button, Title, ErrMsg, Hr};
+export {SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr};
