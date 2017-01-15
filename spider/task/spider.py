@@ -2,23 +2,15 @@
 
 
 import re
-import requests
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 
 import redis
 
 from celery.utils.log import get_task_logger
 from celery import Celery
 
-from lxml import etree
-from lxml.etree import QName
-
 from scrapy.utils.project import get_project_settings
-
+from scrapy.crawler import CrawlerProcess
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
@@ -49,7 +41,6 @@ def get_feed_name(url):
 
 def check_spider(setting_):
     import uuid
-    from scrapy.crawler import CrawlerProcess
 
     setting = setting_.copy()
     spid = str(uuid.uuid4())
@@ -84,6 +75,7 @@ def check_spider(setting_):
 def _gen_lxmlspider(url, args):
     logger = get_task_logger(settings['LOGGER_NAME'])
 
+    import requests
     try:
         r = requests.get(url,
                          headers=settings['DEFAULT_REQUEST_HEADERS'])
@@ -99,6 +91,7 @@ def _gen_lxmlspider(url, args):
                      r.status_code))
         return False
 
+    from lxml import etree
     parser = etree.XMLParser(ns_clean=True)
     root = etree.XML(r.content,
                      parser)
@@ -107,7 +100,7 @@ def _gen_lxmlspider(url, args):
     setting = {'start_urls': [url]}
     for e in root:
         try:
-            en = QName(e.tag).localname.lower()
+            en = etree.QName(e.tag).localname.lower()
         except ValueError:
             continue
         if en == 'title':
@@ -131,27 +124,37 @@ def _gen_lxmlspider(url, args):
     return False
 
 
+def _set_removed_xpath_nodes(args, setting):
+    removed_xpath_nodes_ = args.get('removed_xpath_nodes', None)
+    if removed_xpath_nodes_:
+        removed_xpath_nodes = [_ for _ in (__.strip(' \t\r\n')
+                                           for __ in removed_xpath_nodes_)
+                               if _]
+        if removed_xpath_nodes:
+            settings['removed_xpath_nodes'] = removed_xpath_nodes
+
+
+def _check_url(url):
+    parser = urlparse(url)
+    if not parser.scheme or not parser.netloc:
+        return False
+    return True
+
+
 @app.task(name='lxmlspider-creator')
 def gen_lxmlspider(args):
     logger = get_task_logger(settings['LOGGER_NAME'])
     url = args['url']
-    logger.info('gen_lxmlspider for {}'.format(url))
-    parser = urlparse(url)
-    if not parser.scheme or not parser.netloc:
+    if not _check_url(url):
         logger.error('Error in gen_lxmlspider invalid url[{}]'.format(url))
         return False
+
     save_feed(url)
+
     attrs = ('item_content_xpath', 'category')
     setting = {k: v for k, v in args.items() if k in attrs and v}
-    removed_xpath_nodes = args.get('removed_xpath_nodes', None)
-    if removed_xpath_nodes:
-        xnodes = []
-        for xpath_node in removed_xpath_nodes:
-            x = xpath_node.strip(' \t\r\n')
-            if x:
-                xnodes.append(x)
-        if xnodes:
-            setting['removed_xpath_nodes'] = xnodes
+    _set_removed_xpath_nodes(args, setting)
+
     if not is_exists_spider(url):
         if _gen_lxmlspider(url, setting):
             return True
@@ -162,25 +165,21 @@ def gen_lxmlspider(args):
 def gen_blogspider(args):
     logger = get_task_logger(settings['LOGGER_NAME'])
     url = args['url']
-    parser = urlparse(url)
-    if not parser.scheme or not parser.netloc:
+    if not _check_url(url):
         logger.error('Error in gen_blogspider invalid url[{}]'.format(url))
         return False
+
     save_feed(url)
-    attrs = ('entry', 'item_title', 'item_link', 'item_content')
-    if any(spattr not in args for spattr in attrs):
+
+    attrs = ('entry_xpath',
+             'item_title_xpath',
+             'item_link_xpath',
+             'item_content_xpath')
+    if any(attr not in args for attr in attrs):
+        logger.error('Error in gen_blogspider xpath field')
         return False
-    setting = {'{}_xpath'.format(k): v
-               for k, v in args.items() if k in attrs and v}
-    removed_xpath_nodes = args.get('removed_xpath_nodes', None)
-    if removed_xpath_nodes:
-        xnodes = []
-        for xpath_node in removed_xpath_nodes:
-            x = xpath_node.strip(' \t\r\n')
-            if x:
-                xnodes.append(x)
-        if xnodes:
-            setting['removed_xpath_nodes'] = xnodes
+    setting = {k: v for k, v in args.items() if k in attrs and v}
+    _set_removed_xpath_nodes(args, setting)
     setting['name'] = get_feed_name(url)
     setting['title'] = setting['name']
     setting['category'] = args['category']
@@ -205,8 +204,6 @@ def crawl(args):
 
     if not args:
         return False
-
-    from scrapy.crawler import CrawlerProcess
 
     recrawl = False
     process = CrawlerProcess(settings)

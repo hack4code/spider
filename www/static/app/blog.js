@@ -8,10 +8,10 @@ class SubmitForm extends React.Component {
     return {
       url: "",
       category: "",
-      entry: "",
-      item_title: "",
-      item_link: "",
-      item_content: "",
+      entry_xpath: "",
+      item_title_xpath: "",
+      item_link_xpath: "",
+      item_content_xpath: "",
       removed_xpath_nodes: ["", ]
     }
   }
@@ -27,9 +27,9 @@ class SubmitForm extends React.Component {
     e.preventDefault();
 
     let form = this.state;
-    if (form["url"] == "" || form["entry"] == "" ||
-        form["item_title"] == "" || form["item_link"] == "" ||
-        form["item_content"] == "") {
+    if (form["url"] == "" || form["entry_xpath"] == "" ||
+        form["item_title_xpath"] == "" || form["item_link_xpath"] == "" ||
+        form["item_content_xpath"] == "") {
       this.err.fadeIn("数据不能为空");
       setTimeout(() => {this.err.fadeOut()}, 1000);
     }
@@ -87,10 +87,10 @@ class SubmitForm extends React.Component {
         <form style={style} onSubmit={this.submit}>
           <EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
           <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
-          <EditBox desc="文章Selector:" updateField={this.updateField} type="text" field="entry" value={this.state.entry} />
-          <EditBox desc="标题Selector:" updateField={this.updateField} type="text" field="item_title" value={this.state.item_title} />
-          <EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link" value={this.state.item_link} />
-          <EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content" value={this.state.item_content} />
+          <EditBox desc="文章Selector:" updateField={this.updateField} type="text" field="entry_xpath" value={this.state.entry_xpath} />
+          <EditBox desc="标题Selector:" updateField={this.updateField} type="text" field="item_title_xpath" value={this.state.item_title_xpath} />
+          <EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link_xpath" value={this.state.item_link_xpath} />
+          <EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
           <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
           <Button ref={(com) => this.button = com} />
         </form>
