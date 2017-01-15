@@ -2,12 +2,12 @@ const user = "flask";
 const passwd = "flask";
 
 var conn = new Mongo();
-var db = conn.getDB("articles");
+var db = conn.getDB("scrapy");
 db.auth(user, passwd);
 
 function find_article(spid) {
 	var cursor = db.article.find({spider: spid}).limit(1);
-	return cursor.hasNext();
+	return !(cursor === undefined);
 };
 
 var cursor = db.spider.find({});

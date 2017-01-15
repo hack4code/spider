@@ -2,7 +2,7 @@ const user = "flask";
 const passwd = "flask";
 
 var conn = new Mongo();
-var db = conn.getDB("articles");
+var db = conn.getDB("scrapy");
 db.auth(user, passwd);
 
 
