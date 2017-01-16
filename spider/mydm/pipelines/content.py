@@ -24,10 +24,12 @@ class ContentPipeline(object):
                   'align'}
 
     REMOVED_ATTRS = ('class',
-                     'id')
+                     'id',
+                     'width',
+                     'height')
 
-    STYLE_REMOVED_ATTRS = (r'width\s*=\s*"\d+.*"',
-                           r'height\s*=\s*"\d+.*"')
+    STYLE_REMOVED_ATTRS = (r'width\s*=\s*"?\d+[^" ]*"?',
+                           r'height\s*=\s*"?\d+[^" ]*"?')
 
     @classmethod
     def from_settings(cls, settings):
@@ -106,8 +108,8 @@ class ContentPipeline(object):
                         e.attrib['style'] = style
                     else:
                         e.attrib.pop('style')
-                for attr in self.REMOVED_ATTRS:
-                    if (attr in e.attrib and
+                for attr in e.attrib:
+                    if (attr in self.REMOVED_ATTRS and
                         not (attr == 'class' and
                              e.get(attr).strip() in allow_classes)):
                         e.attrib.pop(attr)
