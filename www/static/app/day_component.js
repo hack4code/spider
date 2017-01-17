@@ -98,7 +98,7 @@ class AddressSector extends React.Component  {
       <p>项目地址</p>
       <ul>
         <li>
-        <p>github: <a style={style} href="https://github.com/alone-walker/BlogSpider" target="_blank">BlogSpider</a></p>
+        <p>github: <a style={style} href="https://github.com/hack4code/BlogSpider" target="_blank">BlogSpider</a></p>
         </li>
       </ul>
       </div>
