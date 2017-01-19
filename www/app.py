@@ -2,38 +2,19 @@
 
 
 from datetime import datetime
-from collections import namedtuple
 
 from flask import Flask, render_template
 
 from error import NotFound, BadRequest
 from user import need_uid
 
-# DEBUG = True
-
-# config for mongodb
-MONGODB_URI = 'mongodb://mongodb:27017/'
-MONGODB_STOREDB_NAME = 'scrapy'
-MONGODB_SCOREDB_NAME = 'score'
-MONGODB_USER = 'flask'
-MONGODB_PWD = 'flask'
-
-# scrapy
-FEED_SUBMIT_URL = 'http://gw:8001/feed'
-
-# log
-LOG_FILE = '/var/log/www/www.log'
-
 # app init
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_pyfile('config.py')
 
 # config for jinja
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
-
-# config for session
-app.secret_key = 'qweasdzxcrty'
 
 
 # error handler
@@ -89,11 +70,14 @@ def show_article(aid):
 
 @app.route('/p/<id:spid>', methods=['GET'])
 def show_entries_byspider(spid):
-    from model import get_spiders
+    from collections import namedtuple
     Spider = namedtuple('Spider', ['id', 'source'])
+
     if spid is None:
         raise BadRequest('invalid spider id')
     spid = str(spid)
+
+    from model import get_spiders
     spiders = get_spiders()
     if spid not in spiders:
         raise BadRequest('spider id not existed')
