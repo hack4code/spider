@@ -14,8 +14,8 @@ class NavSector extends React.Component  {
         <ul>
           <li><p>/d/Y-M-D: 按日期显示文章</p></li>
           <li><p>/l/p: 所有订阅源</p></li>
-          <li><p>/f/atom: 添加rss订阅源</p></li>
-          <li><p>/f/blog: 添加blog订阅源</p></li>
+          <li><p>/feed/rss: 添加rss订阅源</p></li>
+          <li><p>/feed/blog: 添加blog订阅源</p></li>
         </ul>
       </div>
     )
@@ -72,8 +72,8 @@ class SubmitSector extends React.Component  {
       <div>
         <p>Spider</p>
         <ul>
-          <SpiderButton desc="添加rss源，支持rss与atom" url="/f/rss" title="生成RSS Spider" />
-          <SpiderButton desc="添加blog,用于没有rss输出的blog" url="/f/blog" title="生成Blog Spider" />
+          <SpiderButton desc="添加rss源，支持rss与atom" url="/feed/rss" title="生成RSS Spider" />
+          <SpiderButton desc="添加blog,用于没有rss输出的blog" url="/feed/blog" title="生成Blog Spider" />
         </ul>
       </div>
     )
