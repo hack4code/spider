@@ -101,9 +101,5 @@ def submit_blog():
     return render_template('blog.html')
 
 
-@app.route('/about', methods=['GET'])
-def about():
-    return render_template('about.html')
-
 from api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
