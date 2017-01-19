@@ -14,8 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 api_page = Blueprint('api_page',
-                     __name__,
-                     template_folder='template')
+                     __name__)
 
 
 @api_page.route('/feed/rss', methods=['POST'])
