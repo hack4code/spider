@@ -138,8 +138,7 @@ Spider = namedtuple('Spider', ['id', 'source'])
 @api_page.route('/entries', methods=['POST'])
 def get_entries_byspider():
     from model import get_spiders, get_last_aid, get_first_aid, \
-        get_entries_next, get_entries_pre, get_entries_spider, \
-        check_aid
+        get_entries_next, get_entries_pre, get_entries_spider
     spid = request.form.get('spid',
                             None)
     if spid is None:
@@ -165,9 +164,7 @@ def get_entries_byspider():
             return jsonify(err=3,
                            msg='invalid aid')
 
-        if not check_aid(aid,
-                         firstaid,
-                         lastaid):
+        if not firstaid <= aid <= lastaid:
             return jsonify(err=4,
                            msg='aid not found')
 
