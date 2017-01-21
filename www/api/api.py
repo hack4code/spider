@@ -151,8 +151,8 @@ def get_entries_byspider():
         return jsonify(err=2,
                        msg='invalid spider id')
 
-    aid_last = get_last_aid(spid)
-    aid_first = get_first_aid(spid)
+    lastaid = get_last_aid(spid)
+    firstaid = get_first_aid(spid)
     aid = request.args.get('aid',
                            None) or request.form.get('aid',
                                                      None)
@@ -166,8 +166,8 @@ def get_entries_byspider():
                            msg='invalid aid')
 
         if not check_aid(aid,
-                         aid_first,
-                         aid_last):
+                         firstaid,
+                         lastaid):
             return jsonify(err=4,
                            msg='aid not found')
 
@@ -183,7 +183,7 @@ def get_entries_byspider():
     else:
         entries = get_entries_spider(spid)
 
-    if entries is None or len(entries) == 0:
+    if not entries:
         return jsonify(err=5,
                        msg='no article found')
 

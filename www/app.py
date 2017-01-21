@@ -55,7 +55,7 @@ def show_article(aid):
     from model import get_article
     a = get_article(aid)
     if a is None:
-        raise NotFound('article for id={} not exist'.format(aid))
+        raise NotFound('article not exist')
 
     def get_css(dom):
         import os
