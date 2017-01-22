@@ -47,28 +47,32 @@ class MongoDB():
                          key))
 
 
-articledb = MongoDB(app.config['MONGODB_STOREDB_NAME'])
-scoredb = MongoDB(app.config['MONGODB_SCOREDB_NAME'])
+ArticleDB = MongoDB(app.config['MONGODB_STOREDB_NAME'])
+ScoreDB = MongoDB(app.config['MONGODB_SCOREDB_NAME'])
 
 
 def get_begin_day():
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date', ASCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() > 0 else None
+    ).sort('crawl_date',
+           ASCENDING
+           ).limit(1)
+    return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
 def get_end_day():
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date', DESCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() > 0 else None
+    ).sort('crawl_date',
+           DESCENDING
+           ).limit(1)
+    return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
 def get_spider_score(spids):
-    cursor = scoredb.spider.find(
+    cursor = ScoreDB.spider.find(
         {
             'id': {'$in': spids}
         },
@@ -77,11 +81,11 @@ def get_spider_score(spids):
             'score': 1
         }
     )
-    return {r['id']: r['score'] for r in cursor}
+    return {_['id']: _['score'] for _ in cursor}
 
 
 def get_article_score(aids):
-    cursor = scoredb.article.find(
+    cursor = ScoreDB.article.find(
         {
             'id': {'$in': aids}
         },
@@ -90,7 +94,7 @@ def get_article_score(aids):
             'score': 1
         }
     )
-    return {r['id']: r['score'] for r in cursor}
+    return {_['id']: _['score'] for _ in cursor}
 
 
 def get_score(el):
@@ -125,7 +129,7 @@ def get_entries(day):
                      0,
                      0)
     day_n = day_s + timedelta(days=1)
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'crawl_date': {'$gte': day_s,
                            '$lt': day_n}
@@ -140,18 +144,20 @@ def get_entries(day):
             'link': 1,
         }
     )
-    el = [Entry_Day(str(r['_id']),
-                    r['title'],
-                    r['category'],
-                    r['source'],
-                    r['tag'] if 'tag' in r else None,
-                    r['spider'],
-                    r['domain'],
-                    r['link'])
-          for r in cursor]
+    el = [Entry_Day(str(_['_id']),
+                    _['title'],
+                    _['category'],
+                    _['source'],
+                    _['tag'] if 'tag' in _ else None,
+                    _['spider'],
+                    _['domain'],
+                    _['link'])
+          for _ in cursor]
     scores = get_score(el)
     entries = defaultdict(list)
-    for e in sorted(el, key=lambda i: scores[i.id], reverse=True):
+    for e in sorted(el,
+                    key=lambda i: scores[i.id],
+                    reverse=True):
         entries[e.category].append(e)
     return entries
 
@@ -164,7 +170,7 @@ def get_before_day(day):
                  0,
                  0,
                  0)
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'crawl_date': {'$lt': t}
         },
@@ -174,7 +180,7 @@ def get_before_day(day):
     ).sort('crawl_date',
            DESCENDING
            ).limit(1)
-    return None if cursor.count() == 0 else cursor[0]['crawl_date'].date()
+    return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
 def get_after_day(day):
@@ -186,7 +192,7 @@ def get_after_day(day):
                  0,
                  0)
     t_pre = t + timedelta(days=1)
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'crawl_date': {'$gte': t_pre}
         },
@@ -196,7 +202,7 @@ def get_after_day(day):
     ).sort('crawl_date',
            ASCENDING
            ).limit(1)
-    return None if cursor.count() == 0 else cursor[0]['crawl_date'].date()
+    return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
 """
@@ -205,13 +211,13 @@ def get_after_day(day):
 
 
 def get_spiders():
-    cursor = articledb.spider.find({},
+    cursor = ArticleDB.spider.find({},
                                    {'title': 1})
-    return {str(r['_id']): r['title'] for r in cursor}
+    return {str(_['_id']): _['title'] for _ in cursor}
 
 
 def get_first_aid(spid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'spider': spid
         },
@@ -221,11 +227,11 @@ def get_first_aid(spid):
     ).sort('_id',
            ASCENDING
            ).limit(1)
-    return None if cursor.count() == 0 else cursor[0]['_id']
+    return cursor[0]['_id'] if cursor.count() else None
 
 
 def get_last_aid(spid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'spider': spid
         },
@@ -235,17 +241,11 @@ def get_last_aid(spid):
     ).sort('_id',
            DESCENDING
            ).limit(1)
-    return None if cursor.count() == 0 else cursor[0]['_id']
-
-
-def check_aid(aid, first, last):
-    if aid < first or aid > last:
-        return False
-    return True
+    return cursor[0]['_id'] if cursor.count() else None
 
 
 def get_crawl_date(aid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             '_id': aid
         },
@@ -253,11 +253,11 @@ def get_crawl_date(aid):
             'crawl_date': 1
         }
     )
-    return None if cursor.count() == 0 else cursor[0]['crawl_date']
+    return cursor[0]['crawl_date'] if cursor.count() else None
 
 
 def get_entries_next(spid, aid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             '_id': {'$lt': aid},
             'spider': spid
@@ -269,17 +269,13 @@ def get_entries_next(spid, aid):
     ).sort('_id',
            DESCENDING
            ).limit(100)
-    if cursor.count() == 0:
-        return None
-    entries = []
-    for a in cursor:
-        entries.append(Entry(str(a['_id']),
-                             a['title']))
-    return entries
+    return [Entry(str(_['_id']),
+                  _['title'])
+            for _ in cursor] if cursor.count() else None
 
 
 def get_entries_pre(spid, aid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             '_id': {'$gt': aid},
             'spider': spid
@@ -291,17 +287,13 @@ def get_entries_pre(spid, aid):
     ).sort('_id',
            ASCENDING
            ).limit(100)
-    if cursor.count() == 0:
-        return None
-    entries = []
-    for a in cursor:
-        entries.append(Entry(str(a['_id']),
-                             a['title']))
-    return list(reversed(entries))
+    return list(reversed([Entry(str(_['_id']),
+                                _['title'])
+                          for _ in cursor])) if cursor.count() else None
 
 
 def get_entries_spider(spid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'spider': spid
         },
@@ -312,13 +304,9 @@ def get_entries_spider(spid):
     ).sort('_id',
            DESCENDING
            ).limit(100)
-    if cursor.count() == 0:
-        return None
-    entries = []
-    for a in cursor:
-        entries.append(Entry(str(a['_id']),
-                             a['title']))
-    return entries
+    return [Entry(str(_['_id']),
+                  _['title'])
+            for _ in cursor] if cursor.count() else None
 
 
 Article = namedtuple('Article',
@@ -333,7 +321,7 @@ Article = namedtuple('Article',
 
 
 def get_article(aid):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             '_id': aid
         },
@@ -348,11 +336,12 @@ def get_article(aid):
         }
     )
 
-    if cursor.count() == 0:
+    if not cursor.count():
         return None
 
     r = cursor[0]
-    if type(r['content']) is bytes:
+    if isinstance(r['content'],
+                  bytes):
         r['content'] = r['content'].decode('UTF-8')
     if 'source' not in r:
         r['source'] = None
@@ -371,7 +360,7 @@ def get_article(aid):
 
 
 def vote_article(a):
-    scoredb.article.update(
+    ScoreDB.article.update(
         {
             'id': a.id
         },
@@ -380,7 +369,7 @@ def vote_article(a):
         },
         upsert=True
     )
-    scoredb.spider.update(
+    ScoreDB.spider.update(
         {
             'id': a.spider
         },
@@ -392,26 +381,27 @@ def vote_article(a):
 
 
 def get_categories():
-    return articledb.article.distinct('category')
+    return ArticleDB.article.distinct('category')
 
 
 # function for test
-Aid = namedtuple('Aid', ['id'])
+AID = namedtuple('AID', ['id'])
 
 
 def get_all_days():
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {},
         {
             'crawl_date': 1
         }
     )
-    return None if cursor.count() == 0 else set(
-        [r['crawl_date'].date() for r in cursor])
+    return set([_['crawl_date'].date()
+                for _ in cursor]
+               ) if cursor.count() else None
 
 
 def get_all_articles(c):
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {
             'category': c
         },
@@ -420,17 +410,17 @@ def get_all_articles(c):
         }
     ).sort('_id',
            ASCENDING)
-    return None if cursor.count() == 0 else [Aid(r['_id']) for r in cursor]
+    return [AID(_['_id']) for _ in cursor] if cursor.count() else None
 
 
 def get_articles():
-    cursor = articledb.article.find(
+    cursor = ArticleDB.article.find(
         {},
         {
             '_id': 1
         }
     )
-    return None if cursor.count() == 0 else [r['_id'] for r in cursor]
+    return [_['_id'] for _ in cursor] if cursor.count() else None
 
 
 def get_max_aid_all():
