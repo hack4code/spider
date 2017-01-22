@@ -73,9 +73,10 @@ def vote():
     if a is None:
         return jsonify(err=4,
                        msg='no article')
-    vote_article(a)
-    return jsonify(err=0,
-                   aid=str(aid))
+    else:
+        vote_article(a)
+        return jsonify(err=0,
+                       aid=str(aid))
 
 
 @api_page.route('/day', methods=['POST'])
@@ -99,7 +100,7 @@ def get_entries_byday():
         return jsonify(err=1,
                        msg='no articles')
 
-    entries = get_entries(day_entry) or None
+    entries = get_entries(day_entry)
 
     day_before = get_before_day(day_entry)
     if day_before is not None:

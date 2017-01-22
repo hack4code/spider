@@ -159,7 +159,7 @@ def get_entries(day):
                     key=lambda i: scores[i.id],
                     reverse=True):
         entries[e.category].append(e)
-    return entries
+    return entries if entries else None
 
 
 def get_before_day(day):
