@@ -2,8 +2,12 @@
 
 
 import logging
-import requests
 from datetime import datetime, date
+
+import requests
+
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
 
 from flask import Blueprint, jsonify, request, session
 
@@ -23,10 +27,10 @@ def gen_atom_feed():
         url = '{}/atom'.format(app.config['FEED_SUBMIT_URL'])
         r = requests.post(url,
                           request.form)
-    except:
+    except ConnectionError:
         logger.error('genspider[atom] error')
         return jsonify(err=1,
-                       msg='exception')
+                       msg='connection exception')
     rj = r.json()
     return jsonify(err=rj['err'],
                    msg=rj['msg'])
@@ -38,10 +42,10 @@ def gen_blog_feed():
         url = '{}/blog'.format(app.config['FEED_SUBMIT_URL'])
         r = requests.post(url,
                           request.form)
-    except:
+    except ConnectionError:
         logger.error('genspider[blog] error')
         return jsonify(err=1,
-                       msg='exception')
+                       msg='connection exception')
     rj = r.json()
     return jsonify(err=rj['err'],
                    msg=rj['msg'])
@@ -50,9 +54,6 @@ def gen_blog_feed():
 @api_page.route('/vote', methods=['POST'])
 def vote():
     from model import get_article, vote_article
-    from bson.objectid import ObjectId
-    from bson.errors import InvalidId
-
     if 'uid' not in session:
         return jsonify(err=1,
                        msg='no uid')
@@ -79,9 +80,7 @@ def vote():
 
 @api_page.route('/day', methods=['POST'])
 def get_entries_byday():
-    from model import get_begin_day, get_entries, \
-        get_before_day, get_after_day
-
+    from model import get_begin_day, get_entries, get_before_day, get_after_day
     day = request.form.get('day',
                            None)
     try:
@@ -96,13 +95,11 @@ def get_entries_byday():
         return jsonify(err=1,
                        msg='no articles')
 
-    if day_entry < day_begin or day_entry > datetime.utcnow().date():
+    if not day_begin <= day_entry <= datetime.utcnow().date():
         return jsonify(err=1,
                        msg='no articles')
 
-    entries = get_entries(day_entry)
-    if not entries:
-        entries = None
+    entries = get_entries(day_entry) or None
 
     day_before = get_before_day(day_entry)
     if day_before is not None:
@@ -119,13 +116,12 @@ def get_entries_byday():
 
 @api_page.route('/categories', methods=['GET'])
 def categories():
+    from model import get_categories
     categories = {u'技术',
                   u'数据库',
                   u'安全',
                   u'科技',
                   u'新闻'}
-
-    from model import get_categories
     categories.update(get_categories() or {})
     return jsonify(err=0,
                    data=list(categories))
@@ -156,8 +152,6 @@ def get_entries_byspider():
                            None) or request.form.get('aid',
                                                      None)
     if aid:
-        from bson.objectid import ObjectId
-        from bson.errors import InvalidId
         try:
             aid = ObjectId(aid)
         except InvalidId:
@@ -183,11 +177,11 @@ def get_entries_byspider():
     if not entries:
         return jsonify(err=5,
                        msg='no article found')
-
-    return jsonify(err=0,
-                   spider=Spider(spid,
-                                 spiders[spid]),
-                   entries=entries)
+    else:
+        return jsonify(err=0,
+                       spider=Spider(spid,
+                                     spiders[spid]),
+                       entries=entries)
 
 
 @api_page.route('/spiders', methods=['GET'])
