@@ -16,16 +16,18 @@ class ContentPipeline(object):
     DEFAULT_REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
     DEFAULT_SAFE_ATTRS = 'safe_attrs'
 
-    removed_attrs = ('class',
-                     'id')
-    safe_attrs = {'style',
+    SAFE_ATTRS = {'style',
                   'float',
-                  'width',
-                  'height',
                   'src',
                   'font-size',
                   'font-family',
                   'align'}
+
+    REMOVED_ATTRS = ('class',
+                     'id')
+
+    STYLE_REMOVED_ATTRS = (r'width\s*=\s*"\d+.*"',
+                           r'height\s*=\s*"\d+.*"')
 
     @classmethod
     def from_settings(cls, settings):
@@ -54,46 +56,60 @@ class ContentPipeline(object):
 
     def remove_element_with_class(self, doc, removed_classes):
         for e in doc.xpath('//div[@class]'):
-            if any(cls in e.get('class') for cls in removed_classes):
+            if any(cls in e.get('class').lower() for cls in removed_classes):
                 e.drop_tree()
         return doc
 
     def remove_element_with_xpath_nodes(self, doc, removed_xpath_nodes):
-        for xpath_node in removed_xpath_nodes:
+        for xpath in removed_xpath_nodes:
             try:
-                nodes = doc.xpath(xpath_node)
+                nodes = doc.xpath(xpath)
             except XPathEvalError:
                 logger.error((
                     'Error in pipeline content invalid xpath[{}]'
-                    ).format(xpath_node))
-            for node in nodes:
-                node.drop_tree()
+                    ).format(xpath))
+            for _ in nodes:
+                _.drop_tree()
         return doc
 
     def clean_html(self, doc, allow_classes=None, safe_attrs=None):
         allow_classes = allow_classes or ()
         safe_attrs = (set(defs.safe_attrs) |
-                      self.safe_attrs |
+                      self.SAFE_ATTRS |
                       set(safe_attrs or []))
         cleaner = Cleaner(safe_attrs_only=True,
                           safe_attrs=safe_attrs)
         doc = cleaner.clean_html(doc)
 
-        def remove_attr(doc):
-            for it in doc.iter():
-                if it.tag == 'article':
-                    it.tag = 'div'
-                for attr in self.removed_attrs:
-                    if attr in it.attrib:
-                        if (attr == 'class' and
-                                it.get(attr).strip('\n\t ') in allow_classes):
-                            continue
-                        it.attrib.pop(attr)
-
-        remove_attr(doc)
-
         while (len(doc) == 1):
             doc = doc[0]
+
+        def rename_tag(doc):
+            for e in doc.iter():
+                if e.tag.lower() == 'article':
+                    e.tag = 'div'
+
+        rename_tag(doc)
+
+        def remove_attr(doc):
+            pattern = re.compile('|'.join(self.STYLE_REMOVED_ATTRS))
+            for e in doc.iter():
+                if 'style' in e.attrib:
+                    style_ = re.sub(pattern,
+                                    '',
+                                    e.get('style'),
+                                    flags=re.IGNORECASE)
+                    style = re.sub(r'\s{2,}',
+                                   ' ',
+                                   style_)
+                    e.attrib['style'] = style.strip()
+                for attr in self.REMOVED_ATTRS:
+                    if (attr in e.attrib and
+                        not (attr == 'class' and
+                             e.get(attr).lower().strip() in allow_classes)):
+                        e.attrib.pop(attr)
+
+        remove_attr(doc)
 
         def remove_empty_tag(doc):
             for e in doc.xpath('//i[not(text())]'):
@@ -113,6 +129,7 @@ class ContentPipeline(object):
                     break
 
         remove_empty_tag(doc)
+
         return doc
 
     def process_item(self, item, spider):
