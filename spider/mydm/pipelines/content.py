@@ -98,11 +98,14 @@ class ContentPipeline(object):
                 if 'style' in e.attrib:
                     style_ = re.sub(pattern,
                                     '',
-                                    e.get('style'))
+                                    e.get('style')).strip()
                     style = re.sub(r'\s{2,}',
                                    ' ',
-                                   style_)
-                    e.attrib['style'] = style.strip()
+                                   style_).strip()
+                    if style:
+                        e.attrib['style'] = style
+                    else:
+                        e.attrib.pop('style')
                 for attr in self.REMOVED_ATTRS:
                     if (attr in e.attrib and
                         not (attr == 'class' and
