@@ -92,13 +92,13 @@ class ContentPipeline(object):
         rename_tag(doc)
 
         def remove_attr(doc):
-            pattern = re.compile('|'.join(self.STYLE_REMOVED_ATTRS))
+            pattern = re.compile('|'.join(self.STYLE_REMOVED_ATTRS),
+                                 flags=re.IGNORECASE)
             for e in doc.iter():
                 if 'style' in e.attrib:
                     style_ = re.sub(pattern,
                                     '',
-                                    e.get('style'),
-                                    flags=re.IGNORECASE)
+                                    e.get('style'))
                     style = re.sub(r'\s{2,}',
                                    ' ',
                                    style_)
