@@ -89,12 +89,14 @@ a {
   font-weight: normal;
  }
 
+/*
  #article figure {
-  max-width: 92% !important;
+  max-width: 300px !important;
  }
+ */
 
  #article img {
-  max-width: 92% !important;
+  max-width: 300px !important;
   height: auto !important;
  }
 }
