@@ -50,6 +50,7 @@ def gen_blog_feed():
 @api_page.route('/vote', methods=['POST'])
 def vote():
     from model import get_article, vote_article
+
     if 'uid' not in session:
         return jsonify(err=1,
                        msg='no uid')
@@ -67,13 +68,14 @@ def vote():
                        msg='invalid aid')
 
     a = get_article(aid)
-    if a is None:
-        return jsonify(err=4,
-                       msg='no article')
-    else:
+
+    if a:
         vote_article(a)
         return jsonify(err=0,
                        aid=str(aid))
+    else:
+        return jsonify(err=4,
+                       msg='no article')
 
 
 @api_page.route('/day', methods=['POST'])
