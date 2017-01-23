@@ -109,7 +109,7 @@ class ContentPipeline(object):
                 for attr in self.REMOVED_ATTRS:
                     if (attr in e.attrib and
                         not (attr == 'class' and
-                             e.get(attr).lower().strip() in allow_classes)):
+                             e.get(attr).strip() in allow_classes)):
                         e.attrib.pop(attr)
 
         remove_attr(doc)
