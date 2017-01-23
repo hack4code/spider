@@ -48,9 +48,8 @@ def show_entries_byday(day):
 @app.route('/a/<id:aid>', methods=['GET'])
 def show_article(aid):
     from model import get_article
+
     a = get_article(aid)
-    if a is None:
-        raise NotFound('article not exist')
 
     def get_css(dom):
         import os
@@ -58,9 +57,12 @@ def show_article(aid):
                                       dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
 
-    return render_template('article.html',
-                           article=a,
-                           dom_css=get_css(a.domain))
+    if a:
+        return render_template('article.html',
+                               article=a,
+                               dom_css=get_css(a.domain))
+    else:
+        raise NotFound('article not exist')
 
 
 @app.route('/p/<id:spid>', methods=['GET'])
