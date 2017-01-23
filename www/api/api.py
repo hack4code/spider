@@ -58,11 +58,12 @@ def vote():
         return jsonify(err=1,
                        msg='no uid')
 
-    if 'aid' not in request.form:
+    try:
+        aid = request.form['aid']
+    except KeyError:
         return jsonify(err=2,
                        msg='no aid')
 
-    aid = request.form['aid']
     try:
         aid = ObjectId(aid)
     except InvalidId:

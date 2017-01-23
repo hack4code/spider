@@ -121,18 +121,18 @@ def get_score(el):
 
 
 def get_entries(day):
-    day_s = datetime(day.year,
-                     day.month,
-                     day.day,
-                     0,
-                     0,
-                     0,
-                     0)
-    day_n = day_s + timedelta(days=1)
+    bday = datetime(day.year,
+                    day.month,
+                    day.day,
+                    0,
+                    0,
+                    0,
+                    0)
+    eday = bday + timedelta(days=1)
     cursor = ArticleDB.article.find(
         {
-            'crawl_date': {'$gte': day_s,
-                           '$lt': day_n}
+            'crawl_date': {'$gte': bday,
+                           '$lt': eday}
         },
         {
             'title': 1,
@@ -191,10 +191,10 @@ def get_after_day(day):
                  0,
                  0,
                  0)
-    t_pre = t + timedelta(days=1)
+    pt = t + timedelta(days=1)
     cursor = ArticleDB.article.find(
         {
-            'crawl_date': {'$gte': t_pre}
+            'crawl_date': {'$gte': pt}
         },
         {
             'crawl_date': 1
