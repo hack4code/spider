@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 from datetime import datetime, date
 
 import requests
@@ -12,9 +11,6 @@ from bson.errors import InvalidId
 from flask import Blueprint, jsonify, request, session
 
 from app import app
-
-
-logger = logging.getLogger(__name__)
 
 
 api_page = Blueprint('api_page',
@@ -28,7 +24,7 @@ def gen_atom_feed():
         r = requests.post(url,
                           request.form)
     except ConnectionError:
-        logger.error('genspider[atom] error')
+        app.logger.error('genspider[atom] error')
         return jsonify(err=1,
                        msg='connection exception')
     rj = r.json()
@@ -43,7 +39,7 @@ def gen_blog_feed():
         r = requests.post(url,
                           request.form)
     except ConnectionError:
-        logger.error('genspider[blog] error')
+        app.logger.error('genspider[blog] error')
         return jsonify(err=1,
                        msg='connection exception')
     rj = r.json()
@@ -176,14 +172,14 @@ def get_entries_byspider():
     else:
         entries = get_entries_spider(spid)
 
-    if not entries:
-        return jsonify(err=5,
-                       msg='no article found')
-    else:
+    if entries:
         return jsonify(err=0,
                        spider=Spider(spid,
                                      spiders[spid]),
                        entries=entries)
+    else:
+        return jsonify(err=5,
+                       msg='no article found')
 
 
 @api_page.route('/spiders', methods=['GET'])

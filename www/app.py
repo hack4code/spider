@@ -34,24 +34,19 @@ app.url_map.converters['id'] = IdConverter
 
 @app.route('/', methods=['GET'])
 def home():
-    today = str(datetime.utcnow().date())
+    today = datetime.utcnow().date()
     return show_entries_byday(today)
 
 
 @app.route('/d/<date:day>', methods=['GET'])
 @need_uid
 def show_entries_byday(day):
-    if day is None:
-        raise BadRequest('invalid day')
     return render_template('day.html',
                            day_entry=day)
 
 
 @app.route('/a/<id:aid>', methods=['GET'])
 def show_article(aid):
-    if aid is None:
-        raise BadRequest('invalid article id')
-
     from model import get_article
     a = get_article(aid)
     if a is None:
@@ -73,17 +68,16 @@ def show_entries_byspider(spid):
     from collections import namedtuple
     Spider = namedtuple('Spider', ['id', 'source'])
 
-    if spid is None:
-        raise BadRequest('invalid spider id')
     spid = str(spid)
 
     from model import get_spiders
     spiders = get_spiders()
-    if spid not in spiders:
+    if spid in spiders:
+        return render_template('entries.html',
+                               spider=Spider(spid,
+                                             spiders[spid]))
+    else:
         raise BadRequest('spider id not existed')
-    return render_template('entries.html',
-                           spider=Spider(spid,
-                                         spiders[spid]))
 
 
 @app.route('/l/p', methods=['GET'])
