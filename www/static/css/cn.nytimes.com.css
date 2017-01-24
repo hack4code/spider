@@ -7,7 +7,9 @@
  max-width: 98% !important;
  margin-left: auto;
  margin-right: auto;
+ /*
  padding: 6px 0;
+ */
 }
 
 .photoCredit,
@@ -16,12 +18,12 @@
  font-family: Heiti;
  padding: 0;
  margin: 0;
- line-height: 1.6em;
+ line-height: 1.4em;
 }
 
 .photoCredit p,
 .photoWrapper p {
- margin: 0 6em;
+ margin: 0 3em;
  padding: 0;
  color: #909090;
 }
