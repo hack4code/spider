@@ -28,10 +28,8 @@ class ContentPipeline(object):
                      'width',
                      'height')
 
-    STYLE_REMOVED_ATTRS = (r'width\s*=\s*"?\d+[^" ]*"?',
-                           r'width\s*:\s*\d+[^;]*;',
-                           r'height\s*=\s*"?\d+[^" ]*"?',
-                           r'height\s*:\s*\d+[^;]*;')
+    STYLE_REMOVED_ATTRS = (r'width\s*:\s*\d+[^;]*(;|$)',
+                           r'height\s*:\s*\d+[^;]*(;|$)')
 
     @classmethod
     def from_settings(cls, settings):
