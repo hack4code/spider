@@ -209,6 +209,7 @@ class DomainLink extends React.Component  {
       whiteSpace: "nowrap",
       textDecoration: "none",
       margin: "0px",
+      padding: "0px",
     };
     let url = "http://" + this.props.domain;
 
@@ -288,6 +289,8 @@ class EntryTags extends React.Component {
       flexDirection: "row",
       flexWrap: "wrap",
       alignItems: "baseline",
+      margin: "0px",
+      padding: "0px",
     };
     let spider = this.props.spider;
     let tags = this.props.tags;
