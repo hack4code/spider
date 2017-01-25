@@ -166,8 +166,11 @@ class ArticleLink extends React.Component  {
   render() {
     const style = {
       fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
-      fontSize: "0.9em",
+      fontSize: "1em",
       fontWeight: "normal",
+      lineHeight: "110%",
+      margin: "0px",
+      padding: "0px",
     };
     let url = "/a/" + this.props.aid;
     let title = decodeEntities(this.props.title);
@@ -183,6 +186,7 @@ class ArticleLink extends React.Component  {
 class OrginalLink extends React.Component  {
   render() {
     const style = {
+      margin: "0px",
       padding: "0 6px",
       fontSize: "x-small",
     };
@@ -203,7 +207,8 @@ class DomainLink extends React.Component  {
       color: "#888",
       fontSize: "x-small",
       whiteSpace: "nowrap",
-      textDecoration: "none"
+      textDecoration: "none",
+      margin: "0px",
     };
     let url = "http://" + this.props.domain;
 
@@ -218,9 +223,8 @@ class DomainLink extends React.Component  {
 class EntryTitle extends React.Component  {
   render() {
     const style = {
-      margin: 0,
-      padding: 0,
-      lineHeight: 1
+      margin: "0px",
+      padding: "0px"
     };
 
     return (
@@ -283,7 +287,7 @@ class EntryTags extends React.Component {
       display: "flex",
       flexDirection: "row",
       flexWrap: "wrap",
-      alignItems: "baseline"
+      alignItems: "baseline",
     };
     let spider = this.props.spider;
     let tags = this.props.tags;
