@@ -165,7 +165,7 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
   render() {
     const style = {
-      fontFamily: "verdana, helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
+      fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
       fontSize: "0.9em",
       fontWeight: "normal",
     };
