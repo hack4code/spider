@@ -29,7 +29,9 @@ class ContentPipeline(object):
                      'height')
 
     STYLE_REMOVED_ATTRS = (r'width\s*=\s*"?\d+[^" ]*"?',
-                           r'height\s*=\s*"?\d+[^" ]*"?')
+                           r'width\s*:\s*\d+[^;]*;',
+                           r'height\s*=\s*"?\d+[^" ]*"?',
+                           r'height\s*:\s*\d+[^;]*;')
 
     @classmethod
     def from_settings(cls, settings):
@@ -117,15 +119,18 @@ class ContentPipeline(object):
         remove_attr(doc)
 
         def remove_empty_tag(doc):
-            for e in doc.xpath('//i[not(text())]'):
-                e.drop_tree()
+            TAGS = ('//i[not(text())]',
+                    '//ins[not(text())]')
+
+            for xp in TAGS:
+                for e in doc.xpath(xp):
+                    e.drop_tree()
 
             while True:
                 for e in doc.xpath((
                         '//div[not(descendant::div) and '
                         'not(descendant::img) and not(text())]'
                         )):
-                    if len(e.text_content().strip(' \n\r\t')) == 0:
                         e.drop_tree()
                         # break for
                         break
