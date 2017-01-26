@@ -96,8 +96,8 @@ def blog():
     return render_template('blog.html')
 
 
-from .api import api_page
+from api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
 
-from .submit import submit_page
+from submit import submit_page
 app.register_blueprint(submit_page, url_prefix='/submit')
