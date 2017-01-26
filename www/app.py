@@ -100,4 +100,4 @@ from api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
 
 from feed import feed_page
-app.register_blueprint(feed_page, url_prefix='/feed')
+app.register_blueprint(feed_page, url_prefix='/submit')

@@ -30,7 +30,7 @@ def _send(queue, data):
 
 
 @feed_page.route('/crawl', methods=['POST'])
-def run_spider():
+def crawl():
     spiders = [sp for sp in request.form["spiders"].split(",")]
     _send(CRAWL_QUEUE_NAME,
           {'spiders': spiders})
