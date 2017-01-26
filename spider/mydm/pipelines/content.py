@@ -65,15 +65,17 @@ class ContentPipeline(object):
         return doc
 
     def remove_element_with_xpath_nodes(self, doc, removed_xpath_nodes):
-        for xpath in removed_xpath_nodes:
+        for xpath in filter(lambda x: x.strip(),
+                            removed_xpath_nodes):
             try:
                 nodes = doc.xpath(xpath)
             except XPathEvalError:
                 logger.error((
                     'Error in pipeline content invalid xpath[{}]'
                     ).format(xpath))
-            for _ in nodes:
-                _.drop_tree()
+            else:
+                for _ in nodes:
+                    _.drop_tree()
         return doc
 
     def clean_html(self, doc, allow_classes=None, safe_attrs=None):
