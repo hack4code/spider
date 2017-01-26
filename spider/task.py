@@ -11,6 +11,10 @@ import redis
 
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerProcess
+from twisted.internet import reactor
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.log import configure_logging
+
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
@@ -182,10 +186,9 @@ def gen_blogspider(args):
 
 def crawl(args):
     logger.info('job crawl start ...')
-
     spiders_ = args.get('spiders')
-    process = CrawlerProcess(settings)
-    loader = process.spider_loader
+    runner = CrawlerRunner(settings)
+    loader = runner.spider_loader
     if 'all' in spiders_:
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
@@ -194,18 +197,21 @@ def crawl(args):
     if not spiders:
         return False
 
+    configure_logging(settings,
+                      install_root_handler=False)
     for _ in spiders:
-        process.crawl(_)
+        runner.crawl(_)
+    d = runner.join()
+    d.addBoth(lambda _: reactor.stop())
+    reactor.run()
 
-    def flush_db():
-        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-        r = redis.Redis(host=conf.host,
-                        port=conf.port,
-                        db=conf.database)
-        r.flushdb()
 
-    flush_db()
-    process.start()
+def flush_db():
+    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    r = redis.Redis(host=conf.host,
+                    port=conf.port,
+                    db=conf.database)
+    r.flushdb()
 
 
 def get_recrawl_spiders(loader):

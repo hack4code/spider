@@ -35,6 +35,9 @@ def _send(key, data):
 def crawl():
     spiders = [_ for _ in (__ for __ in request.form['spiders'].split(','))
                if _]
+    if not spiders:
+        return jsonify(err=1,
+                       msg='no spiders')
     _send(CRAWL_KEY,
           {'spiders': spiders})
     return jsonify(err=0)
