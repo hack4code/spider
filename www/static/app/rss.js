@@ -43,8 +43,8 @@ class SubmitForm extends React.Component {
       }
 
       let that = this;
-      fetch("/api/feed/rss", {method: "post",
-                              body: data}
+      fetch("/submit/rss", {method: "post",
+                            body: data}
       )
       .then(function(response) {
         return response.json();
