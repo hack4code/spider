@@ -13,9 +13,9 @@ MONGODB_PWD = 'flask'
 
 # rabbitmq
 BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
-CRAWL_QUEUE_NAME = 'crawl_job_queue'
-LXMLSPIDER_QUEUE_NAME = 'lxmlspider_job_queue'
-BLOGSPIDER_QUEUE_NAME = 'blogspider_job_queue'
+CRAWL_KEY = 'crawl'
+LXMLSPIDER_KEY = 'lxmlspider'
+BLOGSPIDER_KEY = 'blogspider'
 
 # log
 LOG_FILE = '/var/log/www/www.log'

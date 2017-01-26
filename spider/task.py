@@ -181,24 +181,21 @@ def gen_blogspider(args):
 
 
 def crawl(args):
-    logger.setLevel(settings['LOG_LEVEL'])
     logger.info('job crawl start ...')
 
-    if not args:
-        return False
-
-    recrawl = False
+    spiders_ = args.get('spiders')
     process = CrawlerProcess(settings)
     loader = process.spider_loader
-    if args[0] == 'all':
-        recrawl = True
+    if 'all' in spiders_:
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
-        spiders = [loader.load(spid)
-                   for spid in args if spid in loader.list()]
+        spiders = [loader.load(spid) for spid in spiders_
+                   if spid in loader.list()]
+    if not spiders:
+        return False
 
-    for sp in spiders:
-        process.crawl(sp)
+    for _ in spiders:
+        process.crawl(_)
 
     def flush_db():
         conf = parse_redis_url(settings['SPIDER_STATS_URL'])
@@ -210,21 +207,21 @@ def crawl(args):
     flush_db()
     process.start()
 
-    def get_recrawl_spiders():
-        if not recrawl:
-            return []
-        spiders = []
-        conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-        r = redis.Redis(host=conf.host,
-                        port=conf.port,
-                        db=conf.database)
-        for sp in loader.list():
-            n = r.get(sp)
-            n = 0 if n is None else int(n)
-            if n == 0:
-                spiders.append(sp)
-        return spiders
-    return get_recrawl_spiders()
+
+def get_recrawl_spiders(loader):
+    if not recrawl:
+        return []
+    spiders = []
+    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    r = redis.Redis(host=conf.host,
+                    port=conf.port,
+                    db=conf.database)
+    for sp in loader.list():
+        n = r.get(sp)
+        n = 0 if n is None else int(n)
+        if n == 0:
+            spiders.append(sp)
+    return spiders
 
 
 def recrawl(spids):
@@ -250,6 +247,5 @@ def recrawl(spids):
             yield runner.crawl(sp)
         reactor.stop()
     run_failed_spiders(settings)
-
     reactor.run()
     return True

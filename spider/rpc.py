@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 import logging
 import sys
 import time
@@ -14,8 +17,8 @@ from task import crawl, gen_lxmlspider, gen_blogspider
 settings = get_project_settings()
 
 
-def run(ch, method, properties, body):
-    args = json.loads(body)['spiders']
+def cron(ch, method, properties, body):
+    args = json.loads(body)
     p = Process(target=crawl,
                 args=(args,))
     p.start()
@@ -32,13 +35,19 @@ def blogspider(ch, method, properties, body):
     gen_blogspider(args)
 
 
-def task(callback, queue):
+def task(callback, key):
     host = settings['BROKER_URL']
     connection = pika.BlockingConnection(pika.connection.URLParameters(host))
     channel = connection.channel()
-    channel.queue_declare(queue=queue)
+    channel.exchange_declare(exchange='direct_logs',
+                             type='direct')
+    result = channel.queue_declare(exclusive=True)
+    queue_name = result.method.queue
+    channel.queue_bind(exchange='direct_logs',
+                       queue=queue_name,
+                       routing_key=key)
     channel.basic_consume(callback,
-                          queue=queue,
+                          queue=queue_name,
                           no_ack=True)
     channel.start_consuming()
 
@@ -56,14 +65,15 @@ def init_logger(settings):
 def main():
     init_logger(settings)
     logger = logging.getLogger(__name__)
-    TASKS = [(run, settings['CRAWL_QUEUE_NAME']),
-             (lxmlspider, settings['LXMLSPIDER_QUEUE_NAME']),
-             (blogspider, settings['BLOGSPIDER_QUEUE_NAME'])]
-    consumers = [(Process(target=task, args=_), _) for _ in TASKS]
+    TASKS = [(cron, settings['CRAWL_KEY']),
+             (lxmlspider, settings['LXMLSPIDER_KEY']),
+             (blogspider, settings['BLOGSPIDER_KEY'])]
+    consumers = [(Process(target=task,
+                          args=_),
+                  _) for _ in TASKS]
     time.sleep(60)
     for p, _ in consumers:
         p.start()
-
     logger.info('rpc task running ...')
     for i, (p, args) in enumerate(consumers):
         logger.info('check task state ...')
