@@ -15,8 +15,8 @@ CRAWL_QUEUE_NAME = app.config['CRAWL_QUEUE_NAME']
 LXMLSPIDER_QUEUE_NAME = app.config['LXMLSPIDER_QUEUE_NAME']
 BLOGSPIDER_QUEUE_NAME = app.config['BLOGSPIDER_QUEUE_NAME']
 
-feed_page = Blueprint('feed_page',
-                      __name__)
+submit_page = Blueprint('submit_page',
+                        __name__)
 
 
 def _send(queue, data):
@@ -29,7 +29,7 @@ def _send(queue, data):
                           body=body)
 
 
-@feed_page.route('/crawl', methods=['POST'])
+@submit_page.route('/crawl', methods=['POST'])
 def crawl():
     spiders = [sp for sp in request.form["spiders"].split(",")]
     _send(CRAWL_QUEUE_NAME,
@@ -37,7 +37,7 @@ def crawl():
     return jsonify(err=0)
 
 
-@feed_page.route('/rss', methods=['POST'])
+@submit_page.route('/rss', methods=['POST'])
 def gen_atom_spider():
     args = {k.strip(): v.strip() for k, v in request.form.items()}
     if 'url' not in args or 'category' not in args:
@@ -53,7 +53,7 @@ def gen_atom_spider():
     return jsonify(err=0)
 
 
-@feed_page.route("/blog", methods=["POST"])
+@submit_page.route("/blog", methods=["POST"])
 def gen_blog_spider():
     args = {k.strip(): v.strip() for k, v in request.form.items()}
     if 'url' not in args or 'category' not in args:

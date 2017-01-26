@@ -82,22 +82,22 @@ def show_entries_byspider(spid):
 
 
 @app.route('/l/p', methods=['GET'])
-def list_spiders():
+def spiders():
     return render_template('spiders.html')
 
 
 @app.route('/feed/rss', methods=['GET'])
-def submit_atom():
+def atom():
     return render_template('rss.html')
 
 
 @app.route('/feed/blog', methods=['GET'])
-def submit_blog():
+def blog():
     return render_template('blog.html')
 
 
-from api import api_page
+from .api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
 
-from feed import feed_page
-app.register_blueprint(feed_page, url_prefix='/submit')
+from .submit import submit_page
+app.register_blueprint(submit_page, url_prefix='/submit')
