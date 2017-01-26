@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import base64
 from io import BytesIO
 from urllib.parse import urljoin
@@ -11,10 +12,13 @@ from PIL import Image as ImageLib
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
-from ..log import logger
+logger = logging.getLogger(__name__)
 
 
 class ImgException(Exception):
+    """
+        Exception for image pipeline
+    """
     pass
 
 

@@ -22,7 +22,7 @@ Entry_Day = namedtuple('Entry_Day', ['id',
                                      'link'])
 
 
-class MongoDB():
+class MongoDB:
     def __init__(self, name):
         self.name = name
         self.client = MongoClient(app.config['MONGODB_URI'],
@@ -97,42 +97,40 @@ def get_article_score(aids):
     return {_['id']: _['score'] for _ in cursor}
 
 
-def get_score(el):
-    spids = set()
-    aids = set()
-    for e in el:
-        spids.add(e.spider)
-        aids.add(e.id)
-    sp_scores = get_spider_score(list(spids))
-    a_scores = get_article_score(list(aids))
-    max_sp_score = max(sp_scores.items(),
-                       key=lambda i: i[1])[1] if sp_scores else 1.0
-    max_a_score = max(a_scores.items(),
-                      key=lambda i: i[1])[1] if a_scores else 1.0
-    scores = {}
-    for e in el:
+def get_score(entries):
+    aids = {_.id for _ in entries}
+    spids = {_.spider for _ in entries}
+    spscores = get_spider_score(list(spids))
+    ascores = get_article_score(list(aids))
+    max_spscore = max(spscores.items(),
+                      key=lambda i: i[1])[1] if spscores else 1.0
+    max_ascore = max(ascores.items(),
+                     key=lambda i: i[1])[1] if ascores else 1.0
+
+    def get_score(e, spscores, max_spscore, ascores, max_ascore):
         spid = e.spider
         aid = e.id
-        sp_score = sp_scores[spid] if spid in sp_scores else 0
-        a_score = a_scores[aid] if aid in a_scores else 0
-        score = 10.0*sp_score/max_sp_score + 90.0*a_score/max_a_score
-        scores[aid] = score
-    return scores
+        spscore = spscores[spid] if spid in spscores else 0
+        ascore = ascores[aid] if aid in ascores else 0
+        return 10.0*spscore/max_spscore + 90.0*ascore/max_ascore
+
+    return {_.id: get_score(_, spscores, max_spscore, ascores, max_ascore)
+            for _ in entries}
 
 
 def get_entries(day):
-    bday = datetime(day.year,
-                    day.month,
-                    day.day,
-                    0,
-                    0,
-                    0,
-                    0)
-    eday = bday + timedelta(days=1)
+    begin = datetime(day.year,
+                     day.month,
+                     day.day,
+                     0,
+                     0,
+                     0,
+                     0)
+    end = begin + timedelta(days=1)
     cursor = ArticleDB.article.find(
         {
-            'crawl_date': {'$gte': bday,
-                           '$lt': eday}
+            'crawl_date': {'$gte': begin,
+                           '$lt': end}
         },
         {
             'title': 1,
@@ -144,18 +142,18 @@ def get_entries(day):
             'link': 1,
         }
     )
-    el = [Entry_Day(str(_['_id']),
-                    _['title'],
-                    _['category'],
-                    _['source'],
-                    _['tag'] if 'tag' in _ else None,
-                    _['spider'],
-                    _['domain'],
-                    _['link'])
-          for _ in cursor]
-    scores = get_score(el)
+    entries_ = [Entry_Day(str(_['_id']),
+                _['title'],
+                _['category'],
+                _['source'],
+                _['tag'] if 'tag' in _ else None,
+                _['spider'],
+                _['domain'],
+                _['link'])
+                for _ in cursor]
+    scores = get_score(entries_)
     entries = defaultdict(list)
-    for e in sorted(el,
+    for e in sorted(entries_,
                     key=lambda i: scores[i.id],
                     reverse=True):
         entries[e.category].append(e)
@@ -191,10 +189,10 @@ def get_after_day(day):
                  0,
                  0,
                  0)
-    pt = t + timedelta(days=1)
+    nextday = t + timedelta(days=1)
     cursor = ArticleDB.article.find(
         {
-            'crawl_date': {'$gte': pt}
+            'crawl_date': {'$gte': nextday}
         },
         {
             'crawl_date': 1

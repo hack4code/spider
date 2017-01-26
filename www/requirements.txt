@@ -1,11 +1,5 @@
-click
 Flask
-itsdangerous
-Jinja2
-MarkupSafe
-pymongo
-python-dateutil
 requests
-six
+pymongo
 uWSGI
-Werkzeug
+pika

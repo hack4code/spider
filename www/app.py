@@ -68,11 +68,10 @@ def show_article(aid):
 @app.route('/p/<id:spid>', methods=['GET'])
 def show_entries_byspider(spid):
     from collections import namedtuple
-    Spider = namedtuple('Spider', ['id', 'source'])
-
-    spid = str(spid)
-
     from model import get_spiders
+
+    Spider = namedtuple('Spider', ['id', 'source'])
+    spid = str(spid)
     spiders = get_spiders()
     if spid in spiders:
         return render_template('entries.html',
@@ -99,3 +98,6 @@ def submit_blog():
 
 from api import api_page
 app.register_blueprint(api_page, url_prefix='/api')
+
+from feed import feed_page
+app.register_blueprint(feed_page, url_prefix='/feed')

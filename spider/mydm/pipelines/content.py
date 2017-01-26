@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import re
 
 from lxml.html import fromstring, HTMLParser, defs
 from lxml.html.clean import Cleaner
 from lxml.etree import XPathEvalError
 
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 
 class ContentPipeline(object):
@@ -116,27 +118,23 @@ class ContentPipeline(object):
 
         remove_attr(doc)
 
-        def remove_empty_tag(doc):
+        def remove_tags(doc):
             TAGS = ('//i[not(text())]',
                     '//ins[not(text())]')
 
-            for xp in TAGS:
-                for e in doc.xpath(xp):
+            for t in TAGS:
+                for e in doc.xpath(t):
                     e.drop_tree()
 
-            while True:
-                for e in doc.xpath((
-                        '//div[not(descendant::div) and '
-                        'not(descendant::img) and not(text())]'
-                        )):
-                        e.drop_tree()
-                        # break for
-                        break
-                else:
-                    # break while
-                    break
+            for e in doc.xpath('//a/div'):
+                e.drop_tree()
 
-        remove_empty_tag(doc)
+            for e in doc.xpath((
+                    '//div[not(descendant::div) and not(descendant::img) and'
+                    ' not(text())]')):
+                e.drop_tree()
+
+        remove_tags(doc)
 
         return doc
 

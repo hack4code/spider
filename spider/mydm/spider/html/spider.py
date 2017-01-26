@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 from urllib.parse import urlparse
 from datetime import datetime
 import inspect
@@ -11,7 +12,9 @@ from scrapy import Request
 
 from ..spider import ErrbackSpider
 from ...items import ArticleItem
-from ...log import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class BLOGSpiderException(Exception):

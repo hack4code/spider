@@ -3,48 +3,14 @@
 
 from datetime import datetime, date
 
-import requests
-
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
 from flask import Blueprint, jsonify, request, session
 
-from app import app
-
 
 api_page = Blueprint('api_page',
                      __name__)
-
-
-@api_page.route('/feed/rss', methods=['POST'])
-def gen_atom_feed():
-    try:
-        url = '{}/atom'.format(app.config['FEED_SUBMIT_URL'])
-        r = requests.post(url,
-                          request.form)
-    except ConnectionError:
-        app.logger.error('genspider[atom] error')
-        return jsonify(err=1,
-                       msg='connection exception')
-    rj = r.json()
-    return jsonify(err=rj['err'],
-                   msg=rj['msg'])
-
-
-@api_page.route('/feed/blog', methods=['POST'])
-def gen_blog_feed():
-    try:
-        url = '{}/blog'.format(app.config['FEED_SUBMIT_URL'])
-        r = requests.post(url,
-                          request.form)
-    except ConnectionError:
-        app.logger.error('genspider[blog] error')
-        return jsonify(err=1,
-                       msg='connection exception')
-    rj = r.json()
-    return jsonify(err=rj['err'],
-                   msg=rj['msg'])
 
 
 @api_page.route('/vote', methods=['POST'])

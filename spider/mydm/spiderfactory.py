@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+
 from .spider import mk_lxmlspider_cls, mk_blogspider_cls
-from .log import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class SpiderFactoryException(Exception):

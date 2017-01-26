@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
-# DEBUG = True
 
-# cookie key
+# cookie
 SECRET_KEY = 'qweasdzxcrty'
 
-# config for mongodb
+# mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
 MONGODB_STOREDB_NAME = 'scrapy'
 MONGODB_SCOREDB_NAME = 'score'
 MONGODB_USER = 'flask'
 MONGODB_PWD = 'flask'
 
-# scrapy
-FEED_SUBMIT_URL = 'http://gw:8001/feed'
+# rabbitmq
+BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
+CRAWL_QUEUE_NAME = 'crawl_job_queue'
+LXMLSPIDER_QUEUE_NAME = 'lxmlspider_job_queue'
+BLOGSPIDER_QUEUE_NAME = 'blogspider_job_queue'
 
 # log
 LOG_FILE = '/var/log/www/www.log'

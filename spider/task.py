@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import re
+import uuid
 from urllib.parse import urlparse
 
+import requests
 import redis
-
-from celery.utils.log import get_task_logger
-from celery import Celery
 
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerProcess
@@ -17,9 +17,7 @@ from mydm.spiderfactory import mk_spider_cls
 from mydm.util import parse_redis_url
 
 settings = get_project_settings()
-app = Celery('tasks', broker=settings['BROKER_URL'])
-app.conf.CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-app.conf.CELERYD_MAX_TASKS_PER_CHILD = 1
+logger = logging.getLogger(__name__)
 
 
 def get_feed_name(url):
@@ -40,8 +38,6 @@ def get_feed_name(url):
 
 
 def check_spider(setting_):
-    import uuid
-
     setting = setting_.copy()
     spid = str(uuid.uuid4())
     setting['_id'] = spid
@@ -73,9 +69,6 @@ def check_spider(setting_):
 
 
 def _gen_lxmlspider(url, args):
-    logger = get_task_logger(settings['LOGGER_NAME'])
-
-    import requests
     try:
         r = requests.get(url,
                          headers=settings['DEFAULT_REQUEST_HEADERS'])
@@ -141,9 +134,7 @@ def _check_url(url):
     return True
 
 
-@app.task(name='lxmlspider-creator')
 def gen_lxmlspider(args):
-    logger = get_task_logger(settings['LOGGER_NAME'])
     url = args['url']
     if not _check_url(url):
         logger.error('Error in gen_lxmlspider invalid url[{}]'.format(url))
@@ -161,9 +152,7 @@ def gen_lxmlspider(args):
     return False
 
 
-@app.task(name='blogspider-creator')
 def gen_blogspider(args):
-    logger = get_task_logger(settings['LOGGER_NAME'])
     url = args['url']
     if not _check_url(url):
         logger.error('Error in gen_blogspider invalid url[{}]'.format(url))
@@ -191,14 +180,7 @@ def gen_blogspider(args):
     return False
 
 
-"""
-task for crawl
-"""
-
-
-@app.task(name='crawl')
 def crawl(args):
-    logger = get_task_logger(settings['LOGGER_NAME'])
     logger.setLevel(settings['LOG_LEVEL'])
     logger.info('job crawl start ...')
 
@@ -245,9 +227,7 @@ def crawl(args):
     return get_recrawl_spiders()
 
 
-@app.task(name='recrawl failed spiders')
 def recrawl(spids):
-    logger = get_task_logger(settings['LOGGER_NAME'])
     logger.setLevel(settings['LOG_LEVEL'])
     logger.info('recrawl job start ...')
 

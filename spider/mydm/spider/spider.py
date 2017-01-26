@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
+
 from twisted.internet.error import TimeoutError
 
 from scrapy.spiders import Spider
 from scrapy import Request
 
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 
 class ErrbackSpider(Spider):
