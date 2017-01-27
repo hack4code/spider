@@ -81,7 +81,7 @@ def main():
             logger.error((
                 'function {} got exception'
                 ).format(TASKS[i][0].__name__))
-            p.terminate()
+            p.join()
             consumers[i] = (Process(target=task,
                                     args=args),
                             args)
