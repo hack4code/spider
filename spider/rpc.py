@@ -78,8 +78,13 @@ def main():
     for i, (p, args) in enumerate(consumers):
         logger.info('check task state ...')
         if not p.is_alive():
-            consumers[i] = Process(target=task,
-                                   args=args)
+            logger.error((
+                'function {} got exception'
+                ).format(TASKS[i][0].__name__))
+            p.terminate()
+            consumers[i] = (Process(target=task,
+                                    args=args),
+                            args)
         time.sleep(120)
 
 

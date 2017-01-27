@@ -189,6 +189,7 @@ def crawl(args):
     spiders_ = args.get('spiders')
     runner = CrawlerRunner(settings)
     loader = runner.spider_loader
+    spiders = None
     if 'all' in spiders_:
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
@@ -203,7 +204,10 @@ def crawl(args):
         runner.crawl(_)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
-    reactor.run()
+    try:
+        reactor.run()
+    except:
+        logger.exception('crawl job got exception')
 
 
 def flush_db():
