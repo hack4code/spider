@@ -18,11 +18,14 @@ settings = get_project_settings()
 
 
 def cron(ch, method, properties, body):
+    logger = logging.getLogger(__name__)
     args = json.loads(body)
     p = Process(target=crawl,
                 args=(args,))
+    logger.info('cron task starting ...')
     p.start()
     p.join()
+    logger.info('cron task finished')
 
 
 def lxmlspider(ch, method, properties, body):
