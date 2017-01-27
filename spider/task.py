@@ -187,6 +187,8 @@ def gen_blogspider(args):
 def crawl(args):
     logger.info('job crawl start ...')
     spiders_ = args.get('spiders')
+    configure_logging(settings,
+                      install_root_handler=False)
     runner = CrawlerRunner(settings)
     loader = runner.spider_loader
     spiders = None
@@ -198,8 +200,6 @@ def crawl(args):
     if not spiders:
         return False
 
-    configure_logging(settings,
-                      install_root_handler=False)
     for _ in spiders:
         runner.crawl(_)
     d = runner.join()
@@ -216,8 +216,6 @@ def flush_db():
 
 
 def get_recrawl_spiders(loader):
-    if not recrawl:
-        return []
     spiders = []
     conf = parse_redis_url(settings['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
@@ -229,30 +227,3 @@ def get_recrawl_spiders(loader):
         if n == 0:
             spiders.append(sp)
     return spiders
-
-
-def recrawl(spids):
-    logger.setLevel(settings['LOG_LEVEL'])
-    logger.info('recrawl job start ...')
-
-    if not spids:
-        return True
-
-    for spid in spids:
-        logger.info('error spider id: {}'.format(spid))
-
-    from twisted.internet import reactor, defer
-
-    @defer.inlineCallbacks
-    def run_failed_spiders(settings):
-        from scrapy.crawler import CrawlerRunner
-
-        runner = CrawlerRunner(settings)
-        loader = runner.spider_loader
-        spiders = [loader.load(spid) for spid in spids]
-        for sp in spiders:
-            yield runner.crawl(sp)
-        reactor.stop()
-    run_failed_spiders(settings)
-    reactor.run()
-    return True
