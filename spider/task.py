@@ -204,10 +204,7 @@ def crawl(args):
         runner.crawl(_)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
-    try:
-        reactor.run()
-    except:
-        logger.exception('crawl job got exception')
+    reactor.run()
 
 
 def flush_db():

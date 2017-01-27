@@ -23,6 +23,7 @@ def cron(ch, method, properties, body):
     p = Process(target=crawl,
                 args=(args,))
     logger.info('cron task starting ...')
+    p.daemon = True
     p.start()
     p.join()
     logger.info('cron task finished')
@@ -78,17 +79,19 @@ def main():
     for p, _ in consumers:
         p.start()
     logger.info('rpc task running ...')
-    for i, (p, args) in enumerate(consumers):
-        logger.info('check task state ...')
-        if not p.is_alive():
-            logger.error((
-                'function {} got exception'
-                ).format(TASKS[i][0].__name__))
-            p.join()
-            consumers[i] = (Process(target=task,
-                                    args=args),
-                            args)
-        time.sleep(120)
+    while True:
+        for i, (p, args) in enumerate(consumers):
+            logger.info('check task state ...')
+            if not p.is_alive():
+                logger.error((
+                    'function {} got exception'
+                    ).format(TASKS[i][0].__name__))
+                p.join()
+                np = Process(target=task,
+                             args=args)
+                np.start()
+                consumers[i] = (np, args)
+            time.sleep(120)
 
 
 if __name__ == '__main__':
