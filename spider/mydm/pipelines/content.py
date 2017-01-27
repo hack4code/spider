@@ -64,7 +64,7 @@ class ContentPipeline(object):
                 e.drop_tree()
         return doc
 
-    def remove_element_with_xpath_nodes(self, doc, removed_xpath_nodes):
+    def remove_element_with_xpath(self, doc, removed_xpath_nodes):
         for xpath in filter(lambda x: x.strip(),
                             removed_xpath_nodes):
             try:
@@ -131,10 +131,12 @@ class ContentPipeline(object):
             for e in doc.xpath('//a/div'):
                 e.drop_tree()
 
-            for e in doc.xpath((
-                    '//div[not(descendant::div) and not(descendant::img) and'
-                    ' not(text())]')):
-                e.drop_tree()
+            while True:
+                for e in doc.xpath((
+                        '//div[not(descendant::div) and'
+                        'not(descendant::img) and not(text())]')):
+                    e.drop_tree()
+                    break
 
         remove_tags(doc)
 
@@ -162,8 +164,8 @@ class ContentPipeline(object):
                                       self.REMOVED_XPATH_NODES_NAME,
                                       None)
         if removed_xpath_nodes is not None:
-            doc = self.remove_element_with_xpath_nodes(doc,
-                                                       removed_xpath_nodes)
+            doc = self.remove_element_with_xpath(doc,
+                                                 removed_xpath_nodes)
         allow_classes = getattr(spider,
                                 self.ALLOW_CLASSES_NAME,
                                 None)
