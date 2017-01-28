@@ -2,6 +2,7 @@
 
 
 import json
+from urllib.parse import urlparse
 
 import pika
 
@@ -31,13 +32,28 @@ def _send(key, data):
     connection.close()
 
 
+def _check_url(url):
+    parser = urlparse(url)
+    return False if not parser.scheme or not parser.netloc else True
+
+
+def _set_removed_xpath_nodes(args):
+    removed_xpath_nodes_ = args.get('removed_xpath_nodes')
+    if removed_xpath_nodes_:
+        removed_xpath_nodes = [_ for _ in (__.strip(' \t\r\n')
+                                           for __ in removed_xpath_nodes_)
+                               if _]
+        if removed_xpath_nodes:
+            args['removed_xpath_nodes'] = removed_xpath_nodes
+
+
 @submit_page.route('/crawl', methods=['POST'])
 def crawl():
     spiders = [_ for _ in (__ for __ in request.form['spiders'].split(','))
                if _]
     if not spiders:
         return jsonify(err=1,
-                       msg='no spiders')
+                       msg='no spider found')
     _send(CRAWL_KEY,
           {'spiders': spiders})
     return jsonify(err=0)
@@ -45,21 +61,64 @@ def crawl():
 
 @submit_page.route('/rss', methods=['POST'])
 def gen_atom_spider():
-    args = {k.strip(): v.strip() for k, v in request.form.items()}
-    if not args.get('url') or not args.get('category'):
+    ATTRS = ('url',
+             'category',
+             'item_content_xpath',
+             'removed_xpath_nodes')
+
+    FORBIDDEN_ATTRS = ('url',
+                       'category')
+
+    args = {k.strip(): v.strip()
+            for k, v in request.form.items() if k in ATTRS and v}
+    if any(_ not in args for _ in FORBIDDEN_ATTRS):
+        attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
         return jsonify(err=1,
-                       msg='url or category needed')
+                       msg='{} field needed'.format(' '.join(attrs)))
+    url = args['url']
+    if not _check_url(url):
+        app.logger.error((
+            'Error in gen_atom_spider invalid atom feed url[{}]'
+            ).format(url))
+        return jsonify(err=2,
+                       msg='invalid url')
+    _set_removed_xpath_nodes(args)
     _send(LXMLSPIDER_KEY,
           args)
     return jsonify(err=0)
 
 
-@submit_page.route("/blog", methods=["POST"])
+@submit_page.route('/blog', methods=['POST'])
 def gen_blog_spider():
-    args = {k.strip(): v.strip() for k, v in request.form.items()}
-    if not args.get('url') or not args.get('category'):
+    ATTRS = ('url',
+             'category',
+             'entry_xpath',
+             'item_title_xpath',
+             'item_link_xpath',
+             'item_content_xpath',
+             'removed_xpath_nodes')
+
+    FORBIDDEN_ATTRS = ('url',
+                       'category',
+                       'entry_xpath',
+                       'item_title_xpath',
+                       'item_link_xpath',
+                       'item_content_xpath')
+
+    args = {k.strip(): v.strip()
+            for k, v in request.form.items() if k in ATTRS and v}
+    _set_removed_xpath_nodes(args)
+    if any(_ not in args for _ in FORBIDDEN_ATTRS):
+        attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
         return jsonify(err=1,
-                       msg='url or category needed')
+                       msg='{} field needed'.format(' '.join(attrs)))
+    url = args['url']
+    if not _check_url(url):
+        app.logger.error((
+            'Error in gen_blog_spider invalid atom feed url[{}]'
+            ).format(url))
+        return jsonify(err=2,
+                       msg='invalid url')
     _send(BLOGSPIDER_KEY,
           args)
     return jsonify(err=0)

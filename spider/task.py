@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 import requests
 import redis
+from lxml import etree
 
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerProcess
@@ -36,8 +37,7 @@ def get_feed_name(url):
                                '',
                                name.lower()
                                ).capitalize()
-                        for name in names[:-1]
-                        if name.lower() != 'www'])
+                        for name in names[:-1] if name.lower() != 'www'])
 
 
 def check_spider(setting_):
@@ -71,7 +71,14 @@ def check_spider(setting_):
     return True if n > 0 else False
 
 
-def _gen_lxmlspider(url, args):
+def gen_lxmlspider(setting):
+    url = setting['url']
+    save_feed(url)
+    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
+        logger.error((
+            u'Error in gen_lxmlspider category error[{}]'
+            ).format(setting['category']))
+        return False
     try:
         r = requests.get(url,
                          headers=settings['DEFAULT_REQUEST_HEADERS'])
@@ -87,13 +94,11 @@ def _gen_lxmlspider(url, args):
                      r.status_code))
         return False
 
-    from lxml import etree
     parser = etree.XMLParser(ns_clean=True)
     root = etree.XML(r.content,
                      parser)
     while len(root) == 1:
         root = root[0]
-    setting = {'start_urls': [url]}
     for e in root:
         try:
             en = etree.QName(e.tag).localname.lower()
@@ -106,81 +111,35 @@ def _gen_lxmlspider(url, args):
     setting['name'] = get_feed_name(url)
     if 'title' not in setting:
         setting['title'] = setting['name']
-    setting['category'] = args['category']
-    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
-        logger.error(u'{} category error'.format(setting['category']))
-        return False
-    attrs = ('item_content_xpath', 'removed_xpath_nodes')
-    setting.update({k: args[k] for k in attrs if k in args})
     setting['type'] = 'xml'
-    if check_spider(setting):
+    setting['start_urls'] = [url]
+    del setting['url']
+    if not is_exists_spider(url) and check_spider(setting):
         save_spider_settings(setting)
         return True
-    logger.error('Error in gen_lxmlspider[{}]'.format(url))
-    return False
-
-
-def _set_removed_xpath_nodes(args, setting):
-    removed_xpath_nodes_ = args.get('removed_xpath_nodes', None)
-    if removed_xpath_nodes_:
-        removed_xpath_nodes = [_ for _ in (__.strip(' \t\r\n')
-                                           for __ in removed_xpath_nodes_)
-                               if _]
-        if removed_xpath_nodes:
-            settings['removed_xpath_nodes'] = removed_xpath_nodes
-
-
-def _check_url(url):
-    parser = urlparse(url)
-    if not parser.scheme or not parser.netloc:
-        return False
-    return True
-
-
-def gen_lxmlspider(args):
-    url = args['url']
-    if not _check_url(url):
-        logger.error('Error in gen_lxmlspider invalid url[{}]'.format(url))
+    else:
+        logger.error('Error in gen_lxmlspider[{}]'.format(url))
         return False
 
+
+def gen_blogspider(setting):
+    url = setting['url']
     save_feed(url)
-
-    attrs = ('item_content_xpath', 'category')
-    setting = {k: v for k, v in args.items() if k in attrs and v}
-    _set_removed_xpath_nodes(args, setting)
-
-    if not is_exists_spider(url):
-        if _gen_lxmlspider(url, setting):
-            return True
-    return False
-
-
-def gen_blogspider(args):
-    url = args['url']
-    if not _check_url(url):
-        logger.error('Error in gen_blogspider invalid url[{}]'.format(url))
+    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
+        logger.error((
+            u'Error in gen_blogspider category error[{}]'
+            ).format(setting['category']))
         return False
-
-    save_feed(url)
-
-    attrs = ('entry_xpath',
-             'item_title_xpath',
-             'item_link_xpath',
-             'item_content_xpath')
-    if any(attr not in args for attr in attrs):
-        logger.error('Error in gen_blogspider xpath field')
-        return False
-    setting = {k: v for k, v in args.items() if k in attrs and v}
-    _set_removed_xpath_nodes(args, setting)
     setting['name'] = get_feed_name(url)
     setting['title'] = setting['name']
-    setting['category'] = args['category']
     setting['type'] = 'blog'
-    setting['start_urls'] = [args['url']]
-    if check_spider(setting):
+    setting['start_urls'] = [url]
+    del setting['url']
+    if not is_exists_spider(url) and check_spider(setting):
         save_spider_settings(setting)
         return True
-    return False
+    else:
+        return False
 
 
 def crawl(args):
@@ -215,7 +174,7 @@ def flush_db():
     r.flushdb()
 
 
-def get_recrawl_spiders(loader):
+def get_failed_spiders(loader):
     spiders = []
     conf = parse_redis_url(settings['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
