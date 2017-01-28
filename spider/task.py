@@ -205,6 +205,7 @@ def crawl(args):
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
+    logger.info('job crawl finished')
 
 
 def flush_db():
