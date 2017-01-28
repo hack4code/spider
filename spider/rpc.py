@@ -25,8 +25,6 @@ def cron(ch, method, properties, body):
     logger.info('cron task starting ...')
     p.daemon = True
     p.start()
-    p.join()
-    logger.info('cron task finished')
 
 
 def lxmlspider(ch, method, properties, body):
@@ -40,7 +38,7 @@ def blogspider(ch, method, properties, body):
 
 
 def task(callback, key):
-    url = '{}?heartbeat=0'.format(settings['BROKER_URL'])
+    url = '{}?heartbeat=3600'.format(settings['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
