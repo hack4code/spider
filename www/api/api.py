@@ -83,6 +83,7 @@ def get_entries_byday():
 @api_page.route('/categories', methods=['GET'])
 def categories():
     from model import get_categories
+
     categories = {u'技术',
                   u'数据库',
                   u'安全',
@@ -101,6 +102,7 @@ Spider = namedtuple('Spider', ['id', 'source'])
 def get_entries_byspider():
     from model import get_spiders, get_last_aid, get_first_aid, \
         get_entries_next, get_entries_pre, get_entries_spider
+
     spid = request.form.get('spid',
                             None)
     if spid is None:
@@ -153,6 +155,7 @@ def get_entries_byspider():
 @api_page.route('/spiders', methods=['GET'])
 def spiders():
     from model import get_spiders
+
     spiders = get_spiders()
     entries = [Spider(spid, name) for spid, name in spiders.items()]
     return jsonify(err=0,

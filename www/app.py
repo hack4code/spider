@@ -22,7 +22,7 @@ app.jinja_env.lstrip_blocks = True
 @app.errorhandler(BadRequest)
 def error(error):
     code = error.code
-    return render_template("error.html",
+    return render_template('error.html',
                            status_code=code,
                            message=error.description), code
 
@@ -48,11 +48,11 @@ def show_entries_byday(day):
 @app.route('/a/<id:aid>', methods=['GET'])
 def show_article(aid):
     from model import get_article
+    import os
 
     a = get_article(aid)
 
     def get_css(dom):
-        import os
         path = '{}/css/{}.css'.format(app.static_folder,
                                       dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
@@ -70,7 +70,8 @@ def show_entries_byspider(spid):
     from collections import namedtuple
     from model import get_spiders
 
-    Spider = namedtuple('Spider', ['id', 'source'])
+    Spider = namedtuple('Spider',
+                        ['id', 'source'])
     spid = str(spid)
     spiders = get_spiders()
     if spid in spiders:
