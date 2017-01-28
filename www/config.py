@@ -18,4 +18,6 @@ LXMLSPIDER_KEY = 'lxmlspider'
 BLOGSPIDER_KEY = 'blogspider'
 
 # log
-LOG_FILE = '/var/log/www/www.log'
+LOG_LEVEL = 'INFO'
+LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
