@@ -41,7 +41,8 @@ def blogspider(ch, method, properties, body):
 
 def task(callback, key):
     host = settings['BROKER_URL']
-    connection = pika.BlockingConnection(pika.connection.URLParameters(host))
+    connection = pika.BlockingConnection(pika.connection.URLParameters(host),
+                                         heartbeat_interval=0)
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
                              type='direct')
