@@ -77,7 +77,7 @@ def main():
         for i, (p, args) in enumerate(tasks):
             if not p.is_alive():
                 logger.error((
-                    'task {} got exception'
+                    'Error in task main task {} got exception'
                     ).format(TASKS[i][0].__name__))
                 p.join()
                 np = Process(target=task,
