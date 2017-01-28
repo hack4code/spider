@@ -3,8 +3,10 @@
 
 import logging
 import sys
-import time
+from time import sleep
 import json
+from functools import partial
+import threading
 from multiprocessing import Process
 
 import pika
@@ -17,27 +19,19 @@ from task import crawl, gen_lxmlspider, gen_blogspider
 settings = get_project_settings()
 
 
-def cron(ch, method, properties, body):
+def consume(callback, jobs, ch, method, properties, body):
     logger = logging.getLogger(__name__)
     args = json.loads(body)
-    p = Process(target=crawl,
+    p = Process(target=callback,
                 args=(args,))
-    logger.info('cron task starting ...')
+    logger.info('{} job starting ...'.format(callback.__name__))
     p.daemon = True
     p.start()
-
-
-def lxmlspider(ch, method, properties, body):
-    args = json.loads(body)
-    gen_lxmlspider(args)
-
-
-def blogspider(ch, method, properties, body):
-    args = json.loads(body)
-    gen_blogspider(args)
+    jobs.append(p)
 
 
 def task(callback, key):
+    jobs = []
     url = '{}?heartbeat=3600'.format(settings['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
@@ -48,10 +42,25 @@ def task(callback, key):
     channel.queue_bind(exchange='direct_logs',
                        queue=queue_name,
                        routing_key=key)
-    channel.basic_consume(callback,
-                          queue=queue_name,
-                          no_ack=True)
-    channel.start_consuming()
+
+    def _process_data_events(connection, channel, queue_name, callback):
+        callback_ = partial(consume, callback, jobs)
+        channel.basic_consume(callback_,
+                              queue=queue_name,
+                              no_ack=True)
+        while True:
+            connection.process_data_events()
+            for j in jobs:
+                if not j.is_alive():
+                    j.join()
+            sleep(120)
+    t = threading.Thread(target=_process_data_events,
+                         args=(connection,
+                               channel,
+                               queue_name,
+                               callback))
+    t.setDaemon(True)
+    t.start()
 
 
 def init_logger(settings):
@@ -67,13 +76,13 @@ def init_logger(settings):
 def main():
     init_logger(settings)
     logger = logging.getLogger(__name__)
-    TASKS = [(cron, settings['CRAWL_KEY']),
-             (lxmlspider, settings['LXMLSPIDER_KEY']),
-             (blogspider, settings['BLOGSPIDER_KEY'])]
+    TASKS = [(crawl, settings['CRAWL_KEY']),
+             (gen_lxmlspider, settings['LXMLSPIDER_KEY']),
+             (gen_blogspider, settings['BLOGSPIDER_KEY'])]
     consumers = [(Process(target=task,
                           args=_),
                   _) for _ in TASKS]
-    time.sleep(60)
+    sleep(60)
     for p, _ in consumers:
         p.start()
     logger.info('rpc task running ...')
@@ -89,7 +98,7 @@ def main():
                              args=args)
                 np.start()
                 consumers[i] = (np, args)
-            time.sleep(120)
+            sleep(120)
 
 
 if __name__ == '__main__':
