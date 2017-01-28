@@ -5,7 +5,6 @@ import logging
 import sys
 from time import sleep
 import json
-from functools import partial
 from multiprocessing import Process
 
 import pika
@@ -16,15 +15,6 @@ from task import crawl, gen_lxmlspider, gen_blogspider
 
 
 settings = get_project_settings()
-
-
-def consume(callback, consumers, ch, method, properties, body):
-    args = json.loads(body)
-    p = Process(target=callback,
-                args=(args,))
-    p.daemon = True
-    p.start()
-    consumers.append(p)
 
 
 def task(callback, key):
@@ -39,10 +29,16 @@ def task(callback, key):
                        queue=queue_name,
                        routing_key=key)
     consumers = []
-    callback_ = partial(consume,
-                        callback,
-                        consumers)
-    channel.basic_consume(callback_,
+
+    def consume(ch, method, properties, body):
+        args = json.loads(body)
+        p = Process(target=callback,
+                    args=(args,))
+        p.daemon = True
+        p.start()
+        consumers.append(p)
+
+    channel.basic_consume(consume,
                           queue=queue_name,
                           no_ack=True)
     while True:
@@ -81,7 +77,7 @@ def main():
         for i, (p, args) in enumerate(tasks):
             if not p.is_alive():
                 logger.error((
-                    'function {} got exception'
+                    'task {} got exception'
                     ).format(TASKS[i][0].__name__))
                 p.join()
                 np = Process(target=task,
