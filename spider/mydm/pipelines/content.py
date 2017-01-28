@@ -131,14 +131,10 @@ class ContentPipeline(object):
             for e in doc.xpath('//a/div'):
                 e.drop_tree()
 
-            while True:
-                for e in doc.xpath((
-                        '//div[not(descendant::div) and'
-                        'not(descendant::img) and not(text())]')):
+            for e in doc.xpath('//div[not(.//div) and not(.//img)'):
+                text = e.text_content().strip(' \r\n\t')
+                if not text:
                     e.drop_tree()
-                    break
-                else:
-                    break
 
         remove_tags(doc)
 
