@@ -18,13 +18,13 @@ from task import crawl, gen_lxmlspider, gen_blogspider
 settings = get_project_settings()
 
 
-def consume(callback, jobs, ch, method, properties, body):
+def consume(callback, consumers, ch, method, properties, body):
     args = json.loads(body)
     p = Process(target=callback,
                 args=(args,))
     p.daemon = True
     p.start()
-    jobs.append(p)
+    consumers.append(p)
 
 
 def task(callback, key):
@@ -38,18 +38,19 @@ def task(callback, key):
     channel.queue_bind(exchange='direct_logs',
                        queue=queue_name,
                        routing_key=key)
-    jobs = []
+    consumers = []
     callback_ = partial(consume,
                         callback,
-                        jobs)
+                        consumers)
     channel.basic_consume(callback_,
                           queue=queue_name,
                           no_ack=True)
     while True:
         connection.process_data_events()
-        for p in jobs:
-            if not p.is_alive():
-                p.join()
+        for _ in filter(lambda __: not __.is_alive(),
+                        consumers):
+            _.join()
+        consumers = [_ for _ in consumers if _.is_alive()]
         sleep(60)
 
 
@@ -78,7 +79,6 @@ def main():
     logger.info('rpc task running ...')
     while True:
         for i, (p, args) in enumerate(tasks):
-            logger.info('check task state ...')
             if not p.is_alive():
                 logger.error((
                     'function {} got exception'
@@ -88,7 +88,7 @@ def main():
                              args=args)
                 np.start()
                 tasks[i] = (np, args)
-            sleep(180)
+            sleep(600)
 
 
 if __name__ == '__main__':

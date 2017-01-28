@@ -15,7 +15,6 @@ from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 
-
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
 from mydm.util import parse_redis_url
