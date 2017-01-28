@@ -26,18 +26,17 @@ logger = logging.getLogger(__name__)
 
 def get_feed_name(url):
     parser = urlparse(url)
-    names = parser.hostname.split('.')
-    if len(names) == 1:
+    fields = parser.hostname.split('.')
+    if len(fields) == 1:
         return re.sub(r'[^a-zA-Z]',
                       '',
-                      names[0]
-                      ).capitalize()
+                      fields[0]
+                      ).lower().capitalize()
     else:
-        return ''.join([re.sub(r'[^a-z]',
+        return ''.join([re.sub(r'[^a-zA-Z]',
                                '',
-                               name.lower()
-                               ).capitalize()
-                        for name in names[:-1] if name.lower() != 'www'])
+                               _).lower().capitalize()
+                        for _ in fields[:-1] if _.lower() != 'www'])
 
 
 def check_spider(setting_):
@@ -73,10 +72,11 @@ def check_spider(setting_):
 
 def gen_lxmlspider(setting):
     url = setting['url']
+    del setting['url']
     save_feed(url)
     if setting['category'] not in settings['ARTICLE_CATEGORIES']:
         logger.error((
-            u'Error in gen_lxmlspider category error[{}]'
+            u'Error in gen_lxmlspider category[{}]'
             ).format(setting['category']))
         return False
     try:
@@ -84,12 +84,12 @@ def gen_lxmlspider(setting):
                          headers=settings['DEFAULT_REQUEST_HEADERS'])
     except ConnectionError:
         logger.error((
-            'Error in _gen_lxmlspider connection error[{}]'
+            'Error in gen_lxmlspider connection[{}]'
             ).format(url))
         return False
     if r.status_code != 200:
         logger.error((
-            'Error in _gen_lxmlspider requests[{},status={}]'
+            'Error in gen_lxmlspider requests[{}, status={}]'
             ).format(url,
                      r.status_code))
         return False
@@ -104,16 +104,16 @@ def gen_lxmlspider(setting):
             en = etree.QName(e.tag).localname.lower()
         except ValueError:
             continue
-        if en == 'title':
-            setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
-                                      '',
-                                      e.text)
+        else:
+            if en == 'title':
+                setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
+                                          '',
+                                          e.text)
     setting['name'] = get_feed_name(url)
     if 'title' not in setting:
         setting['title'] = setting['name']
     setting['type'] = 'xml'
     setting['start_urls'] = [url]
-    del setting['url']
     if not is_exists_spider(url) and check_spider(setting):
         save_spider_settings(setting)
         return True
@@ -124,6 +124,7 @@ def gen_lxmlspider(setting):
 
 def gen_blogspider(setting):
     url = setting['url']
+    del setting['url']
     save_feed(url)
     if setting['category'] not in settings['ARTICLE_CATEGORIES']:
         logger.error((
@@ -134,7 +135,6 @@ def gen_blogspider(setting):
     setting['title'] = setting['name']
     setting['type'] = 'blog'
     setting['start_urls'] = [url]
-    del setting['url']
     if not is_exists_spider(url) and check_spider(setting):
         save_spider_settings(setting)
         return True
