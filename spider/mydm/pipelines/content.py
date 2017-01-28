@@ -137,6 +137,8 @@ class ContentPipeline(object):
                         'not(descendant::img) and not(text())]')):
                     e.drop_tree()
                     break
+                else:
+                    break
 
         remove_tags(doc)
 
