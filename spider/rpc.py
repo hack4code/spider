@@ -43,10 +43,14 @@ def task(callback, key):
                           no_ack=True)
     while True:
         connection.process_data_events()
-        for _ in filter(lambda __: not __.is_alive(),
-                        consumers):
-            _.join()
-        consumers = [_ for _ in consumers if _.is_alive()]
+        if not all(_.is_alive() for _ in consumers):
+            consumers_ = []
+            for _ in consumers:
+                if _.is_alive():
+                    consumers_.append(_)
+                else:
+                    _.join()
+            consumers = consumers_
         sleep(60)
 
 
@@ -77,7 +81,7 @@ def main():
         for i, (p, args) in enumerate(tasks):
             if not p.is_alive():
                 logger.error((
-                    'Error in task main task {} got exception'
+                    'Error in main task {} quit unexpected'
                     ).format(TASKS[i][0].__name__))
                 p.join()
                 np = Process(target=task,
