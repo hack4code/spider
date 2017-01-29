@@ -39,26 +39,21 @@ def get_feed_name(url):
                         for _ in fields[:-1] if _.lower() != 'www'])
 
 
-def check_spider(setting_):
-    setting = setting_.copy()
+def test_spider(setting):
+    setting = setting.copy()
     spid = str(uuid.uuid4())
     setting['_id'] = spid
     cls = mk_spider_cls(setting)
-    custom_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline':
-                                          255},
-                       'WEBSERVICE_ENABLED': False,
-                       'TELNETCONSOLE_ENABLED': False,
-                       'LOG_LEVEL': 'INFO',
-                       'LOG_STDOUT': True,
-                       'LOG_ENABLED': True,
-                       'SPIDER_STATS_URL': settings['TEMP_SPIDER_STATS_URL']}
+    url = settings['TEMP_SPIDER_STATS_URL']
+    test_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
+                     'SPIDER_STATS_URL': url}
 
-    p = CrawlerProcess(custom_settings)
+    p = CrawlerProcess(test_settings)
     p.crawl(cls)
     p.start()
 
-    def get_stats(custom_settings):
-        conf = parse_redis_url(custom_settings['SPIDER_STATS_URL'])
+    def get_stats(url, spid):
+        conf = parse_redis_url(url)
         r = redis.Redis(host=conf.host,
                         port=conf.port,
                         db=conf.database)
@@ -66,7 +61,7 @@ def check_spider(setting_):
         r.delete(spid)
         return 0 if n is None else int(n)
 
-    n = get_stats(custom_settings)
+    n = get_stats(url, spid)
     return True if n > 0 else False
 
 
@@ -109,7 +104,9 @@ def gen_lxmlspider(setting):
         setting['title'] = setting['name']
     setting['type'] = 'xml'
     setting['start_urls'] = [url]
-    if not is_exists_spider(url) and check_spider(setting):
+    if is_exists_spider(url):
+        return True
+    if test_spider(setting):
         save_spider_settings(setting)
         return True
     else:
@@ -125,20 +122,23 @@ def gen_blogspider(setting):
     setting['title'] = setting['name']
     setting['type'] = 'blog'
     setting['start_urls'] = [url]
-    if not is_exists_spider(url) and check_spider(setting):
+    if is_exists_spider(url):
+        return True
+    if test_spider(setting):
         save_spider_settings(setting)
         return True
     else:
+        logger.error('Error in gen_blogspider[{}]'.format(url))
         return False
 
 
 def crawl(args):
     spiders_ = args.get('spiders')
+    spiders = []
     configure_logging(settings,
                       install_root_handler=False)
     runner = CrawlerRunner(settings)
     loader = runner.spider_loader
-    spiders = None
     if 'all' in spiders_:
         spiders = [loader.load(spid) for spid in loader.list()]
     else:
