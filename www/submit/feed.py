@@ -39,19 +39,26 @@ def _check_url(url):
 
 
 def _get_removed_xpath_nodes(args):
-    removed_xpath_nodes_ = args.get('removed_xpath_nodes')
-    if removed_xpath_nodes_:
-        removed_xpath_nodes = [_ for _ in (__.strip(' \t\r\n')
-                                           for __ in removed_xpath_nodes_)
-                               if _]
-        return removed_xpath_nodes
+    removed_xpath_nodes = args.get('removed_xpath_nodes')
+    if removed_xpath_nodes:
+        return [_ for _ in (__.strip(' \t\r\n') for __ in removed_xpath_nodes)
+                if _]
+
+
+def _set_removed_xpath_nodes(args, removed_xpath_nodes):
+    if removed_xpath_nodes:
+        args['removed_xpath_nodes'] = removed_xpath_nodes
     else:
-        return None
+        try:
+            del args['removed_xpath_nodes']
+        except KeyError:
+            pass
 
 
 @submit_page.route('/crawl', methods=['POST'])
 def crawl():
-    spiders = [_ for _ in (__ for __ in request.form['spiders'].split(','))
+    spiders = [_ for _ in (__.strip()
+                           for __ in request.form['spiders'].split(','))
                if _]
     if not spiders:
         return jsonify(err=1,
@@ -90,14 +97,8 @@ def gen_atom_spider():
             ).format(args['category']))
         return jsonify(err=3,
                        msg='invalid category')
-    removed_xpath_nodes = _get_removed_xpath_nodes(args)
-    if removed_xpath_nodes:
-        args['removed_xpath_nodes'] = removed_xpath_nodes
-    else:
-        try:
-            del args['removed_xpath_nodes']
-        except KeyError:
-            pass
+    _set_removed_xpath_nodes(args,
+                             _get_removed_xpath_nodes)
     _send(LXMLSPIDER_KEY,
           args)
     return jsonify(err=0)
@@ -122,14 +123,6 @@ def gen_blog_spider():
 
     args = {k.strip(): v.strip()
             for k, v in request.form.items() if k in ATTRS and v}
-    removed_xpath_nodes = _get_removed_xpath_nodes(args)
-    if removed_xpath_nodes:
-        args['removed_xpath_nodes'] = removed_xpath_nodes
-    else:
-        try:
-            del args['removed_xpath_nodes']
-        except KeyError:
-            pass
     if any(_ not in args for _ in FORBIDDEN_ATTRS):
         attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
         return jsonify(err=1,
@@ -147,6 +140,8 @@ def gen_blog_spider():
             ).format(args['category']))
         return jsonify(err=3,
                        msg='invalid category')
+    _set_removed_xpath_nodes(args,
+                             _get_removed_xpath_nodes(args))
     _send(BLOGSPIDER_KEY,
           args)
     return jsonify(err=0)
