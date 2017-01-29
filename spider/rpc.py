@@ -18,6 +18,7 @@ settings = get_project_settings()
 
 
 def task(callback, key):
+    consumers = []
     url = '{}?heartbeat=600'.format(settings['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
@@ -28,7 +29,6 @@ def task(callback, key):
     channel.queue_bind(exchange='direct_logs',
                        queue=queue_name,
                        routing_key=key)
-    consumers = []
 
     def consume(ch, method, properties, body):
         args = json.loads(body)
@@ -43,7 +43,7 @@ def task(callback, key):
                           no_ack=True)
     while True:
         connection.process_data_events()
-        if not all(_.is_alive() for _ in consumers):
+        if any(not _.is_alive() for _ in consumers):
             consumers_ = []
             for _ in consumers:
                 if _.is_alive():
