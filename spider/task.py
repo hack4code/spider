@@ -61,7 +61,8 @@ def test_spider(setting):
         r.delete(spid)
         return 0 if n is None else int(n)
 
-    n = get_stats(url, spid)
+    n = get_stats(url,
+                  spid)
     return True if n > 0 else False
 
 
