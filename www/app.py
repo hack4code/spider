@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import sys
-import logging
 from datetime import datetime
 
 from flask import Flask, render_template
@@ -33,16 +31,11 @@ app.url_map.converters['date'] = DateConverter
 app.url_map.converters['id'] = IdConverter
 
 
-def init_logger():
-    config = app.config
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setLevel(config['LOG_LEVEL'])
-    handler.setFormatter(logging.Formatter(config['LOG_FORMAT'],
-                                           config['LOG_DATEFORMAT']))
-    app.logger.addHandler(handler)
-
-# log
-init_logger()
+def set_loglevel(level):
+    for handler in app.logger.handlers:
+        if handler.__class__.__name__.startswith('Production'):
+            handler.setLevel(level)
+            break
 
 
 @app.route('/', methods=['GET'])
@@ -116,4 +109,4 @@ app.register_blueprint(api_page, url_prefix='/api')
 from submit import submit_page
 app.register_blueprint(submit_page, url_prefix='/submit')
 
-app.logger.info('www running ...')
+app.logger.info('app running ...')
