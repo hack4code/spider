@@ -74,11 +74,6 @@ def gen_lxmlspider(setting):
     url = setting['url']
     del setting['url']
     save_feed(url)
-    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
-        logger.error((
-            u'Error in gen_lxmlspider category[{}]'
-            ).format(setting['category']))
-        return False
     try:
         r = requests.get(url,
                          headers=settings['DEFAULT_REQUEST_HEADERS'])
@@ -126,11 +121,6 @@ def gen_blogspider(setting):
     url = setting['url']
     del setting['url']
     save_feed(url)
-    if setting['category'] not in settings['ARTICLE_CATEGORIES']:
-        logger.error((
-            u'Error in gen_blogspider category error[{}]'
-            ).format(setting['category']))
-        return False
     setting['name'] = get_feed_name(url)
     setting['title'] = setting['name']
     setting['type'] = 'blog'
@@ -143,7 +133,6 @@ def gen_blogspider(setting):
 
 
 def crawl(args):
-    logger.info('job crawl start ...')
     spiders_ = args.get('spiders')
     configure_logging(settings,
                       install_root_handler=False)
@@ -157,13 +146,11 @@ def crawl(args):
                    if spid in loader.list()]
     if not spiders:
         return False
-
-    for _ in spiders:
-        runner.crawl(_)
+    for sp in spiders:
+        runner.crawl(sp)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
-    logger.info('job crawl finished')
 
 
 def flush_db():

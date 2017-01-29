@@ -15,6 +15,7 @@ HOST = app.config['BROKER_URL']
 CRAWL_KEY = app.config['CRAWL_KEY']
 LXMLSPIDER_KEY = app.config['LXMLSPIDER_KEY']
 BLOGSPIDER_KEY = app.config['BLOGSPIDER_KEY']
+CATEGORIES = app.config['ARTICLE_CATEGORIES']
 
 submit_page = Blueprint('submit_page',
                         __name__)
@@ -37,14 +38,15 @@ def _check_url(url):
     return False if not parser.scheme or not parser.netloc else True
 
 
-def _set_removed_xpath_nodes(args):
+def _get_removed_xpath_nodes(args):
     removed_xpath_nodes_ = args.get('removed_xpath_nodes')
     if removed_xpath_nodes_:
         removed_xpath_nodes = [_ for _ in (__.strip(' \t\r\n')
                                            for __ in removed_xpath_nodes_)
                                if _]
-        if removed_xpath_nodes:
-            args['removed_xpath_nodes'] = removed_xpath_nodes
+        return removed_xpath_nodes
+    else:
+        return None
 
 
 @submit_page.route('/crawl', methods=['POST'])
@@ -78,11 +80,24 @@ def gen_atom_spider():
     url = args['url']
     if not _check_url(url):
         app.logger.error((
-            'Error in gen_atom_spider invalid atom feed url[{}]'
+            'Error in gen_atom_spider invalid url[{}]'
             ).format(url))
         return jsonify(err=2,
                        msg='invalid url')
-    _set_removed_xpath_nodes(args)
+    if args['category'] not in CATEGORIES:
+        app.logger.error((
+            'Error in gen_atom_spider invalid category[{}]'
+            ).format(args['category']))
+        return jsonify(err=3,
+                       msg='invalid category')
+    removed_xpath_nodes = _get_removed_xpath_nodes(args)
+    if removed_xpath_nodes:
+        args['removed_xpath_nodes'] = removed_xpath_nodes
+    else:
+        try:
+            del args['removed_xpath_nodes']
+        except KeyError:
+            pass
     _send(LXMLSPIDER_KEY,
           args)
     return jsonify(err=0)
@@ -107,18 +122,31 @@ def gen_blog_spider():
 
     args = {k.strip(): v.strip()
             for k, v in request.form.items() if k in ATTRS and v}
-    _set_removed_xpath_nodes(args)
+    removed_xpath_nodes = _get_removed_xpath_nodes(args)
+    if removed_xpath_nodes:
+        args['removed_xpath_nodes'] = removed_xpath_nodes
+    else:
+        try:
+            del args['removed_xpath_nodes']
+        except KeyError:
+            pass
     if any(_ not in args for _ in FORBIDDEN_ATTRS):
         attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
         return jsonify(err=1,
-                       msg='{} field needed'.format(' '.join(attrs)))
+                       msg='{} needed'.format(' '.join(attrs)))
     url = args['url']
     if not _check_url(url):
         app.logger.error((
-            'Error in gen_blog_spider invalid atom feed url[{}]'
+            'Error in gen_blog_spider invalid url[{}]'
             ).format(url))
         return jsonify(err=2,
                        msg='invalid url')
+    if args['category'] not in CATEGORIES:
+        app.logger.error((
+            'Error in gen_blog_spider invalid category[{}]'
+            ).format(args['category']))
+        return jsonify(err=3,
+                       msg='invalid category')
     _send(BLOGSPIDER_KEY,
           args)
     return jsonify(err=0)

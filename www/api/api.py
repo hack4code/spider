@@ -2,15 +2,22 @@
 
 
 from datetime import datetime, date
+from collections import namedtuple
 
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
 
 from flask import Blueprint, jsonify, request, session
 
+from app import app
+
 
 api_page = Blueprint('api_page',
                      __name__)
+
+
+CATEGORIES = app.config['ARTICLE_CATEGORIES']
+Spider = namedtuple('Spider', ['id', 'source'])
 
 
 @api_page.route('/vote', methods=['POST'])
@@ -82,20 +89,8 @@ def get_entries_byday():
 
 @api_page.route('/categories', methods=['GET'])
 def categories():
-    from model import get_categories
-
-    categories = {u'技术',
-                  u'数据库',
-                  u'安全',
-                  u'科技',
-                  u'新闻'}
-    categories.update(get_categories() or {})
     return jsonify(err=0,
-                   data=list(categories))
-
-
-from collections import namedtuple
-Spider = namedtuple('Spider', ['id', 'source'])
+                   data=list(CATEGORIES))
 
 
 @api_page.route('/entries', methods=['POST'])

@@ -21,3 +21,9 @@ BLOGSPIDER_KEY = 'blogspider'
 LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
+
+ARTICLE_CATEGORIES = {u'技术',
+                      u'数据库',
+                      u'安全',
+                      u'科技',
+                      u'新闻'}
