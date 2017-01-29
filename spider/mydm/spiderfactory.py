@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class SpiderFactoryException(Exception):
     """
-        exception for factory make spider
+        exception for spider factory
     """
     pass
 
@@ -30,18 +30,18 @@ class SpiderFactory(object):
             raise SpiderFactoryException(
                 'Error in SpiderFactory, no name|type attr found'
                 )
-        t = setting['type']
-        try:
-            return _factory_func[t](setting)
-        except KeyError:
+        f = _factory_func.get(setting['type'])
+        if f:
+            return f(setting)
+        else:
             raise SpiderFactoryException((
-                'Error in SpiderFactory, {} type not support'
-                ).format(t))
+                'Error in SpiderFactory type[{}] not support'
+                ).format(setting['type']))
 
 
 def mk_spider_cls(setting):
     try:
         return SpiderFactory.make_spider(setting)
     except AttributeError:
-        raise SpiderFactoryException('Error in mk_spider_cls, attr error')
+        raise SpiderFactoryException('Error in mk_spider_cls attr')
     logger.info('Factory create spider[{}]'.format(setting['name']))
