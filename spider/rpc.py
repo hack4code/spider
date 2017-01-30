@@ -54,17 +54,16 @@ def task(callback, key):
         sleep(60)
 
 
-def init_logger(settings):
-    root = logging.getLogger()
-    root.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(settings['LOG_LEVEL'])
-    handler.setFormatter(logging.Formatter(settings['LOG_FORMAT'],
-                                           settings['LOG_DATEFORMAT']))
-    root.addHandler(handler)
-
-
 def main():
+    def init_logger(settings):
+        root = logging.getLogger()
+        root.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setLevel(settings['LOG_LEVEL'])
+        handler.setFormatter(logging.Formatter(settings['LOG_FORMAT'],
+                                               settings['LOG_DATEFORMAT']))
+        root.addHandler(handler)
+
     init_logger(settings)
     logger = logging.getLogger(__name__)
     TASKS = [(crawl, settings['CRAWL_KEY']),
