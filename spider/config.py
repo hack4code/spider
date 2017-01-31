@@ -44,7 +44,7 @@ MONGODB_SPIDER_COLLECTION_NAME = 'spider'
 MONGODB_USER = 'scrapy'
 MONGODB_PWD = 'scrapy'
 
-# celery
+# rabbitmq
 BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
 CRAWL_KEY = 'crawl'
 CRAWL2_KEY = 'crawl2'
@@ -53,9 +53,7 @@ BLOGSPIDER_KEY = 'blogspider'
 
 # redis
 SPIDER_STATS_URL = 'redis://redis:6379/0'
-# etag
 ETAG_URL = 'redis://redis:6379/1'
-# test_spider
 TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
 
 # if-modify-since
