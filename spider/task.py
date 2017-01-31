@@ -196,7 +196,7 @@ def crawl(args):
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
 
-    failed_spiders = _get_failed_spiders()
+    failed_spiders = _get_failed_spiders(loader)
     if failed_spiders:
         _send(settings['CRAWL2_KEY'],
               {'spiders': failed_spiders})
