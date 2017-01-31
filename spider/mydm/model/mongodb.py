@@ -6,22 +6,24 @@ from pymongo import MongoClient, ASCENDING
 from scrapy.utils.project import get_project_settings
 
 
-PSettings = get_project_settings()
+SETTINGS = get_project_settings()
 
 
 class MongoDB(object):
-    COLLECTIONS = ('article', 'feed', 'spider', 'category')
+    COLLECTIONS = ('article',
+                   'feed',
+                   'spider',
+                   'category')
 
     def __init__(self):
         self.db = None
-        self.client = MongoClient(PSettings['MONGODB_URI'],
+        self.client = MongoClient(SETTINGS['MONGODB_URI'],
                                   connect=False)
 
     def connect(self):
-        db = self.client[PSettings['MONGODB_DB_NAME']]
-        db.authenticate(PSettings['MONGODB_USER'],
-                        PSettings['MONGODB_PWD'])
-        # create indexes
+        db = self.client[SETTINGS['MONGODB_DB_NAME']]
+        db.authenticate(SETTINGS['MONGODB_USER'],
+                        SETTINGS['MONGODB_PWD'])
         feed = db['feed']
         feed.create_index('url',
                           name='idx_url')
@@ -44,16 +46,16 @@ class MongoDB(object):
                 )
 
 
-db = MongoDB()
+ScrapyDB = MongoDB()
 
 
 def is_exists_feed(url):
-    cursor = db.feed.find({'url': url}).limit(1)
+    cursor = ScrapyDB.feed.find({'url': url}).limit(1)
     return False if cursor.count() == 0 else True
 
 
 def save_feed(url):
-    result = db.feed.insert_one(
+    result = ScrapyDB.feed.insert_one(
         {
             'url': url,
             'create_date': datetime.now()
@@ -76,7 +78,7 @@ def _get_item_day_begin(item):
 
 def is_exists_article(item):
     t = _get_item_day_begin(item)
-    cursor = db.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'spider': item['spider'],
             'crawl_date': {'$lt': t},
@@ -87,7 +89,7 @@ def is_exists_article(item):
     ).limit(1)
     if cursor.count() > 0:
         return True
-    cursor = db.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'spider': item['spider'],
             'crawl_date': {'$gte': t},
@@ -105,7 +107,7 @@ def is_exists_article(item):
 
 def save_article(item):
     t = _get_item_day_begin(item)
-    result = db.article.update(
+    result = ScrapyDB.article.update(
         {
             'spider': item['spider'],
             'crawl_date': {'$gte': t},
@@ -118,25 +120,25 @@ def save_article(item):
 
 
 def is_exists_spider(url):
-    cursor = db.spider.find({'start_urls': {'$in': [url, ]}})
+    cursor = ScrapyDB.spider.find({'start_urls': {'$in': [url, ]}})
     return True if cursor.count() > 0 else False
 
 
 def save_spider_settings(settings):
-    result = db.spider.insert_one(settings)
+    result = ScrapyDB.spider.insert_one(settings)
     return result.inserted_id
 
 
 def get_spider_settings():
     settings = []
-    cursor = db.spider.find()
-    for r in cursor:
-        setting = dict(r)
-        setting['_id'] = str(r['_id'])
+    cursor = ScrapyDB.spider.find()
+    for _ in cursor:
+        setting = dict(_)
+        setting['_id'] = str(_['_id'])
         settings.append(setting)
     return settings
 
 
 def get_category_tags():
-    cursor = db.category.find()
-    return {r['category']: r['tags'] for r in cursor}
+    cursor = ScrapyDB.category.find()
+    return {_['category']: _['tags'] for _ in cursor}
