@@ -47,12 +47,12 @@ class MongoDB:
                          key))
 
 
-ArticleDB = MongoDB(app.config['MONGODB_STOREDB_NAME'])
+ScrapyDB = MongoDB(app.config['MONGODB_STOREDB_NAME'])
 ScoreDB = MongoDB(app.config['MONGODB_SCOREDB_NAME'])
 
 
 def get_begin_day():
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
     ).sort('crawl_date',
@@ -62,7 +62,7 @@ def get_begin_day():
 
 
 def get_end_day():
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
     ).sort('crawl_date',
@@ -127,7 +127,7 @@ def get_entries(day):
                      0,
                      0)
     end = begin + timedelta(days=1)
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'crawl_date': {'$gte': begin,
                            '$lt': end}
@@ -168,7 +168,7 @@ def get_before_day(day):
                  0,
                  0,
                  0)
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'crawl_date': {'$lt': t}
         },
@@ -190,7 +190,7 @@ def get_after_day(day):
                  0,
                  0)
     nextday = t + timedelta(days=1)
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'crawl_date': {'$gte': nextday}
         },
@@ -209,13 +209,13 @@ def get_after_day(day):
 
 
 def get_spiders():
-    cursor = ArticleDB.spider.find({},
-                                   {'title': 1})
+    cursor = ScrapyDB.spider.find({},
+                                  {'title': 1})
     return {str(_['_id']): _['title'] for _ in cursor}
 
 
 def get_first_aid(spid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'spider': spid
         },
@@ -229,7 +229,7 @@ def get_first_aid(spid):
 
 
 def get_last_aid(spid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'spider': spid
         },
@@ -243,7 +243,7 @@ def get_last_aid(spid):
 
 
 def get_crawl_date(aid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             '_id': aid
         },
@@ -255,7 +255,7 @@ def get_crawl_date(aid):
 
 
 def get_entries_next(spid, aid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             '_id': {'$lt': aid},
             'spider': spid
@@ -273,7 +273,7 @@ def get_entries_next(spid, aid):
 
 
 def get_entries_pre(spid, aid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             '_id': {'$gt': aid},
             'spider': spid
@@ -291,7 +291,7 @@ def get_entries_pre(spid, aid):
 
 
 def get_entries_spider(spid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'spider': spid
         },
@@ -319,7 +319,7 @@ Article = namedtuple('Article',
 
 
 def get_article(aid):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             '_id': aid
         },
@@ -379,7 +379,7 @@ def vote_article(a):
 
 
 def get_categories():
-    return ArticleDB.article.distinct('category')
+    return ScrapyDB.article.distinct('category')
 
 
 # function for test
@@ -387,7 +387,7 @@ AID = namedtuple('AID', ['id'])
 
 
 def get_all_days():
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {},
         {
             'crawl_date': 1
@@ -399,7 +399,7 @@ def get_all_days():
 
 
 def get_all_articles(c):
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {
             'category': c
         },
@@ -412,7 +412,7 @@ def get_all_articles(c):
 
 
 def get_articles():
-    cursor = ArticleDB.article.find(
+    cursor = ScrapyDB.article.find(
         {},
         {
             '_id': 1
