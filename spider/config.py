@@ -35,7 +35,7 @@ spider settings
 
 LOGGER_NAME = 'SPIDERLOGGER'
 
-# config for mongodb
+# mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
 MONGODB_DB_NAME = 'scrapy'
 MONGODB_ARTICLE_COLLECTION_NAME = 'article'
@@ -44,25 +44,19 @@ MONGODB_SPIDER_COLLECTION_NAME = 'spider'
 MONGODB_USER = 'scrapy'
 MONGODB_PWD = 'scrapy'
 
-# config for celery
+# celery
 BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
 CRAWL_KEY = 'crawl'
+CRAWL2_KEY = 'crawl2'
 LXMLSPIDER_KEY = 'lxmlspider'
 BLOGSPIDER_KEY = 'blogspider'
 
-#
+# redis
 SPIDER_STATS_URL = 'redis://redis:6379/0'
-# config for etag
+# etag
 ETAG_URL = 'redis://redis:6379/1'
-# config for spider task
+# test_spider
 TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
 
-# config for if-modify-since
+# if-modify-since
 MODIFY_DELTA = 1
-
-# category
-ARTICLE_CATEGORIES = [u'技术',
-                      u'数据库',
-                      u'安全',
-                      u'科技',
-                      u'新闻']

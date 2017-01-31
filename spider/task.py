@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import re
+import json
 import uuid
+import random
 from urllib.parse import urlparse
+import logging
 
 import requests
 import redis
+import pika
 from lxml import etree
+
+from twisted.internet import reactor, defer
 
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerProcess
-from twisted.internet import reactor
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 
@@ -22,6 +26,19 @@ from mydm.util import parse_redis_url
 
 settings = get_project_settings()
 logger = logging.getLogger(__name__)
+
+
+def _send(key, data):
+    host = settings['BROKER_URL']
+    body = json.dumps(data)
+    connection = pika.BlockingConnection(pika.connection.URLParameters(host))
+    channel = connection.channel()
+    channel.exchange_declare(exchange='direct_logs',
+                             type='direct')
+    channel.basic_publish(exchange='direct_logs',
+                          routing_key=key,
+                          body=body)
+    connection.close()
 
 
 def get_feed_name(url):
@@ -133,6 +150,28 @@ def gen_blogspider(setting):
         return False
 
 
+def _get_failed_spiders(loader):
+    spiders = []
+    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    r = redis.Redis(host=conf.host,
+                    port=conf.port,
+                    db=conf.database)
+    for sp in loader.list():
+        n = r.get(sp)
+        n = 0 if n is None else int(n)
+        if n == 0:
+            spiders.append(sp)
+    return spiders
+
+
+def _flush_db():
+    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    r = redis.Redis(host=conf.host,
+                    port=conf.port,
+                    db=conf.database)
+    r.flushdb()
+
+
 def crawl(args):
     spiders_ = args.get('spiders')
     spiders = []
@@ -147,30 +186,35 @@ def crawl(args):
                    if spid in loader.list()]
     if not spiders:
         return False
-    for sp in spiders:
-        runner.crawl(sp)
+    _flush_db()
+    for _ in random.sample(spiders,
+                           len(spiders)):
+        runner.crawl(_)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
+    failed_spiders = _get_failed_spiders()
+    if failed_spiders:
+        _send(settings['CRAWL2_KEY'],
+              {'spiders': failed_spiders})
 
 
-def flush_db():
-    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-    r = redis.Redis(host=conf.host,
-                    port=conf.port,
-                    db=conf.database)
-    r.flushdb()
-
-
-def get_failed_spiders(loader):
+def crawl2(args):
     spiders = []
-    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
-    r = redis.Redis(host=conf.host,
-                    port=conf.port,
-                    db=conf.database)
-    for sp in loader.list():
-        n = r.get(sp)
-        n = 0 if n is None else int(n)
-        if n == 0:
-            spiders.append(sp)
-    return spiders
+    spiders_ = args.get('spiders')
+    configure_logging(settings,
+                      install_root_handler=False)
+    runner = CrawlerRunner(settings)
+    loader = runner.spider_loader
+    spiders = [loader.load(spid) for spid in spiders_
+               if spid in loader.list()]
+    if not spiders:
+        return False
+
+    @defer.inlineCallbacks
+    def seq_crawl():
+        for _ in random.sample(spiders,
+                               len(spiders)):
+            yield runner.crawl(_)
+    seq_crawl()
+    reactor.run()
