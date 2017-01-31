@@ -88,7 +88,7 @@ def main():
                              args=args)
                 np.start()
                 tasks[i] = (np, args)
-            sleep(600)
+        sleep(600)
 
 
 if __name__ == '__main__':

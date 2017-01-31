@@ -186,13 +186,16 @@ def crawl(args):
                    if spid in loader.list()]
     if not spiders:
         return False
+
     _flush_db()
+
     for _ in random.sample(spiders,
                            len(spiders)):
         runner.crawl(_)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
+
     failed_spiders = _get_failed_spiders()
     if failed_spiders:
         _send(settings['CRAWL2_KEY'],
