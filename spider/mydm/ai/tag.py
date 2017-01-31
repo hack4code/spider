@@ -3,6 +3,8 @@
 
 import re
 
+from lxml.html import fromstring, HTMLParser
+
 
 def verify_tags(tags):
     return True if all(len(tag) < 32 for tag in tags) else False
@@ -19,7 +21,6 @@ class ReExtractor:
         if not isinstance(doc,
                           (str, bytes)):
             return None
-        from lxml.html import fromstring, HTMLParser
         doc = fromstring(bytes(bytearray(doc,
                                          encoding=encoding)),
                          parser=HTMLParser(encoding=encoding))
@@ -46,7 +47,6 @@ class ReExtractor:
             tags = self.extract(stag)
             if verify_tags(tags):
                 return tags
-        return None
 
 
 class TagExtractor:
@@ -57,6 +57,4 @@ class TagExtractor:
             match = cls()
             tags = match(doc,
                          encoding=encoding)
-            if tags is not None:
-                return tags
-        return None
+            return tags
