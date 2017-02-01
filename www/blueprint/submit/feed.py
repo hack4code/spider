@@ -55,6 +55,24 @@ def _set_removed_xpath_nodes(args, removed_xpath_nodes):
             pass
 
 
+def _check_args(args, ATTRS):
+    if any(_ not in args for _ in ATTRS):
+        attrs = [_ for _ in ATTRS if _ not in args]
+        return False, '{} field needed'.format(' '.join(attrs))
+    url = args['url']
+    if not _check_url(url):
+        app.logger.error((
+            'Error in _check_args invalid url[{}]'
+            ).format(url))
+        return False, 'invalid url'
+    if args['category'] not in CATEGORIES:
+        app.logger.error((
+            'Error in _check_args invalid category[{}]'
+            ).format(args['category']))
+        return False, 'invalid category'
+    return True, 'OK'
+
+
 @submit_page.route('/crawl', methods=['POST'])
 def crawl():
     spiders = [_ for _ in (__.strip()
@@ -71,32 +89,21 @@ def crawl():
 @submit_page.route('/rss', methods=['POST'])
 def gen_atom_spider():
     ATTRS = ('url',
-             'category',
-             'item_content_xpath',
-             'removed_xpath_nodes')
+             'category')
 
-    FORBIDDEN_ATTRS = ('url',
-                       'category')
+    OPTIONAL_ATTRS = ('item_content_xpath',
+                      'removed_xpath_nodes')
 
-    args = {k.strip(): v.strip()
-            for k, v in request.form.items() if k in ATTRS and v}
-    if any(_ not in args for _ in FORBIDDEN_ATTRS):
-        attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
+    args = {k: v.strip()
+            for k, v in request.form.items()
+            if k in ATTRS + OPTIONAL_ATTRS and v}
+
+    success, msg = _check_args(args,
+                               ATTRS)
+    if not success:
         return jsonify(err=1,
-                       msg='{} field needed'.format(' '.join(attrs)))
-    url = args['url']
-    if not _check_url(url):
-        app.logger.error((
-            'Error in gen_atom_spider invalid url[{}]'
-            ).format(url))
-        return jsonify(err=2,
-                       msg='invalid url')
-    if args['category'] not in CATEGORIES:
-        app.logger.error((
-            'Error in gen_atom_spider invalid category[{}]'
-            ).format(args['category']))
-        return jsonify(err=3,
-                       msg='invalid category')
+                       msg=msg)
+
     _set_removed_xpath_nodes(args,
                              _get_removed_xpath_nodes)
     _send(LXMLSPIDER_KEY,
@@ -111,35 +118,20 @@ def gen_blog_spider():
              'entry_xpath',
              'item_title_xpath',
              'item_link_xpath',
-             'item_content_xpath',
-             'removed_xpath_nodes')
+             'item_content_xpath')
 
-    FORBIDDEN_ATTRS = ('url',
-                       'category',
-                       'entry_xpath',
-                       'item_title_xpath',
-                       'item_link_xpath',
-                       'item_content_xpath')
+    OPTIONAL_ATTRS = ('removed_xpath_nodes')
 
-    args = {k.strip(): v.strip()
-            for k, v in request.form.items() if k in ATTRS and v}
-    if any(_ not in args for _ in FORBIDDEN_ATTRS):
-        attrs = [_ for _ in FORBIDDEN_ATTRS if _ not in args]
+    args = {k: v.strip()
+            for k, v in request.form.items()
+            if k in ATTRS + OPTIONAL_ATTRS and v}
+
+    success, msg = _check_args(args,
+                               ATTRS)
+    if not success:
         return jsonify(err=1,
-                       msg='{} needed'.format(' '.join(attrs)))
-    url = args['url']
-    if not _check_url(url):
-        app.logger.error((
-            'Error in gen_blog_spider invalid url[{}]'
-            ).format(url))
-        return jsonify(err=2,
-                       msg='invalid url')
-    if args['category'] not in CATEGORIES:
-        app.logger.error((
-            'Error in gen_blog_spider invalid category[{}]'
-            ).format(args['category']))
-        return jsonify(err=3,
-                       msg='invalid category')
+                       msg=msg)
+
     _set_removed_xpath_nodes(args,
                              _get_removed_xpath_nodes(args))
     _send(BLOGSPIDER_KEY,
