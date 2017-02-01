@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from lxml.html import tostring
+
 from ..model import is_exists_article, save_article
 from ..ai import get_category
 
@@ -13,7 +15,7 @@ def get_article_lang(item):
 
 class StorePipeline(object):
     """
-        save content to mongodb
+        save data to mongodb
     """
 
     @classmethod
@@ -25,7 +27,6 @@ class StorePipeline(object):
             doc = item['content']
             if not isinstance(doc,
                               (str, bytes)):
-                from lxml.html import tostring
                 item['content'] = tostring(doc,
                                            encoding='UTF-8',
                                            pretty_print=True,
