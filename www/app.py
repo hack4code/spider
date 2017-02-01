@@ -88,7 +88,7 @@ def show_entries_byspider(spid):
                                spider=Spider(spid,
                                              spiders[spid]))
     else:
-        raise BadRequest('spider id not existed')
+        raise NotFound('spider not existed')
 
 
 @app.route('/l/p', methods=['GET'])
