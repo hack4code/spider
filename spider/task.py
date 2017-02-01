@@ -24,12 +24,12 @@ from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import mk_spider_cls
 from mydm.util import parse_redis_url
 
-settings = get_project_settings()
 logger = logging.getLogger(__name__)
+SETTINGS = get_project_settings()
 
 
 def _send(key, data):
-    host = settings['BROKER_URL']
+    host = SETTINGS['BROKER_URL']
     body = json.dumps(data)
     connection = pika.BlockingConnection(pika.connection.URLParameters(host))
     channel = connection.channel()
@@ -61,7 +61,7 @@ def test_spider(setting):
     spid = str(uuid.uuid4())
     setting['_id'] = spid
     cls = mk_spider_cls(setting)
-    url = settings['TEMP_SPIDER_STATS_URL']
+    url = SETTINGS['TEMP_SPIDER_STATS_URL']
     test_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
                      'SPIDER_STATS_URL': url}
 
@@ -89,7 +89,7 @@ def gen_lxmlspider(setting):
     save_feed(url)
     try:
         r = requests.get(url,
-                         headers=settings['DEFAULT_REQUEST_HEADERS'])
+                         headers=SETTINGS['DEFAULT_REQUEST_HEADERS'])
     except ConnectionError:
         logger.error((
             'Error in gen_lxmlspider connection[{}]'
@@ -152,7 +152,7 @@ def gen_blogspider(setting):
 
 def _get_failed_spiders(loader):
     spiders = []
-    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
                     port=conf.port,
                     db=conf.database)
@@ -165,7 +165,7 @@ def _get_failed_spiders(loader):
 
 
 def _flush_db():
-    conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+    conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
                     port=conf.port,
                     db=conf.database)
@@ -175,9 +175,9 @@ def _flush_db():
 def crawl(args):
     spiders_ = args.get('spiders')
     spiders = []
-    configure_logging(settings,
+    configure_logging(SETTINGS,
                       install_root_handler=False)
-    runner = CrawlerRunner(settings)
+    runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     if 'all' in spiders_:
         spiders = [loader.load(spid) for spid in loader.list()]
@@ -198,16 +198,16 @@ def crawl(args):
 
     failed_spiders = _get_failed_spiders(loader)
     if failed_spiders:
-        _send(settings['CRAWL2_KEY'],
+        _send(SETTINGS['CRAWL2_KEY'],
               {'spiders': failed_spiders})
 
 
 def crawl2(args):
     spiders = []
     spiders_ = args.get('spiders')
-    configure_logging(settings,
+    configure_logging(SETTINGS,
                       install_root_handler=False)
-    runner = CrawlerRunner(settings)
+    runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     spiders = [loader.load(spid) for spid in spiders_
                if spid in loader.list()]
