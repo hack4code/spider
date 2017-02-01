@@ -6,7 +6,7 @@
   <meta name=viewport content="width=device-width, initial-scale=1">
   <title>{% block title %}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image/favicon.ico') }}">
   {% if dom_css %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/{}'.format(dom_css)) }}">
