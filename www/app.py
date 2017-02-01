@@ -10,10 +10,9 @@ from user import need_uid
 
 
 def set_loglevel(level):
-    for handler in app.logger.handlers:
-        if handler.__class__.__name__.startswith('Production'):
-            handler.setLevel(level)
-            break
+    handler = next(_ for _ in app.logger.handlers
+                   if _.__class__.__name__.startswith('Production'))
+    handler.setLevel(level)
     app.logger.setLevel(level)
 
 
