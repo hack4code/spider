@@ -46,7 +46,7 @@ class MongoSpiderLoader(object):
             return self.spiders[spid]
         except KeyError:
             raise KeyError((
-                'Error in loader, spider[{}] not found'
+                'spider[{}] not found'
                 ).format(spid))
 
     def find_by_request(self, request):
