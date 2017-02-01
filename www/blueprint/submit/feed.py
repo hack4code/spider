@@ -105,7 +105,7 @@ def gen_atom_spider():
                        msg=msg)
 
     _set_removed_xpath_nodes(args,
-                             _get_removed_xpath_nodes)
+                             _get_removed_xpath_nodes(args))
     _send(LXMLSPIDER_KEY,
           args)
     return jsonify(err=0)
