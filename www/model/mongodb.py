@@ -3,6 +3,7 @@
 
 from collections import namedtuple, defaultdict
 from datetime import datetime, timedelta
+from html import unescape
 
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
@@ -343,7 +344,6 @@ def get_article(aid):
         r['content'] = r['content'].decode('UTF-8')
     if 'source' not in r:
         r['source'] = None
-    from html import unescape
     r['title'] = unescape(r['title'])
 
     a = Article(r['_id'],
