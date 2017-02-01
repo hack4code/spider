@@ -71,7 +71,7 @@ def show_article(aid):
                                article=a,
                                dom_css=get_css(a.domain))
     else:
-        raise NotFound('article not exist')
+        raise NotFound('article not existed')
 
 
 @app.route('/p/<id:spid>', methods=['GET'])
