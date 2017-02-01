@@ -8,8 +8,19 @@ from flask import Flask, render_template
 from error import NotFound, BadRequest
 from user import need_uid
 
+
+def set_loglevel(level):
+    for handler in app.logger.handlers:
+        if handler.__class__.__name__.startswith('Production'):
+            handler.setLevel(level)
+            break
+    app.logger.setLevel(level)
+
+
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+set_loglevel('INFO')
+app.logger.info('app running ...')
 
 # jinja
 app.jinja_env.trim_blocks = True
@@ -29,13 +40,6 @@ def error(error):
 from util import DateConverter, IdConverter
 app.url_map.converters['date'] = DateConverter
 app.url_map.converters['id'] = IdConverter
-
-
-def set_loglevel(level):
-    for handler in app.logger.handlers:
-        if handler.__class__.__name__.startswith('Production'):
-            handler.setLevel(level)
-            break
 
 
 @app.route('/', methods=['GET'])
@@ -110,5 +114,3 @@ app.register_blueprint(api_page,
 from submit import submit_page
 app.register_blueprint(submit_page,
                        url_prefix='/submit')
-
-app.logger.info('app running ...')
