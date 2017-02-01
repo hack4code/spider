@@ -3,9 +3,9 @@
 
 from datetime import datetime
 
+from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
 
-from error import NotFound, BadRequest
 from user import need_uid
 
 
