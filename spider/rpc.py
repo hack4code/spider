@@ -14,12 +14,12 @@ from scrapy.utils.project import get_project_settings
 from task import crawl, crawl2, gen_lxmlspider, gen_blogspider
 
 
-settings = get_project_settings()
+SETTINGS = get_project_settings()
 
 
 def task(callback, key):
     consumers = []
-    url = '{}?heartbeat=600'.format(settings['BROKER_URL'])
+    url = '{}?heartbeat=600'.format(SETTINGS['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
@@ -55,21 +55,21 @@ def task(callback, key):
 
 
 def main():
-    def init_logger(settings):
+    def init_logger():
         root = logging.getLogger()
         root.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(sys.stdout)
-        handler.setLevel(settings['LOG_LEVEL'])
-        handler.setFormatter(logging.Formatter(settings['LOG_FORMAT'],
-                                               settings['LOG_DATEFORMAT']))
+        handler.setLevel(SETTINGS['LOG_LEVEL'])
+        handler.setFormatter(logging.Formatter(SETTINGS['LOG_FORMAT'],
+                                               SETTINGS['LOG_DATEFORMAT']))
         root.addHandler(handler)
 
-    init_logger(settings)
+    init_logger()
     logger = logging.getLogger(__name__)
-    TASKS = [(crawl, settings['CRAWL_KEY']),
-             (gen_lxmlspider, settings['LXMLSPIDER_KEY']),
-             (gen_blogspider, settings['BLOGSPIDER_KEY']),
-             (crawl2, settings['CRAWL2_KEY'])]
+    TASKS = [(crawl, SETTINGS['CRAWL_KEY']),
+             (gen_lxmlspider, SETTINGS['LXMLSPIDER_KEY']),
+             (gen_blogspider, SETTINGS['BLOGSPIDER_KEY']),
+             (crawl2, SETTINGS['CRAWL2_KEY'])]
     tasks = [(Process(target=task,
                       args=_),
               _) for _ in TASKS]
