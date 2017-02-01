@@ -2,6 +2,8 @@
 
 
 from werkzeug.routing import BaseConverter, ValidationError
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
 
 
 class DateConverter(BaseConverter):
@@ -18,8 +20,6 @@ class DateConverter(BaseConverter):
 
 class IdConverter(BaseConverter):
     def to_python(self, value):
-        from bson.objectid import ObjectId
-        from bson.errors import InvalidId
         try:
             return ObjectId(value)
         except InvalidId:
