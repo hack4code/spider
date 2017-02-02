@@ -3,8 +3,8 @@
 
 import logging
 import sys
-from time import sleep
 import json
+from time import sleep
 from multiprocessing import Process
 
 import pika

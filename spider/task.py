@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import re
 import json
 import uuid
 import random
 from urllib.parse import urlparse
-import logging
 
 import requests
 import redis
