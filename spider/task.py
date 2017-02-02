@@ -26,13 +26,12 @@ from mydm.util import parse_redis_url
 logger = logging.getLogger(__name__)
 
 SETTINGS = get_project_settings()
-CRAWL2_KEY = SETTINGS['CRAWL2_KEY']
 
 
 def _send(key, data):
-    host = SETTINGS['BROKER_URL']
     body = json.dumps(data)
-    connection = pika.BlockingConnection(pika.connection.URLParameters(host))
+    connection = pika.BlockingConnection(
+        pika.connection.URLParameters(SETTINGS['BROKER_URL']))
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
                              type='direct')
@@ -208,7 +207,7 @@ def crawl(args):
 
     failed_spiders = _get_failed_spiders(loader)
     if failed_spiders:
-        _send(CRAWL2_KEY,
+        _send(SETTINGS['CRAWL2_KEY'],
               {'spiders': failed_spiders})
 
 
