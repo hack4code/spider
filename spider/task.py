@@ -16,7 +16,6 @@ from lxml import etree
 from twisted.internet import reactor, defer
 
 from scrapy.utils.project import get_project_settings
-from scrapy.crawler import CrawlerProcess
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 
@@ -25,7 +24,9 @@ from mydm.spiderfactory import mk_spider_cls
 from mydm.util import parse_redis_url
 
 logger = logging.getLogger(__name__)
+
 SETTINGS = get_project_settings()
+CRAWL2_KEY = SETTINGS['CRAWL2_KEY']
 
 
 def _send(key, data):
@@ -62,12 +63,21 @@ def test_spider(setting):
     setting['_id'] = spid
     cls = mk_spider_cls(setting)
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
-    test_settings = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
-                     'SPIDER_STATS_URL': url}
+    TEST_SETTINGS = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
+                     'SPIDER_STATS_URL': url,
+                     'BOT_NAME': 'TestSpider',
+                     'WEBSERVICE_ENABLED': False,
+                     'TELNETCONSOLE_ENABLED': False,
+                     'LOG_LEVEL': 'INFO',
+                     'LOG_FORMAT': '%(asctime)s-%(levelname)s: %(message)s',
+                     'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'}
 
-    p = CrawlerProcess(test_settings)
-    p.crawl(cls)
-    p.start()
+    configure_logging(TEST_SETTINGS,
+                      install_root_handler=False)
+    runner = CrawlerRunner(TEST_SETTINGS)
+    d = runner.crawl(cls)
+    d.addBoth(lambda _: reactor.stop())
+    reactor.run()
 
     def get_stats(url, spid):
         conf = parse_redis_url(url)
@@ -198,7 +208,7 @@ def crawl(args):
 
     failed_spiders = _get_failed_spiders(loader)
     if failed_spiders:
-        _send(SETTINGS['CRAWL2_KEY'],
+        _send(CRAWL2_KEY,
               {'spiders': failed_spiders})
 
 
