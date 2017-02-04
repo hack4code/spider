@@ -90,7 +90,6 @@ def crawl():
 def gen_atom_spider():
     ATTRS = ('url',
              'category')
-
     OPTIONAL_ATTRS = ('item_content_xpath',
                       'removed_xpath_nodes')
 
@@ -119,8 +118,7 @@ def gen_blog_spider():
              'item_title_xpath',
              'item_link_xpath',
              'item_content_xpath')
-
-    OPTIONAL_ATTRS = ('removed_xpath_nodes')
+    OPTIONAL_ATTRS = ('removed_xpath_nodes',)
 
     args = {k: v.strip()
             for k, v in request.form.items()
@@ -134,6 +132,8 @@ def gen_blog_spider():
 
     _set_removed_xpath_nodes(args,
                              _get_removed_xpath_nodes(args))
+    app.logger.info('gen_blog_spider: %s',
+                    args)
     _send(BLOGSPIDER_KEY,
           args)
     return jsonify(err=0)
