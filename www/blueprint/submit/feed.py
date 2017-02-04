@@ -97,6 +97,8 @@ def gen_atom_spider():
     args = {k: v.strip()
             for k, v in request.form.items()
             if k in ATTRS + OPTIONAL_ATTRS and v}
+    app.logger.info('args[%s]',
+                    args)
 
     success, msg = _check_args(args,
                                ATTRS)
@@ -106,6 +108,8 @@ def gen_atom_spider():
 
     _set_removed_xpath_nodes(args,
                              _get_removed_xpath_nodes(args))
+    app.logger.info('gen_atom_spider[%s]',
+                    args)
     _send(LXMLSPIDER_KEY,
           args)
     return jsonify(err=0)
@@ -125,7 +129,7 @@ def gen_blog_spider():
             for k, v in request.form.items()
             if k in ATTRS + OPTIONAL_ATTRS and v}
 
-    app.logger.info('args: %s',
+    app.logger.info('args[%s]',
                     args)
     success, msg = _check_args(args,
                                ATTRS)
@@ -135,7 +139,7 @@ def gen_blog_spider():
 
     _set_removed_xpath_nodes(args,
                              _get_removed_xpath_nodes(args))
-    app.logger.info('gen_blog_spider: %s',
+    app.logger.info('gen_blog_spider[%s]',
                     args)
     _send(BLOGSPIDER_KEY,
           args)
