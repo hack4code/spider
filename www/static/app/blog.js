@@ -41,7 +41,7 @@ class SubmitForm extends React.Component {
         form["removed_xpath_nodes"] = JSON.stringify(nodes);
       }
       else {
-        delete from["removed_xpath_nodes"];
+        delete form["removed_xpath_nodes"];
       }
       let data  = new FormData();
       for (let k in form) {
