@@ -39,11 +39,9 @@ def _check_url(url):
 
 
 def _get_removed_xpath_nodes(args):
-    removed_xpath_nodes = args.get('removed_xpath_nodes')
-    if isinstance(removed_xpath_nodes,
-                  str):
-        removed_xpath_nodes = [removed_xpath_nodes]
-    if removed_xpath_nodes:
+    removed_xpath_nodes_ = args.get('removed_xpath_nodes')
+    if removed_xpath_nodes_:
+        removed_xpath_nodes = json.loads(removed_xpath_nodes_)
         return [_ for _ in (__.strip(' \t\r\n') for __ in removed_xpath_nodes)
                 if _]
 
