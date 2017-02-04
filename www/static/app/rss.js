@@ -37,8 +37,7 @@ class SubmitForm extends React.Component {
     else {
       this.err.fadeIn("正在提交 .....");
 
-      let nodes = form["removed_xpath_nodes"].filter((e, index, array) => {e != ""});
-      console.log(nodes);
+      let nodes = form["removed_xpath_nodes"].filter((e) => {return e != "";});
       if (nodes.length > 0) {
         form["removed_xpath_nodes"] = JSON.stringify(nodes);
       }
