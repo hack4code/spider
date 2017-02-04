@@ -5,6 +5,7 @@ import logging
 from urllib.parse import urlparse
 from datetime import datetime
 import inspect
+from html import unescape
 
 from scrapy.spiders import Spider
 from scrapy.selector import Selector
@@ -12,6 +13,7 @@ from scrapy import Request
 
 from ..spider import ErrbackSpider
 from ...items import ArticleItem
+from ...ai import TagExtractor
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +27,6 @@ class BLOGSpiderException(Exception):
 
 
 def extract_tags(doc, encoding):
-    from ...ai import TagExtractor
     extract = TagExtractor()
     return extract(doc, encoding=encoding)
 
@@ -36,7 +37,9 @@ class BLOGSpider(Spider):
     """
 
     # tags item must contain
-    TAGS = ('title', 'link', 'content')
+    TAGS = ('title',
+            'link',
+            'content')
 
     def check_item(self, item):
         return True if all(tag in item and item[tag] is not None
@@ -67,7 +70,6 @@ class BLOGSpider(Spider):
             item['link'] = item['link'].strip('\t\n\r\s')
         # unescape title
         if 'title' in item and item['title'] is not None:
-            from html import unescape
             item['title'] = unescape(item['title'])
         return item
 

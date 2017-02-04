@@ -124,6 +124,8 @@ def gen_blog_spider():
             for k, v in request.form.items()
             if k in ATTRS + OPTIONAL_ATTRS and v}
 
+    app.logger.info('args: %s',
+                    args)
     success, msg = _check_args(args,
                                ATTRS)
     if not success:
