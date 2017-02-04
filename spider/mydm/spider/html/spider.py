@@ -36,14 +36,14 @@ class BLOGSpider(Spider):
         spider crawl blog with xpath
     """
 
-    # tags item must contain
-    TAGS = ('title',
-            'link',
-            'content')
+    # must contain
+    ATTRS = ('title',
+             'link',
+             'content')
 
     def check_item(self, item):
-        return True if all(tag in item and item[tag] is not None
-                           for tag in self.TAGS) else False
+        return True if all(_ in item and item[_] is not None
+                           for _ in self.ATTRS) else False
 
     def extract_entries(self, response):
         return Selector(response,
@@ -54,10 +54,10 @@ class BLOGSpider(Spider):
         # extract item
         attrs = inspect.getmembers(self.__class__,
                                    lambda a: not(inspect.isroutine(a)))
-        extractors = [attr for attr in attrs
-                      if attr[0].startswith('item_') and
-                      attr[0].endswith('_xpath') and
-                      attr[0] != 'item_content_xpath']
+        extractors = [_ for _ in attrs
+                      if _[0].startswith('item_') and
+                      _[0].endswith('_xpath') and
+                      _[0] != 'item_content_xpath']
         item = {name.split('_')[1]: entry.xpath(xnode).extract_first()
                 for name, xnode in extractors}
         # extract tag
@@ -87,12 +87,12 @@ class BLOGSpider(Spider):
         if self.check_item(item):
             return ArticleItem(item)
         else:
-            miss_tags = [tag for tag in self.TAGS
-                         if tag not in item or item[tag] is None]
+            miss_attrs = [_ for _ in self.ATTRS
+                          if _ not in item or item[_] is None]
             logger.error((
-                'Error in spider {} extract content, miss tags{}'
+                'Error in spider {} extract content, miss attrs{}'
                 ).format(self.name,
-                         miss_tags))
+                         miss_attrs))
 
     def parse(self, response):
         try:
