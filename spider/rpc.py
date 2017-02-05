@@ -4,7 +4,7 @@
 import logging
 import sys
 import json
-from collections import deque
+from collections import deque, namedtuple
 from time import sleep
 from multiprocessing import Process
 
@@ -14,6 +14,9 @@ from scrapy.utils.project import get_project_settings
 
 from task import crawl, crawl2, gen_lxmlspider, gen_blogspider
 
+
+Consumer = namedtuple('Consumer',
+                      ['process', 'channel', 'method'])
 
 SETTINGS = get_project_settings()
 
@@ -31,37 +34,43 @@ def task(callback, key):
     channel.queue_bind(exchange='direct_logs',
                        queue=queue_name,
                        routing_key=key)
+    channel.basic_qos(prefetch_count=1)
 
     def consume(ch, method, properties, body):
+        logger.info('new job[%s] from rabbitmq',
+                    callback.__name__)
         args = json.loads(body)
         p = Process(target=callback,
                     args=(args,))
         p.daemon = True
-        consumers.append(p)
+        consumers.append(Consumer(p,
+                                  channel,
+                                  method))
 
     channel.basic_consume(consume,
-                          queue=queue_name,
-                          no_ack=True)
+                          queue=queue_name)
     while True:
         connection.process_data_events()
         try:
-            p = consumers[0]
+            p, channel, method = consumers[0]
+        except IndexError:
+            pass
+        else:
             if not p.is_alive():
                 status = p.exitcode
                 if status is None:
                     p.start()
                 else:
                     if status != 0:
-                        logger.error('%s exited with %d',
+                        logger.error('job[%s] exited with %d',
                                      callback.__name__,
                                      status)
                     else:
-                        logger.info('%s finished',
+                        logger.info('job[%s] finished',
                                     callback.__name__)
                     p.join()
+                    channel.basic_ack(delivery_tag=method.delivery_tag)
                     consumers.popleft()
-        except IndexError:
-            pass
         sleep(60)
 
 

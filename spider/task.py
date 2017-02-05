@@ -197,9 +197,9 @@ def crawl(args):
     if not spiders:
         return False
 
-    for _ in random.sample(spiders,
-                           len(spiders)):
-        runner.crawl(_)
+    map(runner.crawl,
+        random.sample(spiders,
+                      len(spiders)))
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
 
@@ -214,7 +214,6 @@ def crawl(args):
 
 
 def crawl2(args):
-    logger.info('craw2 start running ...')
     spiders = []
     spiders_ = args.get('spiders')
     configure_logging(SETTINGS,
