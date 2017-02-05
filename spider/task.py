@@ -100,15 +100,13 @@ def gen_lxmlspider(setting):
         r = requests.get(url,
                          headers=SETTINGS['DEFAULT_REQUEST_HEADERS'])
     except ConnectionError:
-        logger.error((
-            'Error in gen_lxmlspider connection[{}]'
-            ).format(url))
+        logger.error('Error in gen_lxmlspider connection[%s]',
+                     url)
         return False
     if r.status_code != 200:
-        logger.error((
-            'Error in gen_lxmlspider requests[{}, status={}]'
-            ).format(url,
-                     r.status_code))
+        logger.error('Error in gen_lxmlspider requests[%s, status=%d]',
+                     url,
+                     r.status_code)
         return False
 
     parser = etree.XMLParser(ns_clean=True)
@@ -137,7 +135,8 @@ def gen_lxmlspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_lxmlspider[{}]'.format(url))
+        logger.error('Error in gen_lxmlspider[%s]',
+                     url)
         return False
 
 
@@ -155,7 +154,8 @@ def gen_blogspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_blogspider[{}]'.format(url))
+        logger.error('Error in gen_blogspider[%s]',
+                     url)
         return False
 
 

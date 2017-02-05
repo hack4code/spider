@@ -4,6 +4,7 @@
 import logging
 import sys
 import json
+from collections import deque
 from time import sleep
 from multiprocessing import Process
 
@@ -18,7 +19,8 @@ SETTINGS = get_project_settings()
 
 
 def task(callback, key):
-    consumers = []
+    logger = logging.getLogger(__name__)
+    consumers = deque()
     url = '{}?heartbeat=600'.format(SETTINGS['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
@@ -35,7 +37,6 @@ def task(callback, key):
         p = Process(target=callback,
                     args=(args,))
         p.daemon = True
-        p.start()
         consumers.append(p)
 
     channel.basic_consume(consume,
@@ -43,14 +44,24 @@ def task(callback, key):
                           no_ack=True)
     while True:
         connection.process_data_events()
-        if any(not _.is_alive() for _ in consumers):
-            consumers_ = []
-            for _ in consumers:
-                if _.is_alive():
-                    consumers_.append(_)
+        try:
+            p = consumers[0]
+            if not p.is_alive():
+                status = p.exitcode
+                if status is None:
+                    p.start()
                 else:
-                    _.join()
-            consumers = consumers_
+                    if status != 0:
+                        logger.error('%s exited with %d',
+                                     callback.__name__,
+                                     status)
+                    else:
+                        logger.info('%s finished',
+                                    callback.__name__)
+                    p.join()
+                    consumers.popleft()
+        except IndexError:
+            pass
         sleep(60)
 
 
@@ -80,9 +91,8 @@ def main():
     while True:
         for i, (p, args) in enumerate(tasks):
             if not p.is_alive():
-                logger.error((
-                    'Error in main task {} quit unexpected'
-                    ).format(TASKS[i][0].__name__))
+                logger.error('Error in main task %s quit unexpected',
+                             TASKS[i][0].__name__)
                 p.join()
                 np = Process(target=task,
                              args=args)
