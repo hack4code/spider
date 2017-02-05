@@ -73,6 +73,7 @@ def test_spider(setting):
 
     configure_logging(TEST_SETTINGS,
                       install_root_handler=False)
+    logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
@@ -185,6 +186,7 @@ def crawl(args):
     spiders = []
     configure_logging(SETTINGS,
                       install_root_handler=False)
+    logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     if 'all' in spiders_:
@@ -217,6 +219,7 @@ def crawl2(args):
     spiders_ = args.get('spiders')
     configure_logging(SETTINGS,
                       install_root_handler=False)
+    logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     spiders = [loader.load(spid) for spid in spiders_
