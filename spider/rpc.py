@@ -36,7 +36,7 @@ def task(callback, key):
                        routing_key=key)
     channel.basic_qos(prefetch_count=1)
 
-    def consume(ch, method, properties, body):
+    def consume(channel, method, properties, body):
         logger.info('new job[%s] from rabbitmq',
                     callback.__name__)
         args = json.loads(body)
