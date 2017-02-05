@@ -40,9 +40,9 @@ def task(callback, key):
         p = Process(target=callback,
                     args=(args,))
         p.daemon = True
-        consumers.append(tuple(p,
-                               ch,
-                               method))
+        consumers.append((p,
+                          ch,
+                          method))
 
     channel.basic_consume(consume,
                           queue=queue_name)
