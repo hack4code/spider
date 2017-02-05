@@ -77,7 +77,9 @@ def test_spider(setting):
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
+    logger.info('test_spider reator starting ...')
     reactor.run()
+    logger.info('test_spider reator stopped')
 
     def get_stats(url, spid):
         conf = parse_redis_url(url)
@@ -197,14 +199,16 @@ def crawl(args):
     if not spiders:
         return False
 
-    map(runner.crawl,
-        random.sample(spiders,
-                      len(spiders)))
+    for spider in random.sample(spiders,
+                                len(spiders)):
+        runner.crawl(spider)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
 
     _flush_db()
+    logger.info('crawl reator starting ...')
     reactor.run()
+    logging.info('crawl reator stopped')
 
     if len(spiders) > 4:
         failed_spiders = _get_failed_spiders(spiders)
@@ -227,9 +231,9 @@ def crawl2(args):
         return False
 
     @defer.inlineCallbacks
-    def seq_crawl():
-        for _ in random.sample(spiders,
-                               len(spiders)):
-            yield runner.crawl(_)
-    seq_crawl()
+    def seqcrawl():
+        for spider in random.sample(spiders,
+                                    len(spiders)):
+            yield runner.crawl(spider)
+    seqcrawl()
     reactor.run()

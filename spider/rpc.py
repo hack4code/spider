@@ -4,7 +4,7 @@
 import logging
 import sys
 import json
-from collections import deque, namedtuple
+from collections import deque
 from time import sleep
 from multiprocessing import Process
 
@@ -14,9 +14,6 @@ from scrapy.utils.project import get_project_settings
 
 from task import crawl, crawl2, gen_lxmlspider, gen_blogspider
 
-
-Consumer = namedtuple('Consumer',
-                      ['process', 'channel', 'method'])
 
 SETTINGS = get_project_settings()
 
@@ -36,23 +33,23 @@ def task(callback, key):
                        routing_key=key)
     channel.basic_qos(prefetch_count=1)
 
-    def consume(channel, method, properties, body):
+    def consume(ch, method, properties, body):
         logger.info('new job[%s] from rabbitmq',
                     callback.__name__)
         args = json.loads(body)
         p = Process(target=callback,
                     args=(args,))
         p.daemon = True
-        consumers.append(Consumer(p,
-                                  channel,
-                                  method))
+        consumers.append(tuple(p,
+                               ch,
+                               method))
 
     channel.basic_consume(consume,
                           queue=queue_name)
     while True:
         connection.process_data_events()
         try:
-            p, channel, method = consumers[0]
+            p, ch, method = consumers[0]
         except IndexError:
             pass
         else:
@@ -69,7 +66,7 @@ def task(callback, key):
                         logger.info('job[%s] finished',
                                     callback.__name__)
                     p.join()
-                    channel.basic_ack(delivery_tag=method.delivery_tag)
+                    ch.basic_ack(delivery_tag=method.delivery_tag)
                     consumers.popleft()
         sleep(60)
 
