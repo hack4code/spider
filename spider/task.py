@@ -159,18 +159,17 @@ def gen_blogspider(setting):
         return False
 
 
-def _get_failed_spiders(loader):
-    spiders = []
+def _get_failed_spiders(spiders):
     conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
                     port=conf.port,
                     db=conf.database)
-    for sp in loader.list():
-        n = r.get(sp)
-        n = 0 if n is None else int(n)
-        if n == 0:
-            spiders.append(sp)
-    return spiders
+
+    def get_stats(spid):
+        n = r.get(spid)
+        return 0 if n is None else int(n)
+
+    return [_ for _ in spiders if not get_stats(_)]
 
 
 def _flush_db():
@@ -196,22 +195,24 @@ def crawl(args):
     if not spiders:
         return False
 
-    _flush_db()
-
     for _ in random.sample(spiders,
                            len(spiders)):
         runner.crawl(_)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
+
+    _flush_db()
     reactor.run()
 
-    failed_spiders = _get_failed_spiders(loader)
-    if failed_spiders:
-        _send(SETTINGS['CRAWL2_KEY'],
-              {'spiders': failed_spiders})
+    if len(spiders) > 4:
+        failed_spiders = _get_failed_spiders(spiders)
+        if failed_spiders:
+            _send(SETTINGS['CRAWL2_KEY'],
+                  {'spiders': failed_spiders})
 
 
 def crawl2(args):
+    logger.info('craw2 start running ...')
     spiders = []
     spiders_ = args.get('spiders')
     configure_logging(SETTINGS,
