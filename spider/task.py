@@ -8,6 +8,7 @@ import uuid
 import random
 from urllib.parse import urlparse
 
+from requests.exceptions import ConnectionError
 import requests
 import redis
 import pika
@@ -162,7 +163,7 @@ def gen_blogspider(setting):
         return False
 
 
-def _get_failed_spiders(spiders):
+def _get_failed_spiders(spids):
     conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
     r = redis.Redis(host=conf.host,
                     port=conf.port,
@@ -172,7 +173,7 @@ def _get_failed_spiders(spiders):
         n = r.get(spid)
         return 0 if n is None else int(n)
 
-    return [_ for _ in spiders if not get_stats(_)]
+    return [_ for _ in spids if 0 == get_stats(_)]
 
 
 def _flush_db():
@@ -184,24 +185,24 @@ def _flush_db():
 
 
 def crawl(args):
-    spiders_ = args.get('spiders')
-    spiders = []
+    spids = args.get('spiders')
     configure_logging(SETTINGS,
                       install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
-    if 'all' in spiders_:
-        spiders = [loader.load(spid) for spid in loader.list()]
+    if 'all' in spids:
+        spiders = [loader.load(_) for _ in loader.list()]
     else:
-        spiders = [loader.load(spid) for spid in spiders_
-                   if spid in loader.list()]
+        spiders = [loader.load(_)
+                   for _ in filter(lambda __: __ in loader.list(),
+                                   spids)]
     if not spiders:
         return False
 
-    for spider in random.sample(spiders,
-                                len(spiders)):
-        runner.crawl(spider)
+    for __ in random.sample(spiders,
+                            len(spiders)):
+        runner.crawl(__)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
 
@@ -211,29 +212,27 @@ def crawl(args):
     logging.info('crawl reator stopped')
 
     if len(spiders) > 4:
-        failed_spiders = _get_failed_spiders(spiders)
+        failed_spiders = _get_failed_spiders(spids)
         if failed_spiders:
             _send(SETTINGS['CRAWL2_KEY'],
                   {'spiders': failed_spiders})
 
 
 def crawl2(args):
-    spiders = []
-    spiders_ = args.get('spiders')
+    spids = args.get('spiders')
     configure_logging(SETTINGS,
                       install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
-    spiders = [loader.load(spid) for spid in spiders_
-               if spid in loader.list()]
+    spiders = [loader.load(_) for _ in spids]
     if not spiders:
         return False
 
     @defer.inlineCallbacks
     def seqcrawl():
-        for spider in random.sample(spiders,
-                                    len(spiders)):
-            yield runner.crawl(spider)
+        for __ in random.sample(spiders,
+                                len(spiders)):
+            yield runner.crawl(__)
     seqcrawl()
     reactor.run()
