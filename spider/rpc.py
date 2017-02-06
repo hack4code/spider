@@ -58,13 +58,13 @@ def task(callback, key):
                 if status is None:
                     p.start()
                 else:
-                    if status != 0:
+                    if status == 0:
+                        logger.info('job[%s] finished',
+                                    callback.__name__)
+                    else:
                         logger.error('job[%s] exited with %d',
                                      callback.__name__,
                                      status)
-                    else:
-                        logger.info('job[%s] finished',
-                                    callback.__name__)
                     p.join()
                     ch.basic_ack(delivery_tag=method.delivery_tag)
                     consumers.popleft()
