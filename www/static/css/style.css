@@ -218,7 +218,9 @@ table {
 th,
 td {
  border: 1px solid #ddd;
+ /*
  white-space: nowrap;
+ */
 }
 
 th {
