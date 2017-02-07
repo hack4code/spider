@@ -19,6 +19,8 @@
   * docker-compose exec mongodb mongo /script/init_admin.js
   * docker-compose exec mongodb mongo /script/init_db.js
 
+### React
+
 #### Bundle js with webpack
   * cd www/static/app/
   * docker pull node
@@ -28,8 +30,6 @@
  * curl -X POST -d "spiders=all" http://<i></i>127.0.0.1:8001/crawl
 
 ### Notice
- * iptables: after updating rules, should restart docker
+ * after iptables updating rules, should restart docker
 
 ### Todo
-#### spider
-  * tag: html2txt [ok]
