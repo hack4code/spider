@@ -18,10 +18,13 @@ LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
+EXTENSIONS = {
+        'mydm.extensions.ExtensionStats': 900
+}
+
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
     'mydm.pipelines.ImagesDlownloadPipeline': 300,
-    'mydm.pipelines.StatsPipeline': 900,
     'mydm.pipelines.StorePipeline': 999
 }
 

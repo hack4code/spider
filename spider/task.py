@@ -67,7 +67,7 @@ def test_spider(setting):
         logger.error('{}'.format(e))
         return False
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
-    TEST_SETTINGS = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
+    TEST_SETTINGS = {'EXTENSIONS': {'mydm.extensions.ExtensionStats': 900},
                      'SPIDER_STATS_URL': url,
                      'BOT_NAME': 'TestSpider',
                      'WEBSERVICE_ENABLED': False,
