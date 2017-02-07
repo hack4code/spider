@@ -3,7 +3,6 @@
 
 import logging
 
-from redis.exceptions import ConnectionError
 import redis
 
 from scrapy import signals
@@ -43,7 +42,7 @@ class ExtensionStats:
         try:
             r.set(spider._id,
                   self.stats.get_value(spider._id))
-        except ConnectionError:
+        except redis.exceptions.ConnectionError:
             logger.error('Error in ExtensionStats connect redis server failed')
 
     def item_scraped(self, item, spider):
