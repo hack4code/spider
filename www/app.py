@@ -7,6 +7,7 @@ from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
 
 from user import need_uid
+from util import DateConverter, IdConverter
 
 
 def set_loglevel(level):
@@ -35,8 +36,8 @@ def error(error):
                            status_code=code,
                            message=error.description), code
 
+
 # converter
-from util import DateConverter, IdConverter
 app.url_map.converters['date'] = DateConverter
 app.url_map.converters['id'] = IdConverter
 
@@ -106,10 +107,14 @@ def blog():
     return render_template('blog.html')
 
 
-from blueprint.api import api_page
-app.register_blueprint(api_page,
-                       url_prefix='/api')
+def register_blueprints():
+    from blueprint.api import api_page
+    from blueprint.submit import submit_page
 
-from blueprint.submit import submit_page
-app.register_blueprint(submit_page,
-                       url_prefix='/submit')
+    app.register_blueprint(api_page,
+                           url_prefix='/api')
+    app.register_blueprint(submit_page,
+                           url_prefix='/submit')
+
+
+register_blueprints()
