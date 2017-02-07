@@ -204,7 +204,8 @@ def crawl(args):
     if not spiders:
         return False
 
-    for __ in random.shuffle(spiders):
+    random.shuffle(spiders) 
+    for __ in spiders:
         runner.crawl(__)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
@@ -232,9 +233,10 @@ def crawl2(args):
     if not spiders:
         return False
 
+    random.shuffle(spiders)
     @defer.inlineCallbacks
     def seqcrawl():
-        for __ in random.shuffle(spiders):
+        for __ in spiders:
             yield runner.crawl(__)
     seqcrawl()
     reactor.run()
