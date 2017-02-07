@@ -1,1 +1,4 @@
-from .spider import mk_lxmlspider_cls
+# -*- coding: utf-8 -*-
+
+
+from .spider import LXMLSpiderMeta

@@ -1,1 +1,4 @@
-from .spider import mk_blogspider_cls
+# -*- coding: utf-8 -*-
+
+
+from .spider import BLOGSpiderMeta
