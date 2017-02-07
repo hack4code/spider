@@ -58,3 +58,9 @@ class TagExtractor:
             tags = match(doc,
                          encoding=encoding)
             return tags
+
+
+def extract_tags(doc, encoding):
+    extract = TagExtractor()
+    return extract(doc,
+                   encoding=encoding)
