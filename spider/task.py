@@ -8,7 +8,6 @@ import uuid
 import random
 from urllib.parse import urlparse
 
-from requests.exceptions import ConnectionError
 import requests
 import redis
 import pika
@@ -42,7 +41,7 @@ def _send(key, data):
     connection.close()
 
 
-def get_feed_name(url):
+def _get_feed_name(url):
     parser = urlparse(url)
     fields = parser.hostname.split('.')
     if len(fields) == 1:
@@ -57,6 +56,24 @@ def get_feed_name(url):
                         for _ in fields[:-1] if _.lower() != 'www'])
 
 
+def _get_stats(url, spids):
+    stats = {}
+    conf = parse_redis_url(url)
+    r = redis.Redis(host=conf.host,
+                    port=conf.port,
+                    db=conf.database)
+    for spid in spids:
+        n = None
+        try:
+            n = r.get(spid)
+            r.delete(spid)
+        except redis.exceptions.ConnectionError:
+            logger.error('Error in _get_stats redis connect failed')
+        n = 0 if n is None else int(n)
+        stats[spid] = n
+    return stats
+
+
 def test_spider(setting):
     setting = setting.copy()
     spid = str(uuid.uuid4())
@@ -64,7 +81,8 @@ def test_spider(setting):
     try:
         cls = SpiderFactory.mkspider(setting)
     except SpiderFactoryException as e:
-        logger.error('{}'.format(e))
+        logger.error('Error in test_spider SpiderFactory[%s]',
+                     e)
         return False
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
     TEST_SETTINGS = {'EXTENSIONS': {'mydm.extensions.ExtensionStats': 900},
@@ -85,18 +103,9 @@ def test_spider(setting):
     logger.info('test_spider reator starting ...')
     reactor.run()
     logger.info('test_spider reator stopped')
-
-    def get_stats(url, spid):
-        conf = parse_redis_url(url)
-        r = redis.Redis(host=conf.host,
-                        port=conf.port,
-                        db=conf.database)
-        n = r.get(spid)
-        r.delete(spid)
-        return 0 if n is None else int(n)
-
-    n = get_stats(url,
-                  spid)
+    stats = _get_stats(url,
+                       [spid])
+    n = stats[spid]
     return True if n > 0 else False
 
 
@@ -107,7 +116,7 @@ def gen_lxmlspider(setting):
     try:
         r = requests.get(url,
                          headers=SETTINGS['DEFAULT_REQUEST_HEADERS'])
-    except ConnectionError:
+    except requests.exceptions.ConnectionError:
         logger.error('Error in gen_lxmlspider connection[%s]',
                      url)
         return False
@@ -132,7 +141,7 @@ def gen_lxmlspider(setting):
                 setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
                                           '',
                                           e.text)
-    setting['name'] = get_feed_name(url)
+    setting['name'] = _get_feed_name(url)
     if 'title' not in setting:
         setting['title'] = setting['name']
     setting['type'] = 'xml'
@@ -152,7 +161,7 @@ def gen_blogspider(setting):
     url = setting['url']
     del setting['url']
     save_feed(url)
-    setting['name'] = get_feed_name(url)
+    setting['name'] = _get_feed_name(url)
     setting['title'] = setting['name']
     setting['type'] = 'blog'
     setting['start_urls'] = [url]
@@ -168,24 +177,9 @@ def gen_blogspider(setting):
 
 
 def _get_failed_spiders(spids):
-    conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
-    r = redis.Redis(host=conf.host,
-                    port=conf.port,
-                    db=conf.database)
-
-    def get_stats(spid):
-        n = r.get(spid)
-        return 0 if n is None else int(n)
-
-    return [_ for _ in spids if 0 == get_stats(_)]
-
-
-def _flush_db():
-    conf = parse_redis_url(SETTINGS['SPIDER_STATS_URL'])
-    r = redis.Redis(host=conf.host,
-                    port=conf.port,
-                    db=conf.database)
-    r.flushdb()
+    stats = _get_stats(SETTINGS['SPIDER_STATS_URL'],
+                       spids)
+    return [_ for _ in spids if stats[_] == 0]
 
 
 def crawl(args):
@@ -210,7 +204,6 @@ def crawl(args):
     d.addBoth(lambda _: reactor.stop())
 
     logger.info('crawl reator starting ...')
-    _flush_db()
     reactor.run()
     logging.info('crawl reator stopped')
 

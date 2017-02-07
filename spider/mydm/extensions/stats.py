@@ -37,10 +37,10 @@ class ExtensionStats:
                              0)
 
     def spider_closed(self, spider):
+        r = redis.Redis(host=self.redis_conf.host,
+                        port=self.redis_conf.port,
+                        db=self.redis_conf.database)
         try:
-            r = redis.Redis(host=self.redis_conf.host,
-                            port=self.redis_conf.port,
-                            db=self.redis_conf.database)
             r.set(spider._id,
                   self.stats.get_value(spider._id))
         except ConnectionError:
