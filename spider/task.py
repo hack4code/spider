@@ -9,7 +9,6 @@ import random
 from urllib.parse import urlparse
 
 import requests
-import redis
 import pika
 from lxml import etree
 
@@ -21,7 +20,7 @@ from scrapy.utils.log import configure_logging
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.spiderfactory import SpiderFactory, SpiderFactoryException
-from mydm.util import parse_redis_url
+from mydm.util import get_stats
 
 logger = logging.getLogger(__name__)
 
@@ -56,24 +55,6 @@ def _get_feed_name(url):
                         for _ in fields[:-1] if _.lower() != 'www'])
 
 
-def _get_stats(url, spids):
-    stats = {}
-    conf = parse_redis_url(url)
-    r = redis.Redis(host=conf.host,
-                    port=conf.port,
-                    db=conf.database)
-    for spid in spids:
-        n = None
-        try:
-            n = r.get(spid)
-            r.delete(spid)
-        except redis.exceptions.ConnectionError:
-            logger.error('Error in _get_stats redis connect failed')
-        n = 0 if n is None else int(n)
-        stats[spid] = n
-    return stats
-
-
 def test_spider(setting):
     setting = setting.copy()
     spid = str(uuid.uuid4())
@@ -85,14 +66,19 @@ def test_spider(setting):
                      e)
         return False
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
-    TEST_SETTINGS = {'EXTENSIONS': {'mydm.extensions.ExtensionStats': 900},
-                     'SPIDER_STATS_URL': url,
-                     'BOT_NAME': 'TestSpider',
-                     'WEBSERVICE_ENABLED': False,
-                     'TELNETCONSOLE_ENABLED': False,
-                     'LOG_LEVEL': 'INFO',
-                     'LOG_FORMAT': '%(asctime)s-%(levelname)s: %(message)s',
-                     'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'}
+    TEST_SETTINGS = {
+        'EXTENSIONS': {'mydm.extensions.ExtensionStats': 900,
+                       'scrapy.extensions.logstats.LogStats': None,
+                       'scrapy.extensions.spiderstate.SpiderState': None,
+                       'scrapy.extensions.telnet.TelnetConsole': None, },
+        'SPIDER_STATS_URL': url,
+        'BOT_NAME': 'TestSpider',
+        'WEBSERVICE_ENABLED': False,
+        'TELNETCONSOLE_ENABLED': False,
+        'LOG_LEVEL': 'INFO',
+        'LOG_FORMAT': '%(asctime)s-%(levelname)s: %(message)s',
+        'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'
+    }
 
     configure_logging(TEST_SETTINGS,
                       install_root_handler=False)
@@ -103,8 +89,8 @@ def test_spider(setting):
     logger.info('test_spider reator starting ...')
     reactor.run()
     logger.info('test_spider reator stopped')
-    stats = _get_stats(url,
-                       [spid])
+    stats = get_stats(url,
+                      [spid])
     n = stats[spid]
     return True if n > 0 else False
 
@@ -177,8 +163,8 @@ def gen_blogspider(setting):
 
 
 def _get_failed_spiders(spids):
-    stats = _get_stats(SETTINGS['SPIDER_STATS_URL'],
-                       spids)
+    stats = get_stats(SETTINGS['SPIDER_STATS_URL'],
+                      spids)
     return [_ for _ in spids if stats[_] == 0]
 
 

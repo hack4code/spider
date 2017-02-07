@@ -3,11 +3,9 @@
 
 import logging
 
-import redis
-
 from scrapy import signals
 
-from ..util import parse_redis_url
+from ..util import set_stats
 
 
 logger = logging.getLogger(__name__)
@@ -16,7 +14,7 @@ logger = logging.getLogger(__name__)
 class ExtensionStats:
     def __init__(self, stats, settings):
         self.stats = stats
-        self.redis_conf = parse_redis_url(settings['SPIDER_STATS_URL'])
+        self.url = settings['SPIDER_STATS_URL']
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -36,14 +34,12 @@ class ExtensionStats:
                              0)
 
     def spider_closed(self, spider):
-        r = redis.Redis(host=self.redis_conf.host,
-                        port=self.redis_conf.port,
-                        db=self.redis_conf.database)
-        try:
-            r.set(spider._id,
-                  self.stats.get_value(spider._id))
-        except redis.exceptions.ConnectionError:
-            logger.error('Error in ExtensionStats connect redis server failed')
+        value = self.stats.get_value(spider._id)
+        set_stats(spider._id,
+                  value)
+        logger.info('spider[%s] crawled %d articles',
+                    spider.name,
+                    value)
 
     def item_scraped(self, item, spider):
         self.stats.inc_value(spider._id)
