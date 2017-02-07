@@ -32,14 +32,14 @@ class BLOGSpider(Spider):
     def item_extractors(self):
         if not hasattr(self,
                        '_item_extractors'):
-            extractors = {}
+            extractors = []
             attrs = inspect.getmembers(self.__class__,
                                        lambda _: not(inspect.isroutine(_)))
             for k, v in attrs:
                 fields = k.split('_')
                 if (len(fields) == 3 and fields[0] == 'item' and
                         fields[1] != 'content' and fields[2] == 'xpath'):
-                    extractors[fields[1]] = v
+                    extractors.append((fields[1], v))
             self._item_extractors = extractors
         return self._item_extractors
 
