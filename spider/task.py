@@ -196,22 +196,21 @@ def crawl(args):
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     if 'all' in spids:
-        spiders = [loader.load(_) for _ in loader.list()]
-    else:
-        spiders = [loader.load(_)
-                   for _ in filter(lambda __: __ in loader.list(),
-                                   spids)]
+        spids = loader.list()
+    spiders = [loader.load(_)
+               for _ in filter(lambda __: __ in loader.list(),
+                               spids)]
     if not spiders:
         return False
+    random.shuffle(spiders)
 
-    random.shuffle(spiders) 
     for __ in spiders:
         runner.crawl(__)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
 
-    _flush_db()
     logger.info('crawl reator starting ...')
+    _flush_db()
     reactor.run()
     logging.info('crawl reator stopped')
 
@@ -232,8 +231,8 @@ def crawl2(args):
     spiders = [loader.load(_) for _ in spids]
     if not spiders:
         return False
-
     random.shuffle(spiders)
+
     @defer.inlineCallbacks
     def seqcrawl():
         for __ in spiders:
