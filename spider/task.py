@@ -21,7 +21,7 @@ from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
-from mydm.spiderfactory import mk_spider_cls
+from mydm.spiderfactory import SpiderFactory, SpiderFactoryException
 from mydm.util import parse_redis_url
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,11 @@ def test_spider(setting):
     setting = setting.copy()
     spid = str(uuid.uuid4())
     setting['_id'] = spid
-    cls = mk_spider_cls(setting)
+    try:
+        cls = SpiderFactory.mkspider(setting)
+    except SpiderFactoryException as e:
+        logger.error('{}'.format(e))
+        return False
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
     TEST_SETTINGS = {'ITEM_PIPELINES': {'mydm.pipelines.StatsPipeline': 255},
                      'SPIDER_STATS_URL': url,
@@ -200,8 +204,7 @@ def crawl(args):
     if not spiders:
         return False
 
-    for __ in random.sample(spiders,
-                            len(spiders)):
+    for __ in random.shuffle(spiders):
         runner.crawl(__)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
@@ -231,8 +234,7 @@ def crawl2(args):
 
     @defer.inlineCallbacks
     def seqcrawl():
-        for __ in random.sample(spiders,
-                                len(spiders)):
+        for __ in random.shuffle(spiders):
             yield runner.crawl(__)
     seqcrawl()
     reactor.run()

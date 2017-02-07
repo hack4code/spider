@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
 
-from .html import mk_blogspider_cls
-from .xml import mk_lxmlspider_cls
+
+from .html import BLOGSpiderMeta
+from .xml import LXMLSpiderMeta
+from .spider import ErrbackSpider
+
+
+SpiderMetaClses = {
+        'xml': LXMLSpiderMeta,
+        'blog': BLOGSpiderMeta
+}

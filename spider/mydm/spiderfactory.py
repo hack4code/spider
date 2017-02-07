@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
-
-from .spider import mk_lxmlspider_cls, mk_blogspider_cls
-
-
-logger = logging.getLogger(__name__)
+from .spider import ErrbackSpider, SpiderMetaClses
 
 
 class SpiderFactoryException(Exception):
@@ -16,32 +11,24 @@ class SpiderFactoryException(Exception):
     pass
 
 
-class SpiderFactory(object):
+class SpiderFactory:
     """
         spider builder
     """
     @staticmethod
-    def make_spider(setting):
-        _factory_func = {
-            'xml': mk_lxmlspider_cls,
-            'blog': mk_blogspider_cls
-        }
+    def mkspider(setting):
         if 'name' not in setting or 'type' not in setting:
             raise SpiderFactoryException(
-                'Error in SpiderFactory, no name|type attr found'
+                'Error in SpiderFactory no name|type setting attribute found'
                 )
-        f = _factory_func.get(setting['type'])
-        if f:
-            return f(setting)
-        else:
+        try:
+            return SpiderMetaClses[setting['type']](
+                    '{}Spider'.format(setting['name'].capitalize()),
+                    (ErrbackSpider,),
+                    setting)
+        except KeyError:
             raise SpiderFactoryException((
                 'Error in SpiderFactory type[{}] not support'
                 ).format(setting['type']))
-
-
-def mk_spider_cls(setting):
-    try:
-        return SpiderFactory.make_spider(setting)
-    except AttributeError:
-        raise SpiderFactoryException('Error in mk_spider_cls attr')
-    logger.info('Factory create spider[{}]'.format(setting['name']))
+        except AttributeError as e:
+            raise SpiderFactoryException('{}'.format(e))

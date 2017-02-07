@@ -11,29 +11,16 @@ from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 
-from ..spider import ErrbackSpider
 from ...items import ArticleItem
-from ...ai import TagExtractor
+from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
 
 
-class BLOGSpiderException(Exception):
-    """
-        Exception for blog spider
-    """
-    pass
-
-
-def extract_tags(doc, encoding):
-    extract = TagExtractor()
-    return extract(doc, encoding=encoding)
-
-
 class BLOGSpider(Spider):
     """
-        spider crawl blog with xpath
+        blog spider crawling with xpath
     """
 
     # must contain
@@ -41,9 +28,20 @@ class BLOGSpider(Spider):
              'link',
              'content')
 
-    def check_item(self, item):
-        return True if all(_ in item and item[_] is not None
-                           for _ in self.ATTRS) else False
+    @property
+    def item_extractors(self):
+        if not hasattr(self,
+                       '_item_extractors'):
+            extractors = {}
+            attrs = inspect.getmembers(self.__class__,
+                                       lambda _: not(inspect.isroutine(_)))
+            for k, v in attrs:
+                fields = k.split('_')
+                if (len(fields) == 3 and fields[0] == 'item' and
+                        fields[1] != 'content' and fields[2] == 'xpath'):
+                    extractors[fields[1]] = v
+            self._item_extractors = extractors
+        return self._item_extractors
 
     def extract_entries(self, response):
         return Selector(response,
@@ -51,25 +49,16 @@ class BLOGSpider(Spider):
                         ).xpath(self.entry_xpath)
 
     def extract_item(self, entry, encoding):
-        # extract item
-        attrs = inspect.getmembers(self.__class__,
-                                   lambda a: not(inspect.isroutine(a)))
-        extractors = [_ for _ in attrs
-                      if _[0].startswith('item_') and
-                      _[0].endswith('_xpath') and
-                      _[0] != 'item_content_xpath']
-        item = {name.split('_')[1]: entry.xpath(xnode).extract_first()
-                for name, xnode in extractors}
+        item = {k: entry.xpath(v).extract_first()
+                for k, v in self.item_extractors}
         # extract tag
         tags = extract_tags(entry.xpath('.').extract_first(),
                             encoding)
         if tags is not None:
             item['tag'] = tags
-        # strip link
-        if 'link' in item and item['link'] is not None:
+        if item.get('link') is not None:
             item['link'] = item['link'].strip('\t\n\r\s')
-        # unescape title
-        if 'title' in item and item['title'] is not None:
+        if item.get('title') is not None:
             item['title'] = unescape(item['title'])
         return item
 
@@ -79,18 +68,17 @@ class BLOGSpider(Spider):
         item['link'] = response.url
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
-        if 'tag' not in item:
+        if item.get('tag') is None:
             tags = extract_tags(content,
                                 response.encoding)
             if tags is not None:
                 item['tag'] = tags
-        if self.check_item(item):
+        if all(item.get(_) is not None for _ in self.ATTRS):
             return ArticleItem(item)
         else:
-            miss_attrs = [_ for _ in self.ATTRS
-                          if _ not in item or item[_] is None]
+            miss_attrs = [_ for _ in self.ATTRS if item.get(_) is None]
             logger.error((
-                'Error in spider {} extract content, miss attrs{}'
+                'Error in spider {} extract content miss attrs{}'
                 ).format(self.name,
                          miss_attrs))
 
@@ -129,17 +117,19 @@ class BLOGSpiderMeta(type):
                  'item_title_xpath',
                  'item_link_xpath',
                  'item_content_xpath']
-        if all(attr in attrs for attr in ATTRS):
-            return super(BLOGSpiderMeta,
-                         cls).__new__(cls,
-                                      name,
-                                      bases,
-                                      attrs)
+        if all(_ in attrs for _ in ATTRS):
+            bases_ = [_ for _ in bases if issubclass(_,
+                                                     Spider)]
+            if BLOGSpider not in bases_:
+                bases_.append(BLOGSpider)
+            bases_.extend([_ for _ in bases if not issubclass(_,
+                                                              Spider)])
+            return super().__new__(cls,
+                                   name,
+                                   tuple(bases_),
+                                   attrs)
         else:
-            raise AttributeError
-
-
-def mk_blogspider_cls(setting):
-    return BLOGSpiderMeta('{}Spider'.format(setting['name'].capitalize()),
-                          (BLOGSpider, ErrbackSpider),
-                          setting)
+            miss_attrs = [_ for _ in ATTRS if _ not in attrs]
+            raise AttributeError((
+                'Error in BLOGSpiderMeta miss attributes{}'
+                ).format(miss_attrs))

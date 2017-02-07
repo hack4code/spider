@@ -12,30 +12,22 @@ from scrapy.spiders import Spider
 from scrapy import Request
 
 from .extractor import ItemExtractor
-from ..spider import ErrbackSpider
 from ...items import ArticleItem
+from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
 
 
-def extract_tags(doc, encoding):
-    from ...ai import TagExtractor
-    extract = TagExtractor()
-    return extract(doc, encoding=encoding)
-
-
 class LXMLSpider(Spider):
     """
-        spider for crawl rss|atom
+        spider crawling rss|atom
     """
 
-    # Tags item must contain
-    TAGS = ('title', 'link', 'content')
-
-    def check_item(self, item):
-        return True if all(k in item and item[k] is not None
-                           for k in self.TAGS) else False
+    # attributes item must contain
+    ATTRS = ('title',
+             'link',
+             'content')
 
     def extract_content(self, response):
         item = response.meta['item']
@@ -52,7 +44,6 @@ class LXMLSpider(Spider):
             return ArticleItem(item)
         else:
             logger.error('spider[{}] extract content failed'.format(self.name))
-            return None
 
     def parse(self, response):
         parser = etree.XMLParser(ns_clean=True,
@@ -70,7 +61,7 @@ class LXMLSpider(Spider):
             item['domain'] = urlparse(response.request.url).netloc
             item['data_type'] = 'html'
             item['encoding'] = response.encoding
-            if self.check_item(item):
+            if all(item.get(_) is not None for _ in self.ATTRS):
                 if hasattr(self,
                            'item_content_xpath'):
                     yield Request(item['link'],
@@ -91,17 +82,19 @@ class LXMLSpiderMeta(type):
         ATTRS = ['start_urls',
                  'category',
                  'name']
-        if all(attr in attrs for attr in ATTRS):
-            return super(LXMLSpiderMeta,
-                         cls).__new__(cls,
-                                      name,
-                                      bases,
-                                      attrs)
+        if all(_ in attrs for _ in ATTRS):
+            bases_ = [_ for _ in bases if issubclass(_,
+                                                     Spider)]
+            if LXMLSpider not in bases_:
+                bases_.append(LXMLSpider)
+            bases_.extend([_ for _ in bases if not issubclass(_,
+                                                              Spider)])
+            return super().__new__(cls,
+                                   name,
+                                   tuple(bases_),
+                                   attrs)
         else:
-            raise AttributeError('Error in LXMLSpiderMeta')
-
-
-def mk_lxmlspider_cls(setting):
-    return LXMLSpiderMeta('{}Spider'.format(setting['name'].capitalize()),
-                          (LXMLSpider, ErrbackSpider),
-                          setting)
+            miss_attrs = [_ for _ in ATTRS if _ not in attrs]
+            raise AttributeError((
+                'Error in LXMLSpiderMeta miss attributes{}'
+                ).format(miss_attrs))
