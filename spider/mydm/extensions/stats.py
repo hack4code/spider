@@ -35,7 +35,8 @@ class ExtensionStats:
 
     def spider_closed(self, spider):
         value = self.stats.get_value(spider._id)
-        set_stats(spider._id,
+        set_stats(self.url,
+                  spider._id,
                   value)
         logger.info('spider[%s] crawled %d articles',
                     spider.name,
