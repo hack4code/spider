@@ -4,7 +4,6 @@
 import logging
 from urllib.parse import urlparse
 from datetime import datetime
-import inspect
 from html import unescape
 
 from scrapy.spiders import Spider
@@ -16,6 +15,12 @@ from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
+BLOGSPIDER_ATTRS = ['start_urls',
+                    'category',
+                    'entry_xpath',
+                    'item_title_xpath',
+                    'item_link_xpath',
+                    'item_content_xpath']
 
 
 class BLOGSpider(Spider):
@@ -23,25 +28,8 @@ class BLOGSpider(Spider):
         blog spider crawling with xpath
     """
 
-    # must contain
-    ATTRS = ('title',
-             'link',
-             'content')
-
-    @property
-    def item_extractors(self):
-        if not hasattr(self,
-                       '_item_extractors'):
-            extractors = []
-            attrs = inspect.getmembers(self.__class__,
-                                       lambda _: not(inspect.isroutine(_)))
-            for k, v in attrs:
-                fields = k.split('_')
-                if (len(fields) == 3 and fields[0] == 'item' and
-                        fields[1] != 'content' and fields[2] == 'xpath'):
-                    extractors.append((fields[1], v))
-            self._item_extractors = extractors
-        return self._item_extractors
+    # article item must contained attribute
+    ATTRS = ('title', 'link', 'content')
 
     def extract_entries(self, response):
         return Selector(response,
@@ -49,9 +37,8 @@ class BLOGSpider(Spider):
                         ).xpath(self.entry_xpath)
 
     def extract_item(self, entry, encoding):
-        item = {k: entry.xpath(v).extract_first()
-                for k, v in self.item_extractors}
-        # extract tag
+        item = {attr: entry.xpath(xpath).extract_first()
+                for attr, xpath in self.item_extractors}
         tags = extract_tags(entry.xpath('.').extract_first(),
                             encoding)
         if tags is not None:
@@ -89,7 +76,7 @@ class BLOGSpider(Spider):
                           callback=self.parse,
                           errback=self.errback)
         except AttributeError:
-            logger.info('{} has no prelink attribute'.format(self.name))
+            pass
 
         for entry in self.extract_entries(response):
             item = self.extract_item(entry,
@@ -98,7 +85,7 @@ class BLOGSpider(Spider):
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc
             item['data_type'] = 'html'
-            link = item['link']
+            link = item.get('link')
             if link is None:
                 continue
             link = link.strip('\r\n\s\t')
@@ -112,24 +99,32 @@ class BLOGSpider(Spider):
 
 class BLOGSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
-        ATTRS = ['start_urls',
-                 'category',
-                 'item_title_xpath',
-                 'item_link_xpath',
-                 'item_content_xpath']
-        if all(_ in attrs for _ in ATTRS):
-            bases_ = [_ for _ in bases if issubclass(_,
-                                                     Spider)]
-            if BLOGSpider not in bases_:
-                bases_.append(BLOGSpider)
-            bases_.extend([_ for _ in bases if not issubclass(_,
-                                                              Spider)])
+        if all(_ in attrs for _ in BLOGSPIDER_ATTRS):
+            def update_bases(bases):
+                bases_ = [_ for _ in bases if issubclass(_,
+                                                         Spider)]
+                if BLOGSpider not in bases_:
+                    bases_.append(BLOGSpider)
+                return bases_
+
+            def update_attrs(attrs):
+                attrs_ = attrs.copy()
+                extractors = []
+                for k, v in attrs_:
+                    fields = k.split('_')
+                    if (len(fields) == 3 and fields[0] == 'item' and
+                            fields[1] != 'content' and fields[2] == 'xpath'):
+                        extractors.append((fields[1], v))
+                        del attrs_[k]
+                attrs_['item_extractors'] = extractors
+                return attrs_
+
             return super().__new__(cls,
                                    name,
-                                   tuple(bases_),
-                                   attrs)
+                                   update_bases(bases),
+                                   update_attrs(attrs))
         else:
-            miss_attrs = [_ for _ in ATTRS if _ not in attrs]
+            miss_attrs = [_ for _ in BLOGSPIDER_ATTRS if _ not in attrs]
             raise AttributeError((
                 'Error in BLOGSpiderMeta miss attributes{}'
                 ).format(miss_attrs))

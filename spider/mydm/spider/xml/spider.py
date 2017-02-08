@@ -17,6 +17,7 @@ from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
+XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
 class LXMLSpider(Spider):
@@ -79,22 +80,19 @@ class LXMLSpider(Spider):
 
 class LXMLSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
-        ATTRS = ['start_urls',
-                 'category',
-                 'name']
-        if all(_ in attrs for _ in ATTRS):
-            bases_ = [_ for _ in bases if issubclass(_,
-                                                     Spider)]
-            if LXMLSpider not in bases_:
-                bases_.append(LXMLSpider)
-            bases_.extend([_ for _ in bases if not issubclass(_,
-                                                              Spider)])
+        if all(_ in attrs for _ in XMLSPIDER_ATTRS):
+            def update_bases(bases):
+                bases_ = [_ for _ in bases if issubclass(_,
+                                                         Spider)]
+                if LXMLSpider not in bases_:
+                    bases_.append(LXMLSpider)
+                return bases_
             return super().__new__(cls,
                                    name,
-                                   tuple(bases_),
+                                   update_bases(bases),
                                    attrs)
         else:
-            miss_attrs = [_ for _ in ATTRS if _ not in attrs]
+            miss_attrs = [_ for _ in XMLSPIDER_ATTRS if _ not in attrs]
             raise AttributeError((
                 'Error in LXMLSpiderMeta miss attributes{}'
                 ).format(miss_attrs))
