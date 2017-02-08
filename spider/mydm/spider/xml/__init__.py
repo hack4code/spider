@@ -2,3 +2,8 @@
 
 
 from .spider import LXMLSpiderMeta
+
+
+__all__ = [
+        'LXMLSpiderMeta',
+]

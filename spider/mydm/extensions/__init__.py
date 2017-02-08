@@ -2,3 +2,7 @@
 
 
 from .stats import ExtensionStats
+
+__all__ = [
+        'ExtensionStats'
+]

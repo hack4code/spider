@@ -2,3 +2,8 @@
 
 
 from .spider import BLOGSpiderMeta
+
+
+__all__ = [
+        'BLOGSpiderMeta',
+]

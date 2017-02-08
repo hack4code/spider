@@ -10,3 +10,9 @@ SpiderMetaClses = {
         'xml': LXMLSpiderMeta,
         'blog': BLOGSpiderMeta
 }
+
+
+__all__ = [
+        'ErrbackSpider',
+        'SpiderMetaClses'
+]
