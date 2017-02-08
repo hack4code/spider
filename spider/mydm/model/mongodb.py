@@ -152,11 +152,11 @@ def get_category_tags():
 
 
 def update_spider_stats(spider, stats):
-    cursor = ScrapyDB.stats.findOne(
+    cursor = ScrapyDB.stats.find(
         {
             'id': spider._id
         }
-    )
+    ).limit(1)
     if cursor.count() == 0:
         r = {'id': spider._id,
              'name': spider.name}
