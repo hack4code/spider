@@ -13,14 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class ExtensionStats:
-    def __init__(self, stats, settings):
+    def __init__(self, stats):
         self.stats = stats
-        self.url = settings['SPIDER_STATS_URL']
 
     @classmethod
     def from_crawler(cls, crawler):
-        ext = cls(crawler.stats,
-                  crawler.settings)
+        ext = cls(crawler.stats)
         crawler.signals.connect(ext.spider_opened,
                                 signal=signals.spider_opened)
         crawler.signals.connect(ext.spider_closed,
@@ -36,15 +34,16 @@ class ExtensionStats:
 
     def spider_closed(self, spider):
         value = self.stats.get_value(spider._id)
-        save_stats(self.url,
+        save_stats(spider.settings['SPIDER_STATS_URL'],
                    spider._id,
                    value)
-        logger.info('spider[%s] crawled %d articles',
-                    spider.name,
-                    value)
-        if value == 0:
-            update_spider_stats(spider,
-                                {'fail': 1})
+        if spider.settings['BOT_NAME'] != 'TestSpider':
+            logger.info('spider[%s] crawled %d articles',
+                        spider.name,
+                        value)
+            if value == 0:
+                update_spider_stats(spider,
+                                    {'fail': 1})
 
     def item_scraped(self, item, spider):
         self.stats.inc_value(spider._id)
