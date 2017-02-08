@@ -37,9 +37,9 @@ class MongoDB(object):
                               ('crawl_date', ASCENDING)],
                              name='idx_spider_crawl_date')
         stats = db['stats']
-        stats.create_index({'id': ASCENDING},
-                           name='idx_id',
-                           unique=True)
+        stats.create_index('id',
+                           unique=True,
+                           name='idx_id')
         self._db = db
 
     def __getattr__(self, key):
