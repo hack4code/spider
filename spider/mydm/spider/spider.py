@@ -17,8 +17,10 @@ logger = logging.getLogger(__name__)
 class ErrbackSpider(Spider):
 
     def start_requests(self):
-        for url in self.start_urls:
-            yield Request(url,
+        for _ in self.start_urls:
+            logger.info('request for %s',
+                        _)
+            yield Request(_,
                           callback=self.parse,
                           errback=self.errback,
                           dont_filter=True)
@@ -34,8 +36,8 @@ class ErrbackSpider(Spider):
                          request.url)
         elif failure.check(HttpError):
             response = failure.value.response
-            logger.error('HttpError on url[%s, code=%d]',
+            logger.error('HttpError on url[%s, status=%d]',
                          response.url,
-                         response.code)
+                         response.status)
         else:
             logger.error(repr(failure))
