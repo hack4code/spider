@@ -25,26 +25,26 @@ Entry_Day = namedtuple('Entry_Day', ['id',
 
 class MongoDB:
     def __init__(self, name):
-        self.name = name
-        self.client = MongoClient(app.config['MONGODB_URI'],
-                                  connect=False)
-        self.db = None
+        self._name = name
+        self._client = MongoClient(app.config['MONGODB_URI'],
+                                   connect=False)
+        self._db = None
 
-    def connect(self):
-        db = self.client[self.name]
+    def _connect(self):
+        db = self._client[self._name]
         db.authenticate(app.config['MONGODB_USER'],
                         app.config['MONGODB_PWD'])
-        self.db = db
+        self._db = db
 
     def __getattr__(self, key):
-        if self.db is None:
-            self.connect()
+        if self._db is None:
+            self._connect()
         try:
-            return self.db[key]
+            return self._db[key]
         except KeyError:
             raise AttributeError((
                 '{} db has no collection {}'
-                ).format(self.name,
+                ).format(self._name,
                          key))
 
 
@@ -99,24 +99,20 @@ def get_article_score(aids):
 
 
 def get_score(entries):
-    aids = {_.id for _ in entries}
-    spids = {_.spider for _ in entries}
-    spscores = get_spider_score(list(spids))
-    ascores = get_article_score(list(aids))
+    spscores = get_spider_score(list({_.spider for _ in entries}))
+    ascores = get_article_score(list({_.id for _ in entries}))
     max_spscore = max(spscores.items(),
                       key=lambda i: i[1])[1] if spscores else 1.0
     max_ascore = max(ascores.items(),
                      key=lambda i: i[1])[1] if ascores else 1.0
 
-    def get_score(e, spscores, max_spscore, ascores, max_ascore):
-        spid = e.spider
-        aid = e.id
-        spscore = spscores[spid] if spid in spscores else 0
-        ascore = ascores[aid] if aid in ascores else 0
-        return 10.0*spscore/max_spscore + 90.0*ascore/max_ascore
+    def get_score(e):
+        return (10.0*spscores.get(e.spider,
+                                  0)/max_spscore +
+                90.0*ascores.get(e.id,
+                                 0)/max_ascore)
 
-    return {_.id: get_score(_, spscores, max_spscore, ascores, max_ascore)
-            for _ in entries}
+    return {_.id: get_score(_) for _ in entries}
 
 
 def get_entries(day):
@@ -333,7 +329,7 @@ def get_article(aid):
             'source': 1,
             'spider': 1
         }
-    )
+    ).limit(1)
 
     if not cursor.count():
         return None
@@ -393,9 +389,7 @@ def get_all_days():
             'crawl_date': 1
         }
     )
-    return set([_['crawl_date'].date()
-                for _ in cursor]
-               ) if cursor.count() else None
+    return {_['crawl_date'].date() for _ in cursor} if cursor.count() else None
 
 
 def get_all_articles(c):
