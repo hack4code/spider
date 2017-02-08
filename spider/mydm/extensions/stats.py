@@ -5,7 +5,8 @@ import logging
 
 from scrapy import signals
 
-from ..util import set_stats
+from ..util import save_stats
+from ..model import update_spider_stats
 
 
 logger = logging.getLogger(__name__)
@@ -35,12 +36,15 @@ class ExtensionStats:
 
     def spider_closed(self, spider):
         value = self.stats.get_value(spider._id)
-        set_stats(self.url,
-                  spider._id,
-                  value)
+        save_stats(self.url,
+                   spider._id,
+                   value)
         logger.info('spider[%s] crawled %d articles',
                     spider.name,
                     value)
+        if value == 0:
+            update_spider_stats(spider,
+                                {'fail': 1})
 
     def item_scraped(self, item, spider):
         self.stats.inc_value(spider._id)

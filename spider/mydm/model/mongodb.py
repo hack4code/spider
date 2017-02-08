@@ -2,7 +2,9 @@
 
 
 from datetime import datetime
+
 from pymongo import MongoClient, ASCENDING
+
 from scrapy.utils.project import get_project_settings
 
 
@@ -13,15 +15,16 @@ class MongoDB(object):
     COLLECTIONS = ('article',
                    'feed',
                    'spider',
-                   'category')
+                   'category',
+                   'stats')
 
     def __init__(self):
-        self.db = None
-        self.client = MongoClient(SETTINGS['MONGODB_URI'],
-                                  connect=False)
+        self._db = None
+        self._client = MongoClient(SETTINGS['MONGODB_URI'],
+                                   connect=False)
 
-    def connect(self):
-        db = self.client[SETTINGS['MONGODB_DB_NAME']]
+    def _connect(self):
+        db = self._client[SETTINGS['MONGODB_DB_NAME']]
         db.authenticate(SETTINGS['MONGODB_USER'],
                         SETTINGS['MONGODB_PWD'])
         feed = db['feed']
@@ -33,16 +36,20 @@ class MongoDB(object):
         article.create_index([('spider', ASCENDING),
                               ('crawl_date', ASCENDING)],
                              name='idx_spider_crawl_date')
-        self.db = db
+        stats = db['stats']
+        stats.create_index({'id': ASCENDING},
+                           name='idx_id',
+                           unique=True)
+        self._db = db
 
     def __getattr__(self, key):
-        if self.db is None:
-            self.connect()
+        if self._db is None:
+            self._connect()
         if key in self.COLLECTIONS:
-            return self.db[key]
+            return self._db[key]
         else:
             raise AttributeError(
-                'articles db has no collection {}'.format(key)
+                'scrapy db has no collection {}'.format(key)
                 )
 
 
@@ -64,7 +71,7 @@ def save_feed(url):
     return result.inserted_id
 
 
-def _get_item_day_begin(item):
+def _get_day_begin(item):
     d = item['crawl_date']
     t = datetime(d.year,
                  d.month,
@@ -77,7 +84,7 @@ def _get_item_day_begin(item):
 
 
 def is_exists_article(item):
-    t = _get_item_day_begin(item)
+    t = _get_day_begin(item)
     cursor = ScrapyDB.article.find(
         {
             'spider': item['spider'],
@@ -106,7 +113,7 @@ def is_exists_article(item):
 
 
 def save_article(item):
-    t = _get_item_day_begin(item)
+    t = _get_day_begin(item)
     result = ScrapyDB.article.update(
         {
             'spider': item['spider'],
@@ -142,3 +149,25 @@ def get_spider_settings():
 def get_category_tags():
     cursor = ScrapyDB.category.find()
     return {_['category']: _['tags'] for _ in cursor}
+
+
+def update_spider_stats(spider, stats):
+    cursor = ScrapyDB.stats.findOne(
+        {
+            'id': spider._id
+        }
+    )
+    if cursor.count() == 0:
+        r = {'id': spider._id,
+             'name': spider.name}
+        r.update(stats)
+        ScrapyDB.stats.insert_one(r)
+    else:
+        ScrapyDB.stats.update(
+            {
+                'id': cursor[0]['id']
+            },
+            {
+                '$inc': stats
+            }
+        )

@@ -36,13 +36,13 @@ def get_stats(url, spids):
             n = r.get(spid)
             r.delete(spid)
         except ConnectionError:
-            logger.error('Error in get_stats redis connect failed')
+            logger.error('Error in get_stats failed to connect redis server')
         n = 0 if n is None else int(n)
         stats[spid] = n
     return stats
 
 
-def set_stats(url, spid, value):
+def save_stats(url, spid, value):
     conf = parse_redis_url(url)
     r = redis.Redis(host=conf.host,
                     port=conf.port,
@@ -51,4 +51,4 @@ def set_stats(url, spid, value):
         r.set(spid,
               value)
     except ConnectionError:
-        logger.error('Error in set_stats connect redis server failed')
+        logger.error('Error in save_stats failed to connect redis server')
