@@ -115,8 +115,9 @@ class BLOGSpiderMeta(type):
                     if (len(fields) == 3 and fields[0] == 'item' and
                             fields[1] != 'content' and fields[2] == 'xpath'):
                         extractors.append((fields[1], v))
-                        del attrs_[k]
                 attrs_['item_extractors'] = extractors
+                for k, _ in extractors:
+                    del attrs_['item_{}_xpath'.format(k)]
                 return attrs_
 
             return super().__new__(cls,
