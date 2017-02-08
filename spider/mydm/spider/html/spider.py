@@ -110,7 +110,7 @@ class BLOGSpiderMeta(type):
             def update_attrs(attrs):
                 attrs_ = attrs.copy()
                 extractors = []
-                for k, v in attrs_:
+                for k, v in attrs_.items():
                     fields = k.split('_')
                     if (len(fields) == 3 and fields[0] == 'item' and
                             fields[1] != 'content' and fields[2] == 'xpath'):
