@@ -12,6 +12,7 @@ from scrapy.spiders import Spider
 from scrapy import Request
 
 from .extractor import ItemExtractor
+from ..spider import ErrbackSpider
 from ...items import ArticleItem
 from ...ai import extract_tags
 
@@ -66,9 +67,10 @@ class LXMLSpider(Spider):
                 if hasattr(self,
                            'item_content_xpath'):
                     yield Request(item['link'],
+                                  meta={'item': item},
                                   callback=self.extract_content,
                                   errback=self.errback,
-                                  meta={'item': item})
+                                  dont_filter=True)
                 else:
                     if 'tag' not in item:
                         tags = extract_tags(item['content'],
@@ -82,10 +84,11 @@ class LXMLSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
         if all(_ in attrs for _ in XMLSPIDER_ATTRS):
             def update_bases(bases):
-                bases_ = [_ for _ in bases if issubclass(_,
-                                                         Spider)]
-                if LXMLSpider not in bases_:
-                    bases_.append(LXMLSpider)
+                assert LXMLSpider not in bases, 'LXMLSpider in bases'
+                bases_ = [LXMLSpider]
+                bases_.extend(bases)
+                if ErrbackSpider not in bases_:
+                    bases_.append(ErrbackSpider)
                 return tuple(bases_)
             return super().__new__(cls,
                                    name,

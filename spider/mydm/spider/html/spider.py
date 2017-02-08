@@ -10,6 +10,7 @@ from scrapy.spiders import Spider
 from scrapy.selector import Selector
 from scrapy import Request
 
+from ..spider import ErrbackSpider
 from ...items import ArticleItem
 from ...ai import extract_tags
 
@@ -92,19 +93,21 @@ class BLOGSpider(Spider):
             if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
             yield Request(item['link'],
+                          meta={'item': item},
                           callback=self.extract_content,
                           errback=self.errback,
-                          meta={'item': item})
+                          dont_filter=True)
 
 
 class BLOGSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
         if all(_ in attrs for _ in BLOGSPIDER_ATTRS):
             def update_bases(bases):
-                bases_ = [_ for _ in bases if issubclass(_,
-                                                         Spider)]
-                if BLOGSpider not in bases_:
-                    bases_.append(BLOGSpider)
+                assert BLOGSpider not in bases, "BLOGSpider in bases"
+                bases_ = [BLOGSpider]
+                bases_.extend(bases)
+                if ErrbackSpider not in bases_:
+                    bases_.append(ErrbackSpider)
                 return tuple(bases_)
 
             def update_attrs(attrs):
