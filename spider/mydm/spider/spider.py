@@ -16,7 +16,8 @@ class ErrbackSpider(Spider):
         for url in self.start_urls:
             yield Request(url,
                           callback=self.parse,
-                          errback=self.errback)
+                          errback=self.errback,
+                          dont_filter=True)
 
     def errback(self, failure):
         if failure.check(DNSLookupError):
