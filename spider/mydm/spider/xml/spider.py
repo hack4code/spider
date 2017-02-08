@@ -86,7 +86,7 @@ class LXMLSpiderMeta(type):
                                                          Spider)]
                 if LXMLSpider not in bases_:
                     bases_.append(LXMLSpider)
-                return bases_
+                return tuple(bases_)
             return super().__new__(cls,
                                    name,
                                    update_bases(bases),

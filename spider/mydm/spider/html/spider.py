@@ -105,7 +105,7 @@ class BLOGSpiderMeta(type):
                                                          Spider)]
                 if BLOGSpider not in bases_:
                     bases_.append(BLOGSpider)
-                return bases_
+                return tuple(bases_)
 
             def update_attrs(attrs):
                 attrs_ = attrs.copy()
