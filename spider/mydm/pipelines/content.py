@@ -131,10 +131,6 @@ class ContentPipeline(object):
             for e in doc.xpath('//a/div'):
                 e.drop_tree()
 
-            for e in doc.xpath('//div'):
-                if len(e) == 0:
-                    e.drop_tree()
-
         remove_tags(doc)
 
         return doc
