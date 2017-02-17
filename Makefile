@@ -4,7 +4,7 @@ clean:
 	sudo rm -rf /var/cache/nginx
 
 update:
-	docker pull nginx
+	docker pull nginx:stable-alpine
 	docker pull redis
 	docker pull mongo
 	docker pull python
