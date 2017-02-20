@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from lxml.html import tostring
+from lxml.html import tostring, HtmlElement
 
 from ..model import is_exists_article, save_article
 from ..ai import get_category
@@ -27,11 +27,17 @@ class StorePipeline(object):
             doc = item['content']
             if not isinstance(doc,
                               (str, bytes)):
-                item['content'] = tostring(doc,
-                                           encoding='UTF-8',
-                                           pretty_print=True,
-                                           method='html')
-                item['encoding'] = 'UTF-8'
+                if isinstance(doc,
+                              HtmlElement):
+                    item['content'] = tostring(doc,
+                                               encoding='UTF-8',
+                                               pretty_print=True,
+                                               method='html')
+                    item['encoding'] = 'UTF-8'
+                else:
+                    raise Exception((
+                        'Error in store pipeline unsupported doc type[{}]'
+                        ).format(doc.__class__.__name__))
 
             item_ = dict(item)
             item_['lang'] = get_article_lang(item)

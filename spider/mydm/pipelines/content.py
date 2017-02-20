@@ -4,7 +4,7 @@
 import logging
 import re
 
-from lxml.html import fromstring, HTMLParser, defs
+from lxml.html import fromstring, HTMLParser, defs, HtmlElement
 from lxml.html.clean import Cleaner
 from lxml.etree import XPathEvalError
 
@@ -60,12 +60,12 @@ class ContentPipeline(object):
 
     def remove_element_with_class(self, doc, removed_classes):
         for e in doc.xpath('//div[@class]'):
-            if any(cls in e.get('class').lower() for cls in removed_classes):
+            if any(_ in e.get('class').lower() for _ in removed_classes):
                 e.drop_tree()
         return doc
 
     def remove_element_with_xpath(self, doc, removed_xpath_nodes):
-        for xpath in filter(lambda x: x.strip(),
+        for xpath in filter(lambda _: _.strip(),
                             removed_xpath_nodes):
             try:
                 nodes = doc.xpath(xpath)
@@ -138,11 +138,17 @@ class ContentPipeline(object):
     def process_item(self, item, spider):
         item['title'] = self.format_title(item['title'])
         doc = item['content']
-        if isinstance(doc,
-                      (str, bytes)):
-            doc = fromstring(bytes(bytearray(doc,
-                                             encoding=item['encoding'])),
-                             parser=HTMLParser(encoding=item['encoding']))
+        if not isinstance(doc,
+                          HtmlElement):
+            if isinstance(doc,
+                          (str, bytes)):
+                doc = fromstring(bytes(bytearray(doc,
+                                                 encoding=item['encoding'])),
+                                 parser=HTMLParser(encoding=item['encoding']))
+            else:
+                raise Exception((
+                    'Error in content pipeline unsupported doc type[{}]'
+                    ).format(doc.__class__.__name__))
 
         # remove element with class name for clean display
         removed_classes = getattr(spider,
