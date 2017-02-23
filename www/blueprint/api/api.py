@@ -167,7 +167,14 @@ def spiders():
     from model import get_spiders
 
     spiders = get_spiders()
-    entries = [Spider(spid, name) for spid, name in spiders.items()
-               if spid not in FEEDFILTER]
+    try:
+        master = request.headers['master']
+    except KeyError:
+        master = 'no'
+    if master == 'yes':
+        entries = [Spider(spid, name) for spid, name in spiders.items()]
+    else:
+        entries = [Spider(spid, name) for spid, name in spiders.items()
+                   if spid not in FEEDFILTER]
     return jsonify(err=0,
                    entries=entries)
