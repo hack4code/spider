@@ -82,8 +82,8 @@ def get_entries_byday():
     if request.args.get('master',
                         'no') == 'no':
         entries_ = {}
-        for category, items in entries:
-            entries_[category] = [_ for _ in items
+        for category, alist in entries.items():
+            entries_[category] = [_ for _ in alist
                                   if _.spider not in FEEDFILTER]
         entries = entries_
 
