@@ -79,8 +79,13 @@ def get_entries_byday():
                        msg='no articles')
 
     entries = get_entries(day_entry)
-    if request.args.get('master',
-                        'no') == 'no':
+
+    try:
+        master = request.headers['master']
+        app.logger.info('/api/day with master')
+    except KeyError:
+        master = 'no'
+    if master == 'no':
         entries_ = {}
         for category, alist in entries.items():
             entries_[category] = [_ for _ in alist
