@@ -17,6 +17,8 @@ api_page = Blueprint('api_page',
 
 
 CATEGORIES = app.config['ARTICLE_CATEGORIES']
+FEEDFILTER = app.config['FEED_FILTER']
+
 Spider = namedtuple('Spider', ['id', 'source'])
 
 
@@ -54,17 +56,21 @@ def vote():
 @api_page.route('/day', methods=['POST'])
 def get_entries_byday():
     from model import get_begin_day, get_entries, get_before_day, get_after_day
-    day = request.form.get('day',
-                           None)
     try:
-        day_entry = date(*(int(_) for _ in day.split('-')))
-    except ValueError:
-        return jsonify(err=1,
-                       msg='invalid day')
+        day = request.form['day']
+    except KeyError:
+        return jsonify(err=3,
+                       msg='entry day needed')
+    else:
+        try:
+            day_entry = date(*(int(_) for _ in day.split('-')))
+        except ValueError:
+            return jsonify(err=2,
+                           msg='invalid day')
 
     day_begin = get_begin_day()
 
-    if day_begin is None or day_entry is None:
+    if day_begin is None:
         return jsonify(err=1,
                        msg='no articles')
 
@@ -73,6 +79,13 @@ def get_entries_byday():
                        msg='no articles')
 
     entries = get_entries(day_entry)
+    if request.args.get('master',
+                        'no') == 'no':
+        entries_ = {}
+        for category, items in entries:
+            entries_[category] = [_ for _ in items
+                                  if _['spider'] not in FEEDFILTER]
+        entries = entries_
 
     day_before = get_before_day(day_entry)
     if day_before is not None:
@@ -98,9 +111,9 @@ def get_entries_byspider():
     from model import get_spiders, get_last_aid, get_first_aid, \
         get_entries_next, get_entries_pre, get_entries_spider
 
-    spid = request.form.get('spid',
-                            None)
-    if spid is None:
+    try:
+        spid = request.form['spid']
+    except KeyError:
         return jsonify(err=1,
                        msg='no spider id')
 
@@ -111,10 +124,11 @@ def get_entries_byspider():
 
     lastaid = get_last_aid(spid)
     firstaid = get_first_aid(spid)
-    aid = request.args.get('aid',
-                           None) or request.form.get('aid',
-                                                     None)
-    if aid:
+    try:
+        aid = request.form['aid']
+    except KeyError:
+        entries = get_entries_spider(spid)
+    else:
         try:
             aid = ObjectId(aid)
         except InvalidId:
@@ -133,9 +147,6 @@ def get_entries_byspider():
         else:
             entries = get_entries_next(spid,
                                        aid)
-
-    else:
-        entries = get_entries_spider(spid)
 
     if entries:
         return jsonify(err=0,

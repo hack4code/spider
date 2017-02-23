@@ -31,3 +31,6 @@ ARTICLE_CATEGORIES = {u'技术',
                       u'安全',
                       u'科技',
                       u'新闻'}
+
+# filter
+FEED_FILTER = []
