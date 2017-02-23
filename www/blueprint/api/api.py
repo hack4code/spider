@@ -82,7 +82,6 @@ def get_entries_byday():
 
     try:
         master = request.headers['master']
-        app.logger.info('/api/day with master')
     except KeyError:
         master = 'no'
     if master == 'no':
@@ -168,6 +167,7 @@ def spiders():
     from model import get_spiders
 
     spiders = get_spiders()
-    entries = [Spider(spid, name) for spid, name in spiders.items()]
+    entries = [Spider(spid, name) for spid, name in spiders.items()
+               if spid not in FEEDFILTER]
     return jsonify(err=0,
                    entries=entries)
