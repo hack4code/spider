@@ -84,7 +84,7 @@ def get_entries_byday():
         entries_ = {}
         for category, items in entries:
             entries_[category] = [_ for _ in items
-                                  if _['spider'] not in FEEDFILTER]
+                                  if _.spider not in FEEDFILTER]
         entries = entries_
 
     day_before = get_before_day(day_entry)
