@@ -447,10 +447,11 @@ class ContentDiv extends React.Component {
     return categories.sort(function(a, b) {
       const sortList = {
         "技术": 0,
-        "数据库": 1,
-        "安全": 2,
-        "科技": 3,
-        "新闻": 4
+        "python": 1,
+        "数据库": 2,
+        "安全": 3,
+        "科技": 4,
+        "新闻": 5
       };
       return (sortList[a] > sortList[b]) ? 1 : -1;
     });

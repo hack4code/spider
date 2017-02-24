@@ -27,6 +27,7 @@ BLOGSPIDER_KEY = 'blogspider'
 
 # category
 ARTICLE_CATEGORIES = {u'技术',
+                      u'python',
                       u'数据库',
                       u'安全',
                       u'科技',
