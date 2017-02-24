@@ -10,17 +10,30 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 from app import app
 
 
-Entry = namedtuple('Entry', ['id',
-                             'title'])
+Entry = namedtuple('Entry',
+                   ['id', 'title'])
 
-Entry_Day = namedtuple('Entry_Day', ['id',
-                                     'title',
-                                     'category',
-                                     'source',
-                                     'tag',
-                                     'spider',
-                                     'domain',
-                                     'link'])
+Entry_Day_ = namedtuple('Entry_Day',
+                        ['id',
+                         'title',
+                         'category',
+                         'source',
+                         'tag',
+                         'spider',
+                         'domain',
+                         'link'])
+
+
+class Entry_Day(Entry_Day_):
+    def __init__(data):
+        super().__init__(str(data['_id']),
+                         data.get('title'),
+                         data.get('category'),
+                         data.get('source'),
+                         data.get('tag'),
+                         data.get('spider'),
+                         data.get('domain'),
+                         data.get('link'))
 
 
 class MongoDB:
@@ -139,15 +152,7 @@ def get_entries(day):
             'link': 1,
         }
     )
-    entries_ = [Entry_Day(str(_['_id']),
-                _['title'],
-                _['category'],
-                _['source'],
-                _['tag'] if 'tag' in _ else None,
-                _['spider'],
-                _['domain'],
-                _['link'])
-                for _ in cursor]
+    entries_ = [Entry_Day(_) for _ in cursor]
     scores = get_score(entries_)
     entries = defaultdict(list)
     for e in sorted(entries_,
