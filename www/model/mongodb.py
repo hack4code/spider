@@ -10,21 +10,29 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 from app import app
 
 
-Entry = namedtuple('Entry',
-                   ['id', 'title'])
-
-Entry_Day_ = namedtuple('Entry_Day',
-                        ['id',
-                         'title',
-                         'category',
-                         'source',
-                         'tag',
-                         'spider',
-                         'domain',
-                         'link'])
+EntryBase = namedtuple('Entry',
+                       ['id', 'title'])
 
 
-class Entry_Day(Entry_Day_):
+class Entry(EntryBase):
+    def __new__(cls, d):
+        return super().__new__(cls,
+                               str(d['_id']),
+                               d.get('title'))
+
+
+EntryDayBase = namedtuple('EntryDay',
+                          ['id',
+                           'title',
+                           'category',
+                           'source',
+                           'tag',
+                           'spider',
+                           'domain',
+                           'link'])
+
+
+class EntryDay(EntryDayBase):
     def __new__(cls, d):
         return super().__new__(cls,
                                str(d['_id']),
@@ -35,6 +43,34 @@ class Entry_Day(Entry_Day_):
                                d.get('spider'),
                                d.get('domain'),
                                d.get('link'))
+
+
+ArticleBase = namedtuple('Article',
+                         ['id',
+                          'title',
+                          'domain',
+                          'link',
+                          'content',
+                          'lang',
+                          'source',
+                          'spider'])
+
+
+class Article(ArticleBase):
+    def __new__(cls, d):
+        content = d.get('content')
+        if isinstance(content,
+                      bytes):
+            content = content.decode('UTF-8')
+        return super().__new__(cls,
+                               str(d['_id']),
+                               unescape(d.get('title')),
+                               d.get('domain'),
+                               d.get('link'),
+                               content,
+                               d.get('lang'),
+                               d.get('source'),
+                               d.get('spider'))
 
 
 class MongoDB:
@@ -153,7 +189,7 @@ def get_entries(day):
             'link': 1,
         }
     )
-    entries_ = [Entry_Day(_) for _ in cursor]
+    entries_ = [EntryDay(_) for _ in cursor]
     scores = get_score(entries_)
     entries = defaultdict(list)
     for e in sorted(entries_,
@@ -270,9 +306,7 @@ def get_entries_next(spid, aid):
     ).sort('_id',
            DESCENDING
            ).limit(100)
-    return [Entry(str(_['_id']),
-                  _['title'])
-            for _ in cursor] if cursor.count() else None
+    return [Entry(_) for _ in cursor] if cursor.count() else None
 
 
 def get_entries_pre(spid, aid):
@@ -288,9 +322,8 @@ def get_entries_pre(spid, aid):
     ).sort('_id',
            ASCENDING
            ).limit(100)
-    return list(reversed([Entry(str(_['_id']),
-                                _['title'])
-                          for _ in cursor])) if cursor.count() else None
+    return list(reversed([Entry(_)
+                         for _ in cursor])) if cursor.count() else None
 
 
 def get_entries_spider(spid):
@@ -305,20 +338,7 @@ def get_entries_spider(spid):
     ).sort('_id',
            DESCENDING
            ).limit(100)
-    return [Entry(str(_['_id']),
-                  _['title'])
-            for _ in cursor] if cursor.count() else None
-
-
-Article = namedtuple('Article',
-                     ['id',
-                      'title',
-                      'domain',
-                      'link',
-                      'content',
-                      'lang',
-                      'source',
-                      'spider'])
+    return [Entry(_) for _ in cursor] if cursor.count() else None
 
 
 def get_article(aid):
@@ -336,27 +356,7 @@ def get_article(aid):
             'spider': 1
         }
     ).limit(1)
-
-    if not cursor.count():
-        return None
-
-    r = cursor[0]
-    if isinstance(r['content'],
-                  bytes):
-        r['content'] = r['content'].decode('UTF-8')
-    if 'source' not in r:
-        r['source'] = None
-    r['title'] = unescape(r['title'])
-
-    a = Article(r['_id'],
-                r['title'],
-                r['domain'],
-                r['link'],
-                r['content'],
-                r['lang'],
-                r['source'],
-                r['spider'])
-    return a
+    return Article(cursor[0]) if cursor.count() else None
 
 
 def vote_article(a):
