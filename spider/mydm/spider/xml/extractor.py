@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from html import unescape
+
 from zope.interface import Interface, implementer
 from dateutil.parser import parse as get_date
 from lxml.etree import QName
@@ -15,7 +17,7 @@ class ITagExtractor(Interface):
 
 
 @implementer(ITagExtractor)
-class TitleTag(object):
+class TitleTag:
     tag = 'title'
 
     def __init__(self):
@@ -27,12 +29,11 @@ class TitleTag(object):
 
     def extract(self, e):
         if e.text is not None:
-            from html import unescape
             self.val = unescape(e.text.strip('\t\n '))
 
 
 @implementer(ITagExtractor)
-class LinkTag(object):
+class LinkTag:
     tag = 'link'
 
     def __init__(self):
@@ -53,7 +54,7 @@ class LinkTag(object):
 
 
 @implementer(ITagExtractor)
-class PubDateTag(object):
+class PubDateTag:
     tag = 'pub_date'
 
     def __init__(self):
@@ -72,7 +73,7 @@ class PubDateTag(object):
 
 
 @implementer(ITagExtractor)
-class CategoryTag(object):
+class CategoryTag:
     tag = 'tag'
     attrs = ['term', ]
 
@@ -100,7 +101,7 @@ class CategoryTag(object):
 
 
 @implementer(ITagExtractor)
-class ContentTag(object):
+class ContentTag:
     tag = 'content'
 
     def __init__(self):
@@ -117,7 +118,7 @@ class ContentTag(object):
             self.val = e.text
 
 
-class ItemExtractor(object):
+class ItemExtractor:
     def __init__(self):
         self.extractors = [TitleTag(),
                            LinkTag(),
@@ -127,11 +128,11 @@ class ItemExtractor(object):
 
     def __call__(self, entry):
         for e in entry:
-            for i in self.extractors:
+            for _ in self.extractors:
                 try:
-                    if i.match(e):
-                        i.extract(e)
+                    if _.match(e):
+                        _.extract(e)
                         break
                 except ValueError:
                     continue
-        return {i.tag: i.val for i in self.extractors if i.val is not None}
+        return {_.tag: _.val for _ in self.extractors if _.val is not None}
