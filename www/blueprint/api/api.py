@@ -22,6 +22,14 @@ FEEDFILTER = app.config['FEED_FILTER']
 Spider = namedtuple('Spider', ['id', 'source'])
 
 
+def _is_master():
+    try:
+        master = request.headers['master']
+    except KeyError:
+        master = 'no'
+    return True if master.lower() == 'yes' else False
+
+
 @api_page.route('/vote', methods=['POST'])
 def vote():
     from model import get_article, vote_article
@@ -79,12 +87,11 @@ def get_entries_byday():
                        msg='no articles')
 
     entries = get_entries(day_entry)
+    if not entries:
+        return jsonify(err=1,
+                       msg='no articles')
 
-    try:
-        master = request.headers['master']
-    except KeyError:
-        master = 'no'
-    if master == 'no':
+    if not _is_master():
         entries_ = {}
         for category, alist in entries.items():
             entries_[category] = [_ for _ in alist
@@ -167,11 +174,8 @@ def spiders():
     from model import get_spiders
 
     spiders = get_spiders()
-    try:
-        master = request.headers['master']
-    except KeyError:
-        master = 'no'
-    if master == 'yes':
+
+    if _is_master():
         entries = [Spider(spid, name) for spid, name in spiders.items()]
     else:
         entries = [Spider(spid, name) for spid, name in spiders.items()
