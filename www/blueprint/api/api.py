@@ -64,6 +64,7 @@ def vote():
 @api_page.route('/day', methods=['POST'])
 def get_entries_byday():
     from model import get_begin_day, get_entries, get_before_day, get_after_day
+
     try:
         day = request.form['day']
     except KeyError:
@@ -87,11 +88,8 @@ def get_entries_byday():
                        msg='no articles')
 
     entries = get_entries(day_entry)
-    if not entries:
-        return jsonify(err=1,
-                       msg='no articles')
 
-    if not _is_master():
+    if not _is_master() and entries:
         entries_ = {}
         for category, alist in entries.items():
             entries_[category] = [_ for _ in alist
