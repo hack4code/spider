@@ -8,7 +8,7 @@ from ..ai import get_category
 
 
 def get_article_lang(item):
-    if any(ord(c) > 19967 for c in item['title']):
+    if any(ord(_) > 19967 for _ in item['title']):
         return 'zh'
     return 'en'
 
