@@ -25,15 +25,15 @@ Entry_Day_ = namedtuple('Entry_Day',
 
 
 class Entry_Day(Entry_Day_):
-    def __init__(data):
-        super().__init__(str(data['_id']),
-                         data.get('title'),
-                         data.get('category'),
-                         data.get('source'),
-                         data.get('tag'),
-                         data.get('spider'),
-                         data.get('domain'),
-                         data.get('link'))
+    def __new__(cls, d):
+        return super().__new__(str(d['_id']),
+                               d.get('title'),
+                               d.get('category'),
+                               d.get('source'),
+                               d.get('tag'),
+                               d.get('spider'),
+                               d.get('domain'),
+                               d.get('link'))
 
 
 class MongoDB:
