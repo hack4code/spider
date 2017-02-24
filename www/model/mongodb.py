@@ -26,7 +26,8 @@ Entry_Day_ = namedtuple('Entry_Day',
 
 class Entry_Day(Entry_Day_):
     def __new__(cls, d):
-        return super().__new__(str(d['_id']),
+        return super().__new__(cls,
+                               str(d['_id']),
                                d.get('title'),
                                d.get('category'),
                                d.get('source'),
