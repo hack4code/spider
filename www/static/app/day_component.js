@@ -432,7 +432,8 @@ class ContentDiv extends React.Component {
            "技术": [],
            "科技": [],
            "数据库": [],
-           "安全": []}
+           "安全": [],
+           "python": []}
   };
 
   constructor(props) {
