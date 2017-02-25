@@ -169,6 +169,7 @@ class ArticleLink extends React.Component  {
       fontSize: "1em",
       fontWeight: "normal",
       lineHeight: "110%",
+      letterSpacing: "1px",
       margin: "0px",
       padding: "0px",
     };
