@@ -3,27 +3,27 @@
 
 import re
 
-from lxml.html import fromstring, HTMLParser
-
-
-def verify_tags(tags):
-    return True if all(len(tag) < 32 for tag in tags) else False
+from lxml.html import fromstring, HTMLParser, HtmlElement
 
 
 class ReExtractor:
-    PATTERN = r'tags?\s*:.*'
+    PATTERN = r'(tags?|Filed\s+under)\s*:.*'
+    FS = ','
 
     def extract(self, s):
-        tags = [tag.strip() for tag in s[s.find(':')+1:-1].split(',')]
-        return tags
+        tags = [_.strip() for _ in s[s.find(':')+1:-1].split(self.FS)]
+        return filter(lambda _: len(_) < 16,
+                      tags)
 
     def __call__(self, doc, encoding='UTF-8'):
+        if isinstance(doc,
+                      (str, bytes)):
+            doc = fromstring(bytes(bytearray(doc,
+                                             encoding=encoding)),
+                             parser=HTMLParser(encoding=encoding))
         if not isinstance(doc,
-                          (str, bytes)):
+                          HtmlElement):
             return None
-        doc = fromstring(bytes(bytearray(doc,
-                                         encoding=encoding)),
-                         parser=HTMLParser(encoding=encoding))
         txt = doc.text_content()
         matches = re.findall(self.PATTERN,
                              txt,
@@ -31,21 +31,21 @@ class ReExtractor:
         if len(matches) == 1:
             stag = matches[0]
             tags = self.extract(stag)
-            if verify_tags(tags):
+            if tags:
                 return tags
         elif len(matches) == 2:
             for stag in matches:
                 tags = self.extract(stag)
-                if verify_tags(tags):
+                if tags:
                     return tags
         elif len(matches) > 2:
             stag = matches[0]
             tags = self.extract(stag)
-            if verify_tags(tags):
+            if tags:
                 return tags
             stag = matches[-1]
             tags = self.extract(stag)
-            if verify_tags(tags):
+            if tags:
                 return tags
 
 
