@@ -368,6 +368,11 @@ class Category extends React.Component {
       astyle["color"] = "#222222";
     }
 
+    if (screen.width < 600) {
+      listyle["marginRight"] = "1em";
+      astyle["fontSize"] = "0.8em";
+    }
+
     return (
       <li style={listyle}>
         <a href="#" style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
