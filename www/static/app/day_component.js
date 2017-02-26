@@ -348,20 +348,16 @@ class Category extends React.Component {
   render() {
     const listyle = {
       display: "inline-block",
-      marginRight: is_small_screen ? "0.8em" : "1.6em"
+      marginRight: is_small_screen ? "1.2em" : "1.6em"
     };
 
     const astyle = {
       fontFamily: "Pingfang SC, Microsoft YaHei",
       fontWeight: "bold",
-      fontSize: "1.0em",
-      color: "#666666",
-      textDecoration: "none"
+      textDecoration: "none",
+      color: this.props.focus ? "#222222" : "#666666",
+      fontSize: is_small_screen ? "0.8em" : "1.0em"
     };
-
-    if (this.props.focus) {
-      astyle["color"] = "#222222";
-    }
 
     return (
       <li style={listyle}>
@@ -376,8 +372,8 @@ class CategoryDiv extends React.Component {
     const style = {
       listStyle: "none",
       marginBottom: "0em",
-      marginLeft: is_small_screen ? "0em" : "2em",
-      paddingLeft: is_small_screen ? "0em" : "2em"
+      marginLeft: "0em",
+      paddingLeft: is_small_screen ? "1.6em" : "4em"
     };
 
     let categories = this.props.categories;
