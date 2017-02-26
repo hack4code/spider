@@ -1,5 +1,8 @@
 import React from "react";
 
+
+const is_small_screen = screen.width < 600 ? true : false;
+
 function decodeEntities(encodedString) {
     let textArea = document.createElement('textarea');
     textArea.innerHTML = encodedString;
@@ -116,12 +119,8 @@ class FloatSide extends React.Component  {
       fontSize: "0.7em",
       fontWeight: "bold",
       color: "dimgray",
-      display: "block"
+      display: is_small_screen ? "none" : "block"
     };
-
-    if (screen.width < 600){
-      style["display"] = "none";
-    }
 
     return (
       <div style={style}>
@@ -145,14 +144,10 @@ class Rank extends React.Component  {
      fontFamily: "arial",
      fontSize: "medium",
      fontWeight: "bold",
-     width: "40px",
-     paddingRight: "25px",
+     width: is_small_screen ? "30px" : "40px",
+     paddingRight: is_small_screen ? "15px" : "25px",
      flexShrink: 0
     };
-    if (screen.width < 600){
-      style["width"] = "30px";
-      style["paddingRight"] = "15px";
-    }
 
     return (
       <span style={style}>
@@ -353,7 +348,7 @@ class Category extends React.Component {
   render() {
     const listyle = {
       display: "inline-block",
-      marginRight: "1.6em"
+      marginRight: is_small_screen ? "0.8em" : "1.6em"
     };
 
     const astyle = {
@@ -368,11 +363,6 @@ class Category extends React.Component {
       astyle["color"] = "#222222";
     }
 
-    if (screen.width < 600) {
-      listyle["marginRight"] = "1em";
-      astyle["fontSize"] = "0.8em";
-    }
-
     return (
       <li style={listyle}>
         <a href="#" style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
@@ -385,12 +375,9 @@ class CategoryDiv extends React.Component {
   render() {
     const style = {
       listStyle: "none",
-      marginBottom: 0,
-      marginLeft: "2em"
+      marginBottom: "0em",
+      marginLeft: is_small_screen ? "0em" : "2em"
     };
-    if (screen.width < 600){
-      style["marginLeft"] = "0";
-    }
 
     let categories = this.props.categories;
     let onCategoryClick = this.props.onCategoryClick;
