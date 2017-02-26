@@ -376,7 +376,8 @@ class CategoryDiv extends React.Component {
     const style = {
       listStyle: "none",
       marginBottom: "0em",
-      marginLeft: is_small_screen ? "0em" : "2em"
+      marginLeft: is_small_screen ? "0em" : "2em",
+      paddingLeft: is_small_screen ? "0em" : "2em"
     };
 
     let categories = this.props.categories;
