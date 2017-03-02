@@ -12,8 +12,7 @@ class ReExtractor:
 
     def extract(self, s):
         tags = [_.strip() for _ in s[s.find(':')+1:-1].split(self.FS)]
-        return filter(lambda _: len(_) < 16,
-                      tags)
+        return [__ for __ in tags if len(__) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
