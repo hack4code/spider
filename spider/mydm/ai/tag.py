@@ -15,9 +15,7 @@ class ReExtractor:
     FS = ','
 
     def extract(self, s):
-        logger.info('extract tag from %s',
-                    s)
-        return [_ for _ in s.split(self.FS) if len(_) < 16]
+        return [_.strip(' \t\r\n') for _ in s.split(self.FS) if len(_) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
