@@ -41,7 +41,7 @@ class LXMLSpider(Spider):
             if 'tag' not in item:
                 tags = extract_tags(item['content'],
                                     item['encoding'])
-                if tags is not None:
+                if tags:
                     item['tag'] = tags
             return ArticleItem(item)
         else:
@@ -75,7 +75,7 @@ class LXMLSpider(Spider):
                     if 'tag' not in item:
                         tags = extract_tags(item['content'],
                                             item['encoding'])
-                        if tags is not None:
+                        if tags:
                             item['tag'] = tags
                     yield ArticleItem(item)
 

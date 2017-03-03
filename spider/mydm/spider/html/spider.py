@@ -42,7 +42,7 @@ class BLOGSpider(Spider):
                 for attr, xpath in self.item_extractors}
         tags = extract_tags(entry.xpath('.').extract_first(),
                             encoding)
-        if tags is not None:
+        if tags:
             item['tag'] = tags
         if item.get('link') is not None:
             item['link'] = item['link'].strip('\t\n\r\s')
@@ -59,7 +59,7 @@ class BLOGSpider(Spider):
         if item.get('tag') is None:
             tags = extract_tags(content,
                                 response.encoding)
-            if tags is not None:
+            if tags:
                 item['tag'] = tags
         if all(item.get(_) is not None for _ in self.ATTRS):
             return ArticleItem(item)
