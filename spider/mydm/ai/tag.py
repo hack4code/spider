@@ -12,13 +12,6 @@ logger = logging.getLogger(__name__)
 
 class ReExtractor:
     PATTERN = r'(tags?\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)'
-    FS = ','
-
-    def extract(self, s):
-        s = re.sub(r'(\s|\t)+',
-                   ' ',
-                   s)
-        return [_.strip() for _ in s.split(self.FS) if len(_) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
@@ -33,23 +26,30 @@ class ReExtractor:
         matches = re.findall(self.PATTERN,
                              txt,
                              re.IGNORECASE)
+
+        def extract(s):
+            s = re.sub(r'(\s|\t|\r|\n)+',
+                       ' ',
+                       s)
+            return [_.strip() for _ in s.split(',') if len(_) < 16]
+
         if len(matches) == 1:
             s = matches[0][1]
-            tags = self.extract(s)
+            tags = extract(s)
             if tags:
                 return tags
         elif len(matches) == 2:
             for _, s in matches:
-                tags = self.extract(s)
+                tags = extract(s)
                 if tags:
                     return tags
         elif len(matches) > 2:
             s = matches[0][1]
-            tags = self.extract(s)
+            tags = extract(s)
             if tags:
                 return tags
             s = matches[-1][1]
-            tags = self.extract(s)
+            tags = extract(s)
             if tags:
                 return tags
 
