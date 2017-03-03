@@ -76,12 +76,12 @@ class Article(ArticleBase):
 class MongoDB:
     def __init__(self, name):
         self._name = name
-        self._client = MongoClient(app.config['MONGODB_URI'],
-                                   connect=False)
         self._db = None
 
     def _connect(self):
-        db = self._client[self._name]
+        client = MongoClient(app.config['MONGODB_URI'],
+                             connect=False)
+        db = client[self._name]
         db.authenticate(app.config['MONGODB_USER'],
                         app.config['MONGODB_PWD'])
         self._db = db
