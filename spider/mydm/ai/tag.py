@@ -15,7 +15,10 @@ class ReExtractor:
     FS = ','
 
     def extract(self, s):
-        return [_.strip(' \t\r\n') for _ in s.split(self.FS) if len(_) < 16]
+        s = re.sub(r'(\s|\t)+',
+                   ' ',
+                   s)
+        return [_.strip() for _ in s.split(self.FS) if len(_) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
@@ -59,7 +62,10 @@ class TagExtractor:
             match = cls()
             tags = match(doc,
                          encoding=encoding)
-            return tags
+            if tags:
+                logger.info('TagExtractor got tags %s',
+                            tags)
+                return tags
 
 
 def extract_tags(doc, encoding):
