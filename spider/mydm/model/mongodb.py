@@ -20,27 +20,30 @@ class MongoDB(object):
 
     def __init__(self):
         self._db = None
-        self._client = MongoClient(SETTINGS['MONGODB_URI'],
-                                   connect=False)
 
-    def _connect(self):
-        db = self._client[SETTINGS['MONGODB_DB_NAME']]
-        db.authenticate(SETTINGS['MONGODB_USER'],
-                        SETTINGS['MONGODB_PWD'])
-        feed = db['feed']
+    def _create_indexes(self):
+        feed = self._db['feed']
         feed.create_index('url',
                           name='idx_url')
-        article = db['article']
+        article = self._db['article']
         article.create_index('crawl_date',
                              name='idx_crawl_date')
         article.create_index([('spider', ASCENDING),
                               ('crawl_date', ASCENDING)],
                              name='idx_spider_crawl_date')
-        stats = db['stats']
+        stats = self._db['stats']
         stats.create_index('id',
                            unique=True,
                            name='idx_id')
+
+    def _connect(self):
+        client = MongoClient(SETTINGS['MONGODB_URI'],
+                             connect=False)
+        db = client[SETTINGS['MONGODB_DB_NAME']]
+        db.authenticate(SETTINGS['MONGODB_USER'],
+                        SETTINGS['MONGODB_PWD'])
         self._db = db
+        self._create_indexes()
 
     def __getattr__(self, key):
         if self._db is None:
