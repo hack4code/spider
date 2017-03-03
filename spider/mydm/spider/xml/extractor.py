@@ -29,7 +29,7 @@ class TitleTag:
 
     def extract(self, e):
         if e.text is not None:
-            self.val = unescape(e.text.strip('\t\n '))
+            self.val = unescape(e.text.strip('\r\t\n '))
 
 
 @implementer(ITagExtractor)
@@ -50,7 +50,7 @@ class LinkTag:
         else:
             v = e.text
         if v is not None:
-            self.val = v.strip('\t\n ')
+            self.val = v.strip('\r\t\n ')
 
 
 @implementer(ITagExtractor)
