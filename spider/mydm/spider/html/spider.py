@@ -72,12 +72,14 @@ class BLOGSpider(Spider):
 
     def parse(self, response):
         try:
-            prelink = response.xpath(self.link_pre_xpath).extract_first()
+            xplink = self.link_pre_xpath
+        except AttributeError:
+            pass
+        else:
+            prelink = response.xpath(xplink).extract_first()
             yield Request(prelink,
                           callback=self.parse,
                           errback=self.errback)
-        except AttributeError:
-            pass
 
         for entry in self.extract_entries(response):
             item = self.extract_item(entry,
