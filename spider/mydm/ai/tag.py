@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 import re
 
 from lxml.html import fromstring, HTMLParser, HtmlElement
 
 
+logger = logging.getLogger(__name__)
+
+
 class ReExtractor:
-    PATTERN = r'(tags?\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(?P<tags>.*)'
+    PATTERN = r'(tags?\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)'
     FS = ','
 
     def extract(self, s):
+        logger.info('extract tag from %s',
+                    s)
         return [_ for _ in s.split(self.FS) if len(_) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
