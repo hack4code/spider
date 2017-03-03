@@ -7,12 +7,11 @@ from lxml.html import fromstring, HTMLParser, HtmlElement
 
 
 class ReExtractor:
-    PATTERN = r'(tags?|Filed\s+under)\s*:.*'
+    PATTERN = r'(tags?\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(?P<tags>.*)'
     FS = ','
 
     def extract(self, s):
-        tags = [_.strip() for _ in s[s.find(':')+1:-1].split(self.FS)]
-        return [__ for __ in tags if len(__) < 16]
+        return [_ for _ in s.split(self.FS) if len(_) < 16]
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
@@ -28,22 +27,22 @@ class ReExtractor:
                              txt,
                              re.IGNORECASE)
         if len(matches) == 1:
-            stag = matches[0]
-            tags = self.extract(stag)
+            s = matches[0][1]
+            tags = self.extract(s)
             if tags:
                 return tags
         elif len(matches) == 2:
-            for stag in matches:
-                tags = self.extract(stag)
+            for _, s in matches:
+                tags = self.extract(s)
                 if tags:
                     return tags
         elif len(matches) > 2:
-            stag = matches[0]
-            tags = self.extract(stag)
+            s = matches[0][1]
+            tags = self.extract(s)
             if tags:
                 return tags
-            stag = matches[-1]
-            tags = self.extract(stag)
+            s = matches[-1][1]
+            tags = self.extract(s)
             if tags:
                 return tags
 
