@@ -16,6 +16,7 @@ from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
+
 BLOGSPIDER_ATTRS = ['start_urls',
                     'category',
                     'entry_xpath',
@@ -65,10 +66,9 @@ class BLOGSpider(Spider):
             return ArticleItem(item)
         else:
             miss_attrs = [_ for _ in self.ATTRS if item.get(_) is None]
-            logger.error((
-                'Error in spider {} extract content miss attrs{}'
-                ).format(self.name,
-                         miss_attrs))
+            logger.error('Error in spider %s extract content miss attrs%s',
+                         self.name,
+                         miss_attrs)
 
     def parse(self, response):
         try:
