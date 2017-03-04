@@ -31,7 +31,7 @@ class ReExtractor:
             s = re.sub(r'(\s|\t|\r|\n)+',
                        ' ',
                        s)
-            return [_.strip() for _ in s.split(',') if len(_) < 16]
+            return [_.strip() for _ in s.split(',') if _ and len(_) < 24]
 
         if len(matches) == 1:
             s = matches[0][1]
