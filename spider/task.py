@@ -193,11 +193,11 @@ def crawl(args):
     reactor.run()
     logging.info('crawl reator stopped')
 
-    if len(spiders) > 4:
-        failed_spiders = _get_failed_spiders(spids)
-        if failed_spiders:
-            _send(SETTINGS['CRAWL2_KEY'],
-                  {'spiders': failed_spiders})
+#    if len(spiders) > 4:
+#        failed_spiders = _get_failed_spiders(spids)
+#        if failed_spiders:
+#            _send(SETTINGS['CRAWL2_KEY'],
+#                  {'spiders': failed_spiders})
 
 
 def crawl2(args):
