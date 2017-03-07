@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class ReExtractor:
-    PATTERN = r'(tags?\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)'
+    PATTERN = r'(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)'
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
@@ -31,7 +31,18 @@ class ReExtractor:
             s = re.sub(r'(\s|\t|\r|\n)+',
                        ' ',
                        s)
-            return [_.strip() for _ in s.split(',') if _ and len(_) < 24]
+            tags_ = []
+            for _ in s.split(','):
+                tag = _.strip()
+                if tag:
+                    tags_.append(tag)
+            tags = []
+            for index, tag in enumerate(tags_):
+                if index < 2 and len(tag) > 16:
+                    return None
+                elif len(tag) < 16:
+                    tags.append(tag)
+            return tags
 
         if len(matches) == 1:
             s = matches[0][1]
