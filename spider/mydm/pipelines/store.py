@@ -13,7 +13,7 @@ def get_article_lang(item):
     return 'en'
 
 
-class StorePipeline(object):
+class StorePipeline:
     """
         save data to mongodb
     """
