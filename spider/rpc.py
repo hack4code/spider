@@ -86,8 +86,7 @@ def main():
              (gen_blogspider, SETTINGS['BLOGSPIDER_KEY']),
              (crawl2, SETTINGS['CRAWL2_KEY'])]
     tasks = [(Process(target=task,
-                      args=_),
-              _) for _ in TASKS]
+                      args=_), _) for _ in TASKS]
     sleep(10)
     for p, _ in tasks:
         p.start()
