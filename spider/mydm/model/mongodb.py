@@ -11,7 +11,7 @@ from scrapy.utils.project import get_project_settings
 SETTINGS = get_project_settings()
 
 
-class MongoDB(object):
+class MongoDB:
     COLLECTIONS = ('article',
                    'feed',
                    'spider',
