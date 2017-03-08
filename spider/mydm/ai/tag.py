@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class ReExtractor:
-    PATTERN = r'(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)'
+    p = re.compile(r'(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)',
+                   re.IGNORECASE)
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc,
@@ -22,10 +23,8 @@ class ReExtractor:
         if not isinstance(doc,
                           HtmlElement):
             return None
-        txt = doc.text_content()
-        matches = re.findall(self.PATTERN,
-                             txt,
-                             re.IGNORECASE)
+
+        matches = self.p.findall(doc.text_content())
 
         def extract(s):
             s = re.sub(r'(\s|\t|\r|\n)+',
