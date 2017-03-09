@@ -96,9 +96,10 @@ class LXMLSpiderMeta(type):
                 if ErrbackSpider not in bases_:
                     bases_.append(ErrbackSpider)
                 return tuple(bases_)
+            bases = update_bases(bases)
             return super().__new__(cls,
                                    name,
-                                   update_bases(bases),
+                                   bases,
                                    attrs)
         else:
             miss_attrs = [_ for _ in XMLSPIDER_ATTRS if _ not in attrs]

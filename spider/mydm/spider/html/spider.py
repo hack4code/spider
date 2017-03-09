@@ -16,7 +16,6 @@ from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
-
 BLOGSPIDER_ATTRS = ['start_urls',
                     'category',
                     'entry_xpath',
@@ -30,7 +29,7 @@ class BLOGSpider(Spider):
         blog spider crawling with xpath
     """
 
-    # article item must contained attribute
+    # must contained attribute
     ATTRS = ('title', 'link', 'content')
 
     def extract_entries(self, response):
@@ -125,10 +124,12 @@ class BLOGSpiderMeta(type):
                     del attrs_['item_{}_xpath'.format(k)]
                 return attrs_
 
+            bases = update_bases(bases)
+            attrs = update_attrs(attrs)
             return super().__new__(cls,
                                    name,
-                                   update_bases(bases),
-                                   update_attrs(attrs))
+                                   bases,
+                                   attrs)
         else:
             miss_attrs = [_ for _ in BLOGSPIDER_ATTRS if _ not in attrs]
             raise AttributeError((
