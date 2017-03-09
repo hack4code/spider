@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @implementer(ISpiderLoader)
-class MongoSpiderLoader(object):
+class MongoSpiderLoader:
     def __init__(self):
         self._spiders = None
 
