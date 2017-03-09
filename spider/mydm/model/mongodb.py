@@ -12,12 +12,6 @@ SETTINGS = get_project_settings()
 
 
 class MongoDB:
-    COLLECTIONS = ('article',
-                   'feed',
-                   'spider',
-                   'category',
-                   'stats')
-
     def __init__(self):
         self._db = None
 
@@ -48,12 +42,10 @@ class MongoDB:
     def __getattr__(self, key):
         if self._db is None:
             self._connect()
-        if key in self.COLLECTIONS:
+        try:
             return self._db[key]
-        else:
-            raise AttributeError(
-                'scrapy db has no collection {}'.format(key)
-                )
+        except KeyError:
+            raise AttributeError('ScrapyDb has no collection {}'.format(key))
 
 
 ScrapyDB = MongoDB()
