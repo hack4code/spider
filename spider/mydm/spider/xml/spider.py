@@ -21,12 +21,19 @@ logger = logging.getLogger(__name__)
 XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
+def set_item_tag(item):
+    tags = extract_tags(item['content'],
+                        item['encoding'])
+    if tags:
+        item['tag'] = tags
+
+
 class LXMLSpider(Spider):
     """
         spider crawling rss|atom
     """
 
-    # attributes item must contain
+    # attributes must contain
     ATTRS = ('title',
              'link',
              'content')
@@ -38,11 +45,8 @@ class LXMLSpider(Spider):
             item['content'] = content
             item['encoding'] = response.encoding
             item['link'] = response.url
-            if 'tag' not in item:
-                tags = extract_tags(item['content'],
-                                    item['encoding'])
-                if tags:
-                    item['tag'] = tags
+            if item.get('tag') is None:
+                set_item_tag(item)
             return ArticleItem(item)
         else:
             logger.error('spider[{}] extract content failed'.format(self.name))
@@ -63,20 +67,22 @@ class LXMLSpider(Spider):
             item['domain'] = urlparse(response.request.url).netloc
             item['data_type'] = 'html'
             item['encoding'] = response.encoding
+            if item.get('tag') is None:
+                set_item_tag(item)
             if all(item.get(_) is not None for _ in self.ATTRS):
                 if hasattr(self,
                            'item_content_xpath'):
-                    yield Request(item['link'],
+                    try:
+                        link = '{}?{}'.format(item['link'],
+                                              self.item_content_link_parameter)
+                    except AttributeError:
+                        link = item['link']
+                    yield Request(link,
                                   meta={'item': item},
                                   callback=self.extract_content,
                                   errback=self.errback,
                                   dont_filter=True)
                 else:
-                    if 'tag' not in item:
-                        tags = extract_tags(item['content'],
-                                            item['encoding'])
-                        if tags:
-                            item['tag'] = tags
                     yield ArticleItem(item)
 
 
