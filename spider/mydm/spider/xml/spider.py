@@ -67,9 +67,9 @@ class LXMLSpider(Spider):
             item['domain'] = urlparse(response.request.url).netloc
             item['data_type'] = 'html'
             item['encoding'] = response.encoding
-            if item.get('tag') is None:
-                set_item_tag(item)
             if all(item.get(_) is not None for _ in self.ATTRS):
+                if item.get('tag') is None:
+                    set_item_tag(item)
                 if hasattr(self,
                            'item_content_xpath'):
                     try:
