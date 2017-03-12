@@ -23,7 +23,6 @@ from mydm.spiderfactory import SpiderFactory, SpiderFactoryException
 from mydm.util import get_stats
 
 logger = logging.getLogger(__name__)
-
 SETTINGS = get_project_settings()
 
 
@@ -99,9 +98,11 @@ def gen_lxmlspider(setting):
     url = setting['url']
     del setting['url']
     save_feed(url)
+    headers = SETTINGS['DEFAULT_REQUEST_HEADERS'].copy()
+    headers['User-Agent'] = SETTINGS['USER_AGENT']
     try:
         r = requests.get(url,
-                         headers=SETTINGS['DEFAULT_REQUEST_HEADERS'])
+                         headers=headers)
     except requests.exceptions.ConnectionError:
         logger.error('Error in gen_lxmlspider connection[%s]',
                      url)
