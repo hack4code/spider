@@ -122,7 +122,11 @@ def save_article(item):
 
 
 def is_exists_spider(url):
-    cursor = ScrapyDB.spider.find({'start_urls': {'$in': [url, ]}})
+    cursor = ScrapyDB.spider.find(
+            {
+                'start_urls': {'$in': [url]}
+            }
+    )
     return True if cursor.count() > 0 else False
 
 
