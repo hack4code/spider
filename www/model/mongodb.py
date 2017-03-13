@@ -74,6 +74,8 @@ class Article(ArticleBase):
 
 
 class MongoDB:
+    __slots__ = ('_name', '_db')
+
     def __init__(self, name):
         self._name = name
         self._db = None
