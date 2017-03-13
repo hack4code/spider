@@ -24,6 +24,13 @@ BLOGSPIDER_ATTRS = ['start_urls',
                     'item_content_xpath']
 
 
+def set_item_tag(txt, item, encoding='utf-8'):
+    tags = extract_tags(txt,
+                        encoding)
+    if tags:
+        item['tag'] = tags
+
+
 class BLOGSpider(Spider):
     """
         blog spider crawling with xpath
@@ -40,10 +47,9 @@ class BLOGSpider(Spider):
     def extract_item(self, entry, encoding):
         item = {attr: entry.xpath(xpath).extract_first()
                 for attr, xpath in self.item_extractors}
-        tags = extract_tags(entry.xpath('.').extract_first(),
-                            encoding)
-        if tags:
-            item['tag'] = tags
+        set_item_tag(entry.xpath('.').extract_first(),
+                     item,
+                     encoding)
         if item.get('link') is not None:
             item['link'] = item['link'].strip('\t\n\r\s')
         if item.get('title') is not None:
@@ -57,10 +63,9 @@ class BLOGSpider(Spider):
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
         if item.get('tag') is None:
-            tags = extract_tags(content,
-                                response.encoding)
-            if tags:
-                item['tag'] = tags
+            set_item_tag(content,
+                         item,
+                         response.encoding)
         if all(item.get(_) is not None for _ in self.ATTRS):
             return ArticleItem(item)
         else:
