@@ -12,6 +12,12 @@ SETTINGS = get_project_settings()
 
 
 class MongoDB:
+    """
+        mongodb
+    """
+
+    __slots__ = ('_db',)
+
     def __init__(self):
         self._db = None
 
@@ -45,7 +51,7 @@ class MongoDB:
         try:
             return self._db[key]
         except KeyError:
-            raise AttributeError('ScrapyDb has no collection {}'.format(key))
+            raise AttributeError('MongoDb has no collection {}'.format(key))
 
 
 ScrapyDB = MongoDB()
