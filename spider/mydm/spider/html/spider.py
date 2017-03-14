@@ -7,7 +7,6 @@ from datetime import datetime
 from html import unescape
 
 from scrapy.spiders import Spider
-from scrapy.selector import Selector
 from scrapy import Request
 
 from ..spider import ErrbackSpider
@@ -40,9 +39,7 @@ class BLOGSpider(Spider):
     ATTRS = ('title', 'link', 'content')
 
     def extract_entries(self, response):
-        return Selector(response,
-                        type='html'
-                        ).xpath(self.entry_xpath)
+        return response.selector.xpath(self.entry_xpath)
 
     def extract_item(self, entry, encoding):
         item = {attr: entry.xpath(xpath).extract_first()
