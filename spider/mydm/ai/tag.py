@@ -81,18 +81,19 @@ class TagExtractor:
                           HtmlElement):
             return None
         for cls in self.EXTRACTORS:
-            tags = []
             extract = cls()
             tags_ = extract(doc)
-            for idx, tag in enumerate(tags_):
-                if idx < 2 and len(tag) > 16:
-                    break
-                elif len(tag) < 16:
-                    tags.append(tag)
-            else:
-                if tags:
-                    logger.info('TagExtractor got tags %s',
-                                tags)
+            if tags_:
+                tags = []
+                for idx, tag in enumerate(tags_):
+                    if idx < 2 and len(tag) > 16:
+                        break
+                    elif len(tag) < 16:
+                        tags.append(tag)
+                else:
+                    if tags:
+                        logger.info('TagExtractor got tags %s',
+                                    tags)
                     return tags
 
 
