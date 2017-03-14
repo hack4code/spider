@@ -62,7 +62,7 @@ class LXMLExtractor:
                         break
                 tags = []
                 for _ in container[idx+1:]:
-                    tag = _.text_content().strip('\r\n\t\s')
+                    tag = _.text_content().strip(',\r\n\t\s')
                     if tag:
                         tags.append(tag)
                 return tags
