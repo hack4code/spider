@@ -12,7 +12,7 @@ import pika
 
 from scrapy.utils.project import get_project_settings
 
-from task import crawl, crawl2, gen_lxmlspider, gen_blogspider
+from task import crawl, gen_lxmlspider, gen_blogspider
 
 
 SETTINGS = get_project_settings()
@@ -83,8 +83,7 @@ def main():
     logger = logging.getLogger(__name__)
     TASKS = [(crawl, SETTINGS['CRAWL_KEY']),
              (gen_lxmlspider, SETTINGS['LXMLSPIDER_KEY']),
-             (gen_blogspider, SETTINGS['BLOGSPIDER_KEY']),
-             (crawl2, SETTINGS['CRAWL2_KEY'])]
+             (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])]
     tasks = [(Process(target=task,
                       args=_), _) for _ in TASKS]
     sleep(10)

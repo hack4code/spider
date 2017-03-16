@@ -12,7 +12,7 @@ import requests
 import pika
 from lxml import etree
 
-from twisted.internet import reactor, defer
+from twisted.internet import reactor
 
 from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerRunner
@@ -166,12 +166,6 @@ def gen_blogspider(setting):
         return False
 
 
-def _get_failed_spiders(spids):
-    stats = get_stats(SETTINGS['SPIDER_STATS_URL'],
-                      spids)
-    return [_ for _ in spids if stats[_] == 0]
-
-
 def crawl(args):
     spids = args.get('spiders')
     configure_logging(SETTINGS,
@@ -186,8 +180,8 @@ def crawl(args):
                                spids)]
     if not spiders:
         return False
-    random.shuffle(spiders)
 
+    random.shuffle(spiders)
     for __ in spiders:
         runner.crawl(__)
     d = runner.join()
@@ -196,29 +190,3 @@ def crawl(args):
     logger.info('crawl reator starting ...')
     reactor.run()
     logging.info('crawl reator stopped')
-
-#    if len(spiders) > 4:
-#        failed_spiders = _get_failed_spiders(spids)
-#        if failed_spiders:
-#            _send(SETTINGS['CRAWL2_KEY'],
-#                  {'spiders': failed_spiders})
-
-
-def crawl2(args):
-    spids = args.get('spiders')
-    configure_logging(SETTINGS,
-                      install_root_handler=False)
-    logging.getLogger('scrapy').setLevel(logging.WARNING)
-    runner = CrawlerRunner(SETTINGS)
-    loader = runner.spider_loader
-    spiders = [loader.load(_) for _ in spids]
-    if not spiders:
-        return False
-    random.shuffle(spiders)
-
-    @defer.inlineCallbacks
-    def seqcrawl():
-        for __ in spiders:
-            yield runner.crawl(__)
-    seqcrawl()
-    reactor.run()
