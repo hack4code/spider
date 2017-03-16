@@ -29,11 +29,14 @@ class ExtensionStats:
         return ext
 
     def spider_opened(self, spider):
-        self.stats.set_value(spider._id,
-                             0)
+        pass
+
+    def item_scraped(self, item, spider):
+        pass
 
     def spider_closed(self, spider):
-        value = self.stats.get_value(spider._id)
+        value = self.stats.get_value('item_scraped_count',
+                                     0)
         save_stats(spider.settings['SPIDER_STATS_URL'],
                    spider._id,
                    value)
@@ -44,6 +47,3 @@ class ExtensionStats:
             if value == 0:
                 update_spider_stats(spider,
                                     {'fail': 1})
-
-    def item_scraped(self, item, spider):
-        self.stats.inc_value(spider._id)
