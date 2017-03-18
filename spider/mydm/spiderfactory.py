@@ -2,13 +2,12 @@
 
 
 from .spider import ErrbackSpider, SpiderMetaClses
+from .exceptions import SpiderFactoryException
 
 
-class SpiderFactoryException(Exception):
-    """
-        exception for spider factory
-    """
-    pass
+__all__ = [
+        'SpiderFactory'
+]
 
 
 class SpiderFactory:

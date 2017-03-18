@@ -8,6 +8,7 @@ from lxml.html import fromstring, HTMLParser, defs, HtmlElement
 from lxml.html.clean import Cleaner
 from lxml.etree import XPathEvalError
 
+from ..exceptions import ContentException
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +147,7 @@ class ContentPipeline(object):
                                                  encoding=item['encoding'])),
                                  parser=HTMLParser(encoding=item['encoding']))
             else:
-                raise Exception((
+                raise ContentException((
                     'Error in content pipeline unsupported doc type[{}]'
                     ).format(doc.__class__.__name__))
 

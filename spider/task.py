@@ -19,7 +19,8 @@ from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
 
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
-from mydm.spiderfactory import SpiderFactory, SpiderFactoryException
+from mydm.exceptions import SpiderFactoryException
+from mydm.spiderfactory import SpiderFactory
 from mydm.util import get_stats
 
 logger = logging.getLogger(__name__)

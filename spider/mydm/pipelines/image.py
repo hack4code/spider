@@ -12,14 +12,10 @@ from PIL import Image as ImageLib
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
+from ..exceptions import ImgException
+
+
 logger = logging.getLogger(__name__)
-
-
-class ImgException(Exception):
-    """
-        Exception for image pipeline
-    """
-    pass
 
 
 class Image():

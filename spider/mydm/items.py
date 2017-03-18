@@ -4,6 +4,11 @@
 import scrapy
 
 
+__all__ = [
+        'ArticleItem'
+]
+
+
 class ArticleItem(scrapy.Item):
     domain = scrapy.Field()
     title = scrapy.Field()
