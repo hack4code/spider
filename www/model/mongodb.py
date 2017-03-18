@@ -1,76 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from datetime import datetime, timedelta
-from html import unescape
 
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from app import app
 
-
-EntryBase = namedtuple('Entry',
-                       ['id', 'title'])
-
-
-class Entry(EntryBase):
-    def __new__(cls, d):
-        return super().__new__(cls,
-                               str(d['_id']),
-                               d.get('title'))
-
-
-EntryDayBase = namedtuple('EntryDay',
-                          ['id',
-                           'title',
-                           'category',
-                           'source',
-                           'tag',
-                           'spider',
-                           'domain',
-                           'link'])
-
-
-class EntryDay(EntryDayBase):
-    def __new__(cls, d):
-        return super().__new__(cls,
-                               str(d['_id']),
-                               d.get('title'),
-                               d.get('category'),
-                               d.get('source'),
-                               d.get('tag'),
-                               d.get('spider'),
-                               d.get('domain'),
-                               d.get('link'))
-
-
-ArticleBase = namedtuple('Article',
-                         ['id',
-                          'title',
-                          'domain',
-                          'link',
-                          'content',
-                          'lang',
-                          'source',
-                          'spider'])
-
-
-class Article(ArticleBase):
-    def __new__(cls, d):
-        content = d.get('content')
-        if isinstance(content,
-                      bytes):
-            content = content.decode('UTF-8')
-        return super().__new__(cls,
-                               str(d['_id']),
-                               unescape(d.get('title')),
-                               d.get('domain'),
-                               d.get('link'),
-                               content,
-                               d.get('lang'),
-                               d.get('source'),
-                               d.get('spider'))
+from .mongodata import Entry, EntryDay, Article
 
 
 class MongoDB:
@@ -387,8 +325,6 @@ def get_categories():
 
 
 # function for test
-AID = namedtuple('AID', ['id'])
-
 
 def get_all_days():
     cursor = ScrapyDB.article.find(
@@ -401,6 +337,8 @@ def get_all_days():
 
 
 def get_all_articles(c):
+    from .mongodata import AID
+
     cursor = ScrapyDB.article.find(
         {
             'category': c
