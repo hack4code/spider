@@ -108,8 +108,8 @@ def blog():
 
 
 def register_blueprints():
-    from blueprint.api import api_page
-    from blueprint.submit import submit_page
+    from blueprint import api_page
+    from blueprint import submit_page
 
     app.register_blueprint(api_page,
                            url_prefix='/api')
