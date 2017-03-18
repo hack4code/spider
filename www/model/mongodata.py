@@ -57,9 +57,10 @@ class Article(ArticleBase):
         if isinstance(content,
                       bytes):
             content = content.decode('UTF-8')
+        title = unescape(d.get('title'))
         return super().__new__(cls,
                                str(d['_id']),
-                               unescape(d.get('title')),
+                               title,
                                d.get('domain'),
                                d.get('link'),
                                content,
