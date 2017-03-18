@@ -2,19 +2,15 @@
 
 
 from ..model import get_category_tags
+from ..util import cache_porperty
 
 
 class CategoryAI():
 
-    def __init__(self):
-        self._tags = None
-
-    @property
+    @cache_porperty
     def tags(self):
-        if self._tags is None:
-            tags = get_category_tags()
-            self._tags = {c: [t.lower() for t in a] for c, a in tags.items()}
-        return self._tags
+        tags = get_category_tags()
+        return {c: [_.lower() for _ in t] for c, t in tags.items()}
 
     def category(self, item):
         if 'tag' not in item:

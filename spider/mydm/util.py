@@ -52,3 +52,20 @@ def save_stats(url, spid, value):
               value)
     except ConnectionError:
         logger.error('Error in save_stats failed to connect redis server')
+
+
+class cache_porperty:
+
+    def __init__(self, func):
+        self.__name__ = func.__name__
+        self.func = func
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        value = obj.__dict__.get(self.__name__,
+                                 None)
+        if value is None:
+            value = self.func(obj)
+            obj.__dict__[self.__name__] = value
+            return value
