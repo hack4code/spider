@@ -10,7 +10,7 @@ from scrapy.interfaces import ISpiderLoader
 from .exceptions import SpiderFactoryException
 from .spiderfactory import SpiderFactory
 from .model import get_spider_settings
-from .util import cache_porperty
+from .util import cache_property
 
 
 __all__ = [
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @implementer(ISpiderLoader)
 class MongoSpiderLoader:
 
-    @cache_porperty
+    @cache_property
     def spiders(self):
         spiders = {}
         for setting in get_spider_settings():

@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 from collections import namedtuple
 
 import redis
-from redis.exceptions import ConnectionError
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,7 @@ def get_stats(url, spids):
         try:
             n = r.get(spid)
             r.delete(spid)
-        except ConnectionError:
+        except redis.exceptions.ConnectionError:
             logger.error('Error in get_stats failed to connect redis server')
         n = 0 if n is None else int(n)
         stats[spid] = n
@@ -50,11 +49,11 @@ def save_stats(url, spid, value):
     try:
         r.set(spid,
               value)
-    except ConnectionError:
+    except redis.exceptions.ConnectionError:
         logger.error('Error in save_stats failed to connect redis server')
 
 
-class cache_porperty:
+class cache_property:
 
     def __init__(self, func):
         self.func = func

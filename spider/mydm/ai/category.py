@@ -2,12 +2,12 @@
 
 
 from ..model import get_category_tags
-from ..util import cache_porperty
+from ..util import cache_property
 
 
 class CategoryAI():
 
-    @cache_porperty
+    @cache_property
     def tags(self):
         tags = get_category_tags()
         return {c: [_.lower() for _ in t] for c, t in tags.items()}
