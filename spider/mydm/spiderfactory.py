@@ -21,13 +21,14 @@ class SpiderFactory:
                 'Error in SpiderFactory no name|type setting attribute found'
                 )
         try:
-            return SpiderMetaClses[setting['type']](
-                    '{}Spider'.format(setting['name'].capitalize()),
-                    (ErrbackSpider,),
-                    setting)
+            build = SpiderMetaClses[setting['type']]
         except KeyError:
             raise SpiderFactoryException((
                 'Error in SpiderFactory type[{}] not support'
                 ).format(setting['type']))
+        try:
+            return build('{}Spider'.format(setting['name'].capitalize()),
+                         (ErrbackSpider,),
+                         setting)
         except AttributeError as e:
             raise SpiderFactoryException('{}'.format(e))
