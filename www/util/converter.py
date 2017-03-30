@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from datetime import date
+
 from werkzeug.routing import BaseConverter, ValidationError
 from bson.objectid import ObjectId
 from bson.errors import InvalidId
@@ -8,7 +10,6 @@ from bson.errors import InvalidId
 
 class DateConverter(BaseConverter):
     def to_python(self, value):
-        from datetime import date
         try:
             return date(*(int(_) for _ in value.split('-')))
         except ValueError:

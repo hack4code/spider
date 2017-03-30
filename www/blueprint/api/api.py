@@ -19,7 +19,8 @@ api_page = Blueprint('api_page',
 CATEGORIES = app.config['ARTICLE_CATEGORIES']
 FEEDFILTER = app.config['FEED_FILTER']
 
-Spider = namedtuple('Spider', ['id', 'source'])
+Spider = namedtuple('Spider',
+                    ['id', 'source'])
 
 
 def _is_master():
