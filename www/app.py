@@ -13,8 +13,9 @@ from util import DateConverter, IdConverter
 def set_loglevel(level):
     handler = next(_ for _ in app.logger.handlers
                    if _.__class__.__name__.startswith('Production'))
-    handler.setLevel(level)
-    app.logger.setLevel(level)
+    if handler is not None:
+        handler.setLevel(level)
+        app.logger.setLevel(level)
 
 
 app = Flask(__name__)
@@ -67,7 +68,7 @@ def show_article(aid):
                                       dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
 
-    if a:
+    if a is not None:
         return render_template('article.html',
                                article=a,
                                dom_css=get_css(a.domain))
