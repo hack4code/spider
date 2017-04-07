@@ -58,35 +58,42 @@ class LXMLSpider(Spider):
                                  encoding=response.encoding)
         root = etree.XML(response.body,
                          parser)
-        while len(root) == 1:
-            root = root[0]
-        for entry in root:
-            extract = ItemExtractor()
-            item = extract(entry)
-            item['category'] = self.category
-            item['crawl_date'] = datetime.now()
-            item['domain'] = urlparse(response.request.url).netloc
-            item['data_type'] = 'html'
-            item['encoding'] = response.encoding
-            if all(item.get(_) is not None for _ in self.ATTRS):
-                if item.get('tag') is None and item.get('content') is not None:
-                    set_item_tag(item['content'],
-                                 item,
-                                 item['encoding'])
-                if hasattr(self,
-                           'item_content_xpath'):
-                    try:
-                        link = '{}?{}'.format(item['link'],
-                                              self.item_content_link_parameter)
-                    except AttributeError:
-                        link = item['link']
-                    yield Request(link,
-                                  meta={'item': item},
-                                  callback=self.extract_content,
-                                  errback=self.errback,
-                                  dont_filter=True)
-                elif item.get('content') is not None:
-                    yield ArticleItem(item)
+        if root is None:
+            logger.error('Error in LXMLSpider feed parse failed')
+            yield None
+        else:
+            while len(root) == 1:
+                root = root[0]
+            for entry in root:
+                extract = ItemExtractor()
+                item = extract(entry)
+                item['category'] = self.category
+                item['crawl_date'] = datetime.now()
+                item['domain'] = urlparse(response.request.url).netloc
+                item['data_type'] = 'html'
+                item['encoding'] = response.encoding
+                if all(item.get(_) is not None for _ in self.ATTRS):
+                    if (item.get('tag') is None and
+                            item.get('content') is not None):
+                        set_item_tag(item['content'],
+                                     item,
+                                     item['encoding'])
+                    if hasattr(self,
+                               'item_content_xpath'):
+                        try:
+                            link = '{}?{}'.format(
+                                    item['link'],
+                                    self.item_content_link_parameter
+                                    )
+                        except AttributeError:
+                            link = item['link']
+                        yield Request(link,
+                                      meta={'item': item},
+                                      callback=self.extract_content,
+                                      errback=self.errback,
+                                      dont_filter=True)
+                    elif item.get('content') is not None:
+                        yield ArticleItem(item)
 
 
 class LXMLSpiderMeta(type):
