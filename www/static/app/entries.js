@@ -73,7 +73,7 @@ class App extends React.Component {
 
   getEntries(aid, q) {
     let url = new URL(window.location.protocol + "//" + window.location.hostname + "/api/entries");
-    let params = {spid: spid};
+    let params = {spid: this.state.spid};
     if (aid != null) {
       params["aid"] = aid;
       params["q"] = q;
