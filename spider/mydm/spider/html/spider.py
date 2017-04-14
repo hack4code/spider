@@ -106,7 +106,7 @@ class BLOGSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
         if all(_ in attrs for _ in BLOGSPIDER_ATTRS):
             def update_bases(bases):
-                assert BLOGSpider not in bases, "BLOGSpider in bases"
+                assert BLOGSpider not in bases, 'BLOGSpider in bases'
                 bases_ = [BLOGSpider]
                 bases_.extend(bases)
                 if ErrbackSpider not in bases_:
