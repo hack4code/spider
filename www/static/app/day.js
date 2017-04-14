@@ -12,12 +12,13 @@ class App extends React.Component {
   }
 
   setDay(day) {
-    let form  = new FormData();
-    form.append("day", day);
+    let url = new Url(window.location.protocol + "//" + window.location.hostname + "/api/day");
+    let params = {day: day}
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     let that = this;
-    fetch("/api/day", {method: "POST",
-                       credentials: "same-origin",
-    		       body: form})
+
+    fetch(url, {method: "GET",
+                credentials: "same-origin"})
     .then(function(response) {
       return response.json();
     })

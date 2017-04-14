@@ -62,12 +62,12 @@ def vote():
                        msg='no article')
 
 
-@api_page.route('/day', methods=['POST'])
+@api_page.route('/day', methods=['GET'])
 def get_entries_byday():
     from model import get_begin_day, get_entries, get_before_day, get_after_day
 
     try:
-        day = request.form['day']
+        day = request.args['day']
     except KeyError:
         return jsonify(err=3,
                        msg='entry day needed')
