@@ -17,8 +17,7 @@ class App extends React.Component {
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     let that = this;
 
-    fetch(url, {method: "GET",
-                credentials: "same-origin"})
+    fetch(url)
     .then(function(response) {
       return response.json();
     })
