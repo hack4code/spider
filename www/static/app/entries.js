@@ -72,16 +72,16 @@ class App extends React.Component {
   }
 
   getEntries(aid, q) {
-    let form  = new FormData();
-    let spid = this.state.spid;
-    form.append("spid", spid)
+    let url = new URL(window.location.protocol + "//" + window.location.hostname + "/api/entries");
+    let params = {spid: spid};
     if (aid != null) {
-      form.append("aid", aid);
-      form.append("q", q);
+      params["aid"] = aid;
+      params["q"] = q;
     }
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     let that = this;
-    fetch("/api/entries", {method: "POST",
-                           body: form})
+
+    fetch(url)
     .then(function(response) {
       return response.json();
     })

@@ -116,13 +116,13 @@ def categories():
                    data=list(CATEGORIES))
 
 
-@api_page.route('/entries', methods=['POST'])
+@api_page.route('/entries', methods=['GET'])
 def get_entries_byspider():
     from model import get_spiders, get_last_aid, get_first_aid, \
         get_entries_next, get_entries_pre, get_entries_spider
 
     try:
-        spid = request.form['spid']
+        spid = request.args['spid']
     except KeyError:
         return jsonify(err=1,
                        msg='no spider id')
