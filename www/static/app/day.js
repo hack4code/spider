@@ -12,7 +12,7 @@ class App extends React.Component {
   }
 
   setDay(day) {
-    let url = new Url(window.location.protocol + "//" + window.location.hostname + "/api/day");
+    let url = new URL(window.location.protocol + "//" + window.location.hostname + "/api/day");
     let params = {day: day}
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     let that = this;
