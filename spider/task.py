@@ -114,12 +114,19 @@ def gen_lxmlspider(setting):
                      r.status_code)
         return False
 
-    parser = etree.XMLParser(ns_clean=True,
+    parser = etree.XMLParser(encoding=r.encoding,
+                             ns_clean=True,
                              remove_blank_text=True,
                              dtd_validation=False,
                              load_dtd=True)
-    root = etree.XML(r.content,
-                     parser)
+    try:
+        root = etree.XML(r.content,
+                         parser)
+    except:
+        logger.exception('Error in gen_lxmlspider parse feed[%s] failed',
+                         url)
+        return False
+
     while len(root) == 1:
         root = root[0]
     for e in root:
