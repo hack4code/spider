@@ -56,7 +56,10 @@ class ContentPipeline(object):
                       title)
 
     def make_abs_link(self, doc, link):
-        doc.make_links_absolute(link)
+        try:
+            doc.make_links_absolute(link)
+        except ValueError:
+            logger.exception('Error in pipeline content make_links_absolute')
         return doc
 
     def remove_element_with_class(self, doc, removed_classes):
@@ -71,9 +74,8 @@ class ContentPipeline(object):
             try:
                 nodes = doc.xpath(xpath)
             except XPathEvalError:
-                logger.error((
-                    'Error in pipeline content invalid xpath[{}]'
-                    ).format(xpath))
+                logger.error('Error in pipeline content invalid xpath[%s]',
+                             xpath)
             else:
                 for _ in nodes:
                     _.drop_tree()
