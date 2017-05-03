@@ -59,7 +59,8 @@ class ContentPipeline(object):
         try:
             doc.make_links_absolute(link)
         except ValueError:
-            logger.exception('Error in pipeline content make_links_absolute')
+            logger.error('Error in pipeline content make_links_absolute[%s]',
+                         link)
         return doc
 
     def remove_element_with_class(self, doc, removed_classes):
