@@ -1,6 +1,9 @@
-var webpack = require("webpack");
-var path = require("path");
-var jspath = path.resolve(__dirname);
+const webpack = require("webpack");
+const path = require("path");
+const PrepackWebpackPlugin = require('prepack-webpack-plugin');
+
+const configuration = {};
+const jspath = path.resolve(__dirname);
 
 module.exports = {
   entry: {
@@ -31,6 +34,8 @@ module.exports = {
   /*
       new webpack.ProvidePlugin({$: "jquery", jQuery: "jquery", "window.jQuery": "jquery"}),
   */
+      new PrepackWebpackPlugin(configuration),
+
       new webpack.DefinePlugin({
         "process.env": {
            NODE_ENV: JSON.stringify("production")
