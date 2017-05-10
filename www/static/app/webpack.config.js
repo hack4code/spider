@@ -1,6 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
-const PrepackWebpackPlugin = require('prepack-webpack-plugin');
+const PrepackWebpackPlugin = require('prepack-webpack-plugin').default
 
 const configuration = {};
 const jspath = path.resolve(__dirname);
@@ -33,8 +33,8 @@ module.exports = {
   plugins: [
   /*
       new webpack.ProvidePlugin({$: "jquery", jQuery: "jquery", "window.jQuery": "jquery"}),
-  */
       new PrepackWebpackPlugin(configuration),
+  */
 
       new webpack.DefinePlugin({
         "process.env": {
