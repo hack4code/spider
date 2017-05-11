@@ -359,9 +359,11 @@ class Category extends React.Component {
       fontSize: is_small_screen ? "0.8em" : "1.0em"
     };
 
+    const href = "#" + this.props.category;
+
     return (
       <li style={listyle}>
-        <a href="#" style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
+        <a href={href} style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
       </li>
     )
   }
