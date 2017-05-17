@@ -41,16 +41,20 @@ class LinkTag:
 
     def match(self, e):
         name = QName(e.tag).localname.lower()
-        return name == 'link'
+        return name in ('link', 'guid')
 
     def extract(self, e):
-        v = None
         if 'href' in e.attrib:
             v = e.attrib['href']
         else:
             v = e.text
         if v is not None:
-            self.val = v.strip('\r\t\n ')
+            v = v.strip('\r\t\n ')
+        if v:
+            if self.val is None:
+                self.val = v
+            elif'isPermaLink' in e.attrib:
+                self.val = v
 
 
 @implementer(ITagExtractor)
