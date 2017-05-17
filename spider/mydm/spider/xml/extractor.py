@@ -28,8 +28,11 @@ class TitleTag:
         return name == 'title'
 
     def extract(self, e):
-        if e.text is not None:
-            self.val = unescape(e.text.strip('\r\t\n '))
+        v = e.text
+        if v is not None:
+            v = v.strip('\r\t\n ')
+        if v:
+            self.val = unescape(v)
 
 
 @implementer(ITagExtractor)
@@ -53,7 +56,7 @@ class LinkTag:
         if v:
             if self.val is None:
                 self.val = v
-            elif'isPermaLink' in e.attrib:
+            elif 'isPermaLink' in e.attrib:
                 self.val = v
 
 
