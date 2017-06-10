@@ -74,7 +74,8 @@ class PubDateTag:
     def extract(self, e):
         if e.text is None:
             return
-        v = get_date(e.text)
+        v = get_date(e.text,
+                     ignoretz=True)
         if self.val is None or self.val < v:
             self.val = v
 
