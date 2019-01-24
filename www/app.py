@@ -10,14 +10,6 @@ from user import need_uid
 from util import DateConverter, IdConverter
 
 
-def set_loglevel(level):
-    handler = next(_ for _ in app.logger.handlers
-                   if _.__class__.__name__.startswith('Production'))
-    if handler is not None:
-        handler.setLevel(level)
-        app.logger.setLevel(level)
-
-
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.logger.setLevel(logging.INFO)
