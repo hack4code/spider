@@ -1,6 +1,5 @@
 const webpack = require("webpack");
 const path = require("path");
-const PrepackWebpackPlugin = require('prepack-webpack-plugin').default
 
 const configuration = {};
 const jspath = path.resolve(__dirname);
@@ -25,24 +24,19 @@ module.exports = {
           { test: /\.js/,
 	    loader: "babel-loader",
 	    exclude: /node_modules/,
-      	    query: { presets:["react", "es2015", "stage-0"] }
+      	    query: { presets:["react", "env", "stage-0"] }
 	  }
       ]
   },
 
   plugins: [
-  /*
-      new webpack.ProvidePlugin({$: "jquery", jQuery: "jquery", "window.jQuery": "jquery"}),
-      new PrepackWebpackPlugin(configuration),
-  */
-
       new webpack.DefinePlugin({
         "process.env": {
            NODE_ENV: JSON.stringify("production")
          }
       }),
 
-      new webpack.optimize.UglifyJsPlugin({
+      new webpack.optimize.minimize({
           compress: {
               warnings: false,
           },
