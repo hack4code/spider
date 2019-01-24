@@ -45,4 +45,14 @@ module.exports = {
           },
       }),
   ],
+
+  optimization: {
+      minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    compress: false
+                }
+            })
+        ]
+    },
 };
