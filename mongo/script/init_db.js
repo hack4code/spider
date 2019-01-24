@@ -14,11 +14,11 @@ db.auth("admin", "admin")
 db = conn.getDB("scrapy");
 db.createUser({user: "scrapy",
 	       pwd: scrapy_pwd,
-	       roles: [ { role: "readWrite", db: "articles" } ]})
+	       roles: [ { role: "readWrite", db: "scrapy" } ]})
 
 db.createUser({user: "flask",
 	       pwd: flask_pwd,
-	       roles: [ { role: "read", db: "articles" } ]})
+	       roles: [ { role: "read", db: "scrapy" } ]})
 
 /* score db user */
 db = conn.getDB("score");
