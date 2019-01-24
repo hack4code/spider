@@ -26,7 +26,7 @@ def _send(key, data):
     connection = pika.BlockingConnection(pika.connection.URLParameters(HOST))
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
-                             type='direct')
+                             exchange_type='direct')
     channel.basic_publish(exchange='direct_logs',
                           routing_key=key,
                           body=body)
