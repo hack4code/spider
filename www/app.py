@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import logging
 from datetime import datetime
 
 from werkzeug.exceptions import NotFound, BadRequest
@@ -20,7 +20,7 @@ def set_loglevel(level):
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-set_loglevel('INFO')
+app.logger.setLevel(logging.INFO)
 app.logger.info('app running ...')
 
 # jinja
