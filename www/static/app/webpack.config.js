@@ -1,5 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
+const UglifyJsPlugin=require('uglifyjs-webpack-plugin');
 
 const configuration = {};
 const jspath = path.resolve(__dirname);
@@ -20,11 +21,22 @@ module.exports = {
   },
 
   module: {
-      loaders: [
+      rules: [
           { test: /\.js/,
-	    loader: "babel-loader",
 	    exclude: /node_modules/,
-      	    query: { presets:["react", "env", "stage-0"] }
+	    loader: "babel-loader",
+
+	    options: {
+                presets: [
+                    '@babel/preset-env',
+		    '@babel/preset-react',
+                    {
+                        plugins: [
+                          '@babel/plugin-proposal-class-properties'
+                        ]
+                    }
+               ]
+	    },
 	  }
       ]
   },
@@ -34,15 +46,6 @@ module.exports = {
         "process.env": {
            NODE_ENV: JSON.stringify("production")
          }
-      }),
-
-      new webpack.optimize.minimize({
-          compress: {
-              warnings: false,
-          },
-          output: {
-              comments: false,
-          },
       }),
   ],
 
