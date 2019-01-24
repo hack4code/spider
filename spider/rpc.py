@@ -25,7 +25,7 @@ def task(callback, key):
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs',
-                             type='direct')
+                             exchange_type='direct')
     result = channel.queue_declare(exclusive=True)
     queue_name = result.method.queue
     channel.queue_bind(exchange='direct_logs',
@@ -86,7 +86,7 @@ def main():
              (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])]
     tasks = [(Process(target=task,
                       args=_), _) for _ in TASKS]
-    sleep(10)
+    sleep(60)
     for p, _ in tasks:
         p.start()
     logger.info('rpc task running ...')
