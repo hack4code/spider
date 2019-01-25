@@ -1,11 +1,9 @@
-## [Spider](https://code4hack.me)
+## [Spider]
 
-### Images
-* rabbitmq
-* redis
-* python
-* nginx
-* mongo
+### React
+#### Bundle js with webpack
+  * cd www/static/app/
+  * docker run --rm -v `pwd`:/app/ -w /app/ node ./build.sh
 
 ### Init
  * docker-compose build
@@ -16,21 +14,8 @@
 ### Mongodb
 
 #### First time, should create users of mongodb
-  * docker-compose exec mongodb mongo /script/init_admin.js
-  * docker-compose exec mongodb mongo /script/init_db.js
-
-### React
-
-#### Bundle js with webpack
-  * cd www/static/app/
-  * docker pull node
-  * docker run --rm -v `pwd`:/app/ -w /app/ node ./build.sh
+  * docker-compose exec mongodb mongo /script/init\_admin.js
+  * docker-compose exec mongodb mongo /script/init\_db.js
 
 ### Cron job
- * curl -X POST -d "spiders=all" http://<i></i>127.0.0.1:8001/crawl
-
-### Notice
- * after iptables updating rules, should restart docker
-
-### Todo
- * fix twisted multiprocess bug
+ * curl -X POST -d "spiders=all" http://localhost/submit/crawl
