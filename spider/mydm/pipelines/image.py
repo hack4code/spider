@@ -121,14 +121,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
         try:
             image = Image(data)
             w, _ = image.size
-            # if w < 400:
-            #     style = img.get('style')
-            #     if style is None:
-            #         style = ''
-            #     else:
-            #         style = style.strip()
-            #     style += 'float: right;'
-            #     img.set('style', style)
             if imglen > self.IMAGE_MAX_SIZE:
                 data = image.optimize()
             imgtype = image.type
