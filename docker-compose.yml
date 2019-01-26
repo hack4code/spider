@@ -28,6 +28,7 @@ services:
                 volumes:
                         - ./mongo/script/:/script/
                         - ./mongo/data/:/data/db/
+                        - ./mongo/dump/:/dump/
                 networks:
                         - mongodb
                 command: ["--auth", "--storageEngine", "wiredTiger"]
