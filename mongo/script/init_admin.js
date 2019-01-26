@@ -1,7 +1,6 @@
 
 /* password admin */
 var admin_pwd="admin"
-
 var db = null
 
 /* connect to mongodb */
