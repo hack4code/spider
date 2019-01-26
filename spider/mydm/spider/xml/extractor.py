@@ -2,10 +2,20 @@
 
 
 from html import unescape
+from urllib.parse import urlparse
 
 from zope.interface import Interface, implementer
 from dateutil.parser import parse as get_date
 from lxml.etree import QName
+
+
+def is_url(v):
+    try:
+        r = urlparse(v)
+    except Exception:
+        return False
+    else:
+        return all([r.scheme, r.netloc, r.path])
 
 
 class ITagExtractor(Interface):
@@ -53,11 +63,14 @@ class LinkTag:
             v = e.text
         if v is not None:
             v = v.strip('\r\t\n ')
-        if v:
-            if self.val is None:
-                self.val = v
-            elif 'isPermaLink' in e.attrib:
-                self.val = v
+        if not v:
+            return
+        if not is_url(v):
+            return
+        if self.val is None:
+            self.val = v
+        elif 'isPermaLink' in e.attrib:
+            self.val = v
 
 
 @implementer(ITagExtractor)
