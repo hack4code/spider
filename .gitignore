@@ -1,3 +1,4 @@
+*.swp
 env/
 mongo/data/
 __pycache__
