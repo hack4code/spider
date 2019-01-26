@@ -1,7 +1,11 @@
 *.swp
+
 env/
-mongo/data/
 __pycache__
+
+mongo/data/
+mongo/dump/
+
 www/static/app/js/
 www/static/app/node_modules/
 www/static/app/*.json
