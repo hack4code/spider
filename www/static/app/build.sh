@@ -4,7 +4,6 @@ npm init -f
 
 npm install react --save-dev
 npm install react-dom --save-dev
-npm install react-transition-group --save-dev
 npm install whatwg-fetch --save-dev
 npm install @babel/core --save-dev
 npm install @babel/preset-env --save-dev
