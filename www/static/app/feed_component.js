@@ -1,5 +1,4 @@
 import React from "react";
-import ReactCSSTransitionGroup from "react-transition-group";
 import "whatwg-fetch";
 
 class Title extends React.Component {
@@ -41,7 +40,7 @@ class ErrMsg extends React.Component {
     super(props);
     this.fadeIn = this.fadeIn.bind(this);
     this.fadeOut = this.fadeOut.bind(this);
-    this.state = {show: false, msg: ""};
+    this.state = {show: false, message: ""};
   }
 
   fadeIn(msg) {
@@ -54,24 +53,20 @@ class ErrMsg extends React.Component {
 
   render() {
     const style = {
-      textAlign: "center",
-      fontSize: "0.5em",
-      marginBottom: "1em",
-      color: "#aaa"
+        textAlign: "center",
+        fontSize: "0.5em",
+        marginBottom: "1em",
+        color: "#aaa",
     };
 
-    let items = [];
     if (this.state.show) {
-      items.push(<span>{this.state.message}</span>);
+      return (
+        <div style={style}>{this.state.message}</div>
+      )
     }
-
-    return (
-      <div style={style}>
-        <ReactCSSTransitionGroup component="span" transitionName="err" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
-          {items}
-        </ReactCSSTransitionGroup>
-      </div>
-    )
+    else {
+      return null;
+    }
   }
 }
 
