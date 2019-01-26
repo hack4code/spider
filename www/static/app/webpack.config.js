@@ -1,6 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
-const UglifyJsPlugin=require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const configuration = {};
 const jspath = path.resolve(__dirname);
@@ -22,7 +22,8 @@ module.exports = {
 
   module: {
       rules: [
-          { test: /\.js/,
+          {
+	    test: /\.js/,
 	    exclude: /node_modules/,
 	    loader: "babel-loader",
 
@@ -58,4 +59,5 @@ module.exports = {
             })
         ]
     },
+
 };
