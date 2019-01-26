@@ -1,21 +1,18 @@
-## [Spider]
+# Blog Spider
 
-### React
-#### Bundle js with webpack
+## Init
+
+### js
   * cd www/static/app/
   * docker run --rm -v `pwd`:/app/ -w /app/ node ./build.sh
 
-### Init
- * docker-compose build
+### mongodb
+  * mkdir mongo/data
+  * docker run --rm -v `pwd`/mongo/script/:/script `pwd`/mongo/data:/data/db/ mongo cd /script/ && mongo init\_admin.js && mongo init\_db.js
+  * sudo chown -R $USER:$USER mongo/data/
 
-### Run
+## Run
  * docker-compose up -d
 
-### Mongodb
-
-#### First time, should create users of mongodb
-  * docker-compose exec mongodb mongo /script/init\_admin.js
-  * docker-compose exec mongodb mongo /script/init\_db.js
-
-### Cron job
- * curl -X POST -d "spiders=all" http://localhost/submit/crawl
+## Cron job
+ * curl -X POST -d "spiders=all" http://127.0.0.1/submit/crawl
