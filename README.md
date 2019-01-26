@@ -16,4 +16,4 @@
  * docker-compose up --build -d
 
 ## Cron Job
- * curl -X POST -d "spiders=all" http://127.0.0.1/submit/crawl
+ * curl -X POST -d "spiders=all" `http://127.0.0.1/submit/crawl`
