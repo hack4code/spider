@@ -1,0 +1,85 @@
+version: "2"
+services:
+        rabbitmq:
+                image: rabbitmq
+                container_name: rabbitmq
+                expose:
+                        - "5672"
+                networks:
+                        - rabbitmq
+                environment:
+                        RABBITMQ_DEFAULT_USER: rabbitmq
+                        RABBITMQ_DEFAULT_PASS: rabbitmq
+                hostname: rabbitmq
+
+        redis:
+                image: redis
+                container_name: redis
+                expose:
+                        - "6379"
+                networks:
+                        - redis
+
+        mongodb:
+                image: mongo
+                container_name: mongodb
+                expose:
+                        - "27017"
+                volumes:
+                        - ./mongo/script/:/script/
+                        - ./mongo/data/:/data/db/
+                        - ./mongo/dump/:/dump/
+                networks:
+                        - mongodb
+                command: ["--auth", "--storageEngine", "wiredTiger"]
+
+        spider:
+                build:
+                        context: .
+                        dockerfile: Dockerfile-spider
+                container_name: spider
+                depends_on:
+                        - rabbitmq
+                        - redis
+                        - mongodb
+                networks:
+                        - rabbitmq
+                        - redis
+                        - mongodb
+                links:
+                        - rabbitmq
+                        - redis
+                        - mongodb
+                volumes:
+                        - ./spider/:/spider/
+                command: su -m spider -c "python rpc.py"
+
+        www:
+                build:
+                        context: .
+                        dockerfile: Dockerfile-www
+                container_name: www
+                depends_on:
+                        - spider
+                networks:
+                        - rabbitmq
+                        - mongodb
+                        - www
+                links:
+                        - rabbitmq
+                        - mongodb
+                ports:
+                        - "127.0.0.1:8000:8000"
+                volumes:
+                        - ./www/:/www/
+                command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
+
+networks:
+        rabbitmq:
+                driver: bridge
+        redis:
+                driver: bridge
+        mongodb:
+                driver: bridge
+        www:
+                driver: bridge
