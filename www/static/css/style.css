@@ -155,13 +155,13 @@ article .title	A {
 article[lang="en"] #article {
  font-family: 'Nunito', 'sans-serif' !important;
  line-height: 1.8em;
- font-size: 1.1em;
+ font-size: 1.2em;
 }
 
 article[lang="zh"] #article {
  font-family: 'Pingfang SC', 'Microsoft YaHei', 'sans-serif' !important;
  line-height: 2.0em;
- font-size: 0.95em;
+ font-size: 1em;
 }
 
 article #article {
