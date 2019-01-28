@@ -113,5 +113,5 @@ register_blueprints()
 # api
 api = Api(app)
 api.add_resource(CrawlSpiders, '/submit/crawl')
-app.add_resource(AtomFeed, '/submit/rss')
-app.add_resource(BlogFeed, '/submit/blog')
+api.add_resource(AtomFeed, '/submit/rss')
+api.add_resource(BlogFeed, '/submit/blog')
