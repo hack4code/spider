@@ -60,8 +60,8 @@ class SubmitForm extends React.Component {
           that.setState(state);
         }
         else {
-          r = response.json();
-          that.err.fadeIn("失败: " + r["message"]);
+          data = response.json();
+          that.err.fadeIn("失败: " + data["message"]);
           setTimeout(() => {that.err.fadeOut()}, 800);
         }
       })

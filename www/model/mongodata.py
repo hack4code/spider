@@ -5,15 +5,13 @@ from html import unescape
 from collections import namedtuple
 
 
-EntryBase = namedtuple('Entry',
-                       ['id', 'title'])
+EntryBase = namedtuple('Entry', ['id', 'title'])
 
 
 class Entry(EntryBase):
+
     def __new__(cls, d):
-        return super().__new__(cls,
-                               str(d['_id']),
-                               d.get('title'))
+        return super().__new__(cls, str(d['_id']), d.get('title'))
 
 
 EntryDayBase = namedtuple('EntryDay',
@@ -28,6 +26,7 @@ EntryDayBase = namedtuple('EntryDay',
 
 
 class EntryDay(EntryDayBase):
+
     def __new__(cls, d):
         return super().__new__(cls,
                                str(d['_id']),
@@ -52,10 +51,10 @@ ArticleBase = namedtuple('Article',
 
 
 class Article(ArticleBase):
+
     def __new__(cls, d):
         content = d.get('content')
-        if isinstance(content,
-                      bytes):
+        if isinstance(content, bytes):
             content = content.decode('UTF-8')
         title = unescape(d.get('title'))
         return super().__new__(cls,

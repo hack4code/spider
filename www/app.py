@@ -9,13 +9,15 @@ from flask_restful import Api
 
 from user import need_uid
 from util import DateConverter, IdConverter
-from api import CrawlSpiders, AtomFeed, BlogFeed
+from api import (
+        Vote, Day, Categories, Entries, Spiders,
+        CrawlSpiders, AtomFeed, BlogFeed
+)
 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.logger.setLevel(logging.INFO)
-app.logger.info('app running ...')
 
 # jinja
 app.jinja_env.trim_blocks = True
@@ -46,8 +48,7 @@ def home():
 @app.route('/d/<date:day>', methods=['GET'])
 @need_uid
 def show_entries_byday(day):
-    return render_template('day.html',
-                           day_entry=day)
+    return render_template('day.html', day_entry=day)
 
 
 @app.route('/a/<id:aid>', methods=['GET'])
@@ -58,8 +59,7 @@ def show_article(aid):
     a = get_article(aid)
 
     def get_css(dom):
-        path = '{}/css/{}.css'.format(app.static_folder,
-                                      dom)
+        path = '{}/css/{}.css'.format(app.static_folder, dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
 
     if a is not None:
@@ -75,14 +75,12 @@ def show_entries_byspider(spid):
     from collections import namedtuple
     from model import get_spiders
 
-    Spider = namedtuple('Spider',
-                        ['id', 'source'])
+    Spider = namedtuple('Spider', ['id', 'source'])
     spid = str(spid)
     spiders = get_spiders()
     if spid in spiders:
         return render_template('entries.html',
-                               spider=Spider(spid,
-                                             spiders[spid]))
+                               spider=Spider(spid, spiders[spid]))
     else:
         raise NotFound('spider not existed')
 
@@ -102,16 +100,13 @@ def blog():
     return render_template('blog.html')
 
 
-# blueprint
-def register_blueprints():
-    from blueprint import api_page
-    app.register_blueprint(api_page, url_prefix='/api')
-
-
-register_blueprints()
-
 # api
 api = Api(app)
 api.add_resource(CrawlSpiders, '/submit/crawl')
 api.add_resource(AtomFeed, '/submit/rss')
 api.add_resource(BlogFeed, '/submit/blog')
+api.add_resource(Vote, '/api/vote')
+api.add_resource(Day, '/api/day')
+api.add_resource(Entries, '/api/entries')
+api.add_resource(Spiders, '/api/spiders/')
+api.add_resource(Categories, '/api/categories')

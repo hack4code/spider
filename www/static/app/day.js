@@ -19,11 +19,8 @@ class App extends React.Component {
 
     fetch(url)
     .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      let err = data["err"];
-      if (!err) {
+      let data = response.json()
+      if (response.status == 200) {
         let nstate = {day_before: data["day_before"],
                       day_after: data["day_after"]};
         if (data["data"]) {
@@ -44,9 +41,12 @@ class App extends React.Component {
           that.setState(nstate);
         }
       }
+      else {
+        console.log(data['message']);
+      }
     })
     .catch(function(err) {
-      console.log("error in fetch json data");
+      console.log("fetch error");
     });
   }
 
