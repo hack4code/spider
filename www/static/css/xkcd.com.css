@@ -1,4 +1,6 @@
 #article img    { display: block;
                   margin-left: auto;
                   margin-right: auto;
-                  margin-bottom: 1em; }
+		  max-width: 60em; }
+
+.page		{ width: 64em; }
