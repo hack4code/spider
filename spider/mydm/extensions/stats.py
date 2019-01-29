@@ -35,8 +35,7 @@ class ExtensionStats:
         pass
 
     def spider_closed(self, spider):
-        value = self.stats.get_value('item_scraped_count',
-                                     0)
+        value = self.stats.get_value('item_scraped_count', 0)
         save_stats(spider.settings['SPIDER_STATS_URL'],
                    spider._id,
                    value)
@@ -45,5 +44,4 @@ class ExtensionStats:
                         spider.name,
                         value)
             if value == 0:
-                update_spider_stats(spider,
-                                    {'fail': 1})
+                update_spider_stats(spider, {'fail': 1})

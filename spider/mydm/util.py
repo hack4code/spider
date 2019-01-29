@@ -18,9 +18,7 @@ def parse_redis_url(url):
     host = parser.hostname
     port = parser.port
     db = int(parser.path[1:])
-    return RedisConf(host,
-                     port,
-                     db)
+    return RedisConf(host, port, db)
 
 
 def get_stats(url, spids):
@@ -47,8 +45,7 @@ def save_stats(url, spid, value):
                     port=conf.port,
                     db=conf.database)
     try:
-        r.set(spid,
-              value)
+        r.set(spid, value)
     except redis.exceptions.ConnectionError:
         logger.error('Error in save_stats failed to connect redis server')
 
@@ -62,7 +59,5 @@ class cache_property:
         if obj is None:
             return self
         value = self.func(obj)
-        setattr(obj,
-                self.func.__name__,
-                value)
+        setattr(obj, self.func.__name__, value)
         return value
