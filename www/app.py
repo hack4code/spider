@@ -5,9 +5,11 @@ from datetime import datetime
 
 from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
+from flask_restful import Api
 
 from user import need_uid
 from util import DateConverter, IdConverter
+from api import CrawlSpiders, AtomFeed, BlogFeed
 
 
 app = Flask(__name__)
@@ -100,14 +102,16 @@ def blog():
     return render_template('blog.html')
 
 
+# blueprint
 def register_blueprints():
     from blueprint import api_page
-    from blueprint import submit_page
-
-    app.register_blueprint(api_page,
-                           url_prefix='/api')
-    app.register_blueprint(submit_page,
-                           url_prefix='/submit')
+    app.register_blueprint(api_page, url_prefix='/api')
 
 
 register_blueprints()
+
+# api
+api = Api(app)
+api.add_resource(CrawlSpiders, '/submit/crawl')
+app.add_resource(AtomFeed, '/submit/rss')
+app.add_resource(BlogFeed, '/submit/blog')
