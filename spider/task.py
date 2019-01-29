@@ -30,10 +30,10 @@ SETTINGS = get_project_settings()
 def _send(key, data):
     body = json.dumps(data)
     connection = pika.BlockingConnection(
-        pika.connection.URLParameters(SETTINGS['BROKER_URL']))
+        pika.connection.URLParameters(SETTINGS['BROKER_URL'])
+    )
     channel = connection.channel()
-    channel.exchange_declare(exchange='direct_logs',
-                             type='direct')
+    channel.exchange_declare(exchange='direct_logs', type='direct')
     channel.basic_publish(exchange='direct_logs',
                           routing_key=key,
                           body=body)
@@ -62,8 +62,7 @@ def test_spider(setting):
     try:
         cls = SpiderFactory.mkspider(setting)
     except SpiderFactoryException as e:
-        logger.error('Error in test_spider SpiderFactory[%s]',
-                     e)
+        logger.error('Error in test_spider SpiderFactory[%s]', e)
         return False
     url = SETTINGS['TEMP_SPIDER_STATS_URL']
     TEST_SETTINGS = {
@@ -80,8 +79,7 @@ def test_spider(setting):
         'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'
     }
 
-    configure_logging(TEST_SETTINGS,
-                      install_root_handler=False)
+    configure_logging(TEST_SETTINGS, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
@@ -89,8 +87,7 @@ def test_spider(setting):
     logger.info('test_spider reator starting ...')
     reactor.run()
     logger.info('test_spider reator stopped')
-    stats = get_stats(url,
-                      [spid])
+    stats = get_stats(url, [spid])
     n = stats[spid]
     return True if n > 0 else False
 
@@ -102,11 +99,9 @@ def gen_lxmlspider(setting):
     headers = SETTINGS['DEFAULT_REQUEST_HEADERS'].copy()
     headers['User-Agent'] = SETTINGS['USER_AGENT']
     try:
-        r = requests.get(url,
-                         headers=headers)
+        r = requests.get(url, headers=headers)
     except requests.exceptions.ConnectionError:
-        logger.error('Error in gen_lxmlspider connection[%s]',
-                     url)
+        logger.error('Error in gen_lxmlspider connection[%s]', url)
         return False
     if r.status_code != 200:
         logger.error('Error in gen_lxmlspider requests[%s, status=%d]',
@@ -120,11 +115,9 @@ def gen_lxmlspider(setting):
                              dtd_validation=False,
                              load_dtd=True)
     try:
-        root = etree.XML(r.content,
-                         parser)
-    except:
-        logger.exception('Error in gen_lxmlspider parse feed[%s] failed',
-                         url)
+        root = etree.XML(r.content, parser)
+    except Exception:
+        logger.exception('Error in gen_lxmlspider parse feed[%s] failed', url)
         return False
 
     while len(root) == 1:
@@ -150,8 +143,7 @@ def gen_lxmlspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_lxmlspider[%s]',
-                     url)
+        logger.error('Error in gen_lxmlspider[%s]', url)
         return False
 
 
@@ -169,23 +161,22 @@ def gen_blogspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_blogspider[%s]',
-                     url)
+        logger.error('Error in gen_blogspider[%s]', url)
         return False
 
 
 def crawl(args):
     spids = args.get('spiders')
-    configure_logging(SETTINGS,
-                      install_root_handler=False)
+    configure_logging(SETTINGS, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
     if 'all' in spids:
         spids = loader.list()
-    spiders = [loader.load(_)
-               for _ in filter(lambda __: __ in loader.list(),
-                               spids)]
+    spiders = [
+        loader.load(_)
+        for _ in filter(lambda __: __ in loader.list(), spids)
+    ]
     if not spiders:
         return False
 

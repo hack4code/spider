@@ -22,8 +22,7 @@ XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
 def set_item_tag(txt, item, encoding='utf-8'):
-    tags = extract_tags(txt,
-                        encoding)
+    tags = extract_tags(txt, encoding)
     if tags:
         item['tag'] = tags
 
@@ -45,9 +44,7 @@ class LXMLSpider(Spider):
             item['encoding'] = response.encoding
             item['link'] = response.url
             if item.get('tag') is None:
-                set_item_tag(content,
-                             item,
-                             item['encoding'])
+                set_item_tag(content, item, item['encoding'])
             return ArticleItem(item)
         else:
             logger.error('spider[{}] extract content failed'.format(self.name))
@@ -75,9 +72,7 @@ class LXMLSpider(Spider):
                 if all(item.get(_) is not None for _ in self.ATTRS):
                     if (item.get('tag') is None and
                             item.get('content') is not None):
-                        set_item_tag(item['content'],
-                                     item,
-                                     item['encoding'])
+                        set_item_tag(item['content'], item, item['encoding'])
                     if hasattr(self,
                                'item_content_xpath'):
                         try:

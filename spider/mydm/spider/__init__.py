@@ -7,12 +7,12 @@ from .spider import ErrbackSpider
 
 
 SpiderMetaClses = {
-        'xml': LXMLSpiderMeta,
-        'blog': BLOGSpiderMeta
+    'xml': LXMLSpiderMeta,
+    'blog': BLOGSpiderMeta
 }
 
 
 __all__ = [
-        'ErrbackSpider',
-        'SpiderMetaClses'
+    'ErrbackSpider',
+    'SpiderMetaClses'
 ]

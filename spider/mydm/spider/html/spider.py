@@ -24,8 +24,7 @@ BLOGSPIDER_ATTRS = ['start_urls',
 
 
 def set_item_tag(txt, item, encoding='utf-8'):
-    tags = extract_tags(txt,
-                        encoding)
+    tags = extract_tags(txt, encoding)
     if tags:
         item['tag'] = tags
 
@@ -48,7 +47,7 @@ class BLOGSpider(Spider):
                      item,
                      encoding)
         if item.get('link') is not None:
-            item['link'] = item['link'].strip('\t\n\r\s')
+            item['link'] = item['link'].strip('\t\n\r ')
         if item.get('title') is not None:
             item['title'] = unescape(item['title'])
         return item
@@ -83,8 +82,7 @@ class BLOGSpider(Spider):
                           errback=self.errback)
 
         for entry in self.extract_entries(response):
-            item = self.extract_item(entry,
-                                     response.encoding)
+            item = self.extract_item(entry, response.encoding)
             item['category'] = self.category
             item['crawl_date'] = datetime.now()
             item['domain'] = urlparse(response.request.url).netloc
@@ -92,7 +90,7 @@ class BLOGSpider(Spider):
             link = item.get('link')
             if link is None:
                 continue
-            link = link.strip('\r\n\s\t')
+            link = link.strip('\r\n\t ')
             if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
             yield Request(item['link'],

@@ -66,7 +66,6 @@ def task(callback, key):
                     p.join()
                     ch.basic_ack(delivery_tag=method.delivery_tag)
                     consumers.popleft()
-        sleep(60)
 
 
 def main():
@@ -81,11 +80,12 @@ def main():
 
     init_logger()
     logger = logging.getLogger(__name__)
-    TASKS = [(crawl, SETTINGS['CRAWL_KEY']),
-             (gen_lxmlspider, SETTINGS['LXMLSPIDER_KEY']),
-             (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])]
-    tasks = [(Process(target=task,
-                      args=_), _) for _ in TASKS]
+    TASKS = [
+        (crawl, SETTINGS['CRAWL_KEY']),
+        (gen_lxmlspider, SETTINGS['LXMLSPIDER_KEY']),
+        (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])
+    ]
+    tasks = [(Process(target=task, args=_), _) for _ in TASKS]
     sleep(60)
     for p, _ in tasks:
         p.start()
@@ -93,14 +93,15 @@ def main():
     while True:
         for i, (p, args) in enumerate(tasks):
             if not p.is_alive():
-                logger.error('Error in main task %s quit unexpected',
-                             TASKS[i][0].__name__)
+                logger.error(
+                    'Error in main task %s quit unexpected',
+                    TASKS[i][0].__name__
+                )
                 p.join()
-                np = Process(target=task,
-                             args=args)
+                np = Process(target=task, args=args)
                 np.start()
                 tasks[i] = (np, args)
-        sleep(600)
+        sleep(60)
 
 
 if __name__ == '__main__':
