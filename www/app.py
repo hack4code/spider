@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 from datetime import datetime
+from collections import namedtuple
 
 from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
-from flask_restful import Api
 
 from user import need_uid
 from util import DateConverter, IdConverter
-from api import (
-        Vote, Day, Categories, Entries, Spiders,
-        CrawlSpiders, AtomFeed, BlogFeed
-)
+from model import init_db, get_article, get_spiders
+from api import init_api
 
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.logger.setLevel(logging.INFO)
-
 # jinja
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
+# converter
+app.url_map.converters['date'] = DateConverter
+app.url_map.converters['id'] = IdConverter
+# db
+init_db(app)
+# api
+init_api(app)
 
 
 # error handler
@@ -34,11 +39,6 @@ def error(error):
             status_code=code,
             message=error.description
     ), code
-
-
-# converter
-app.url_map.converters['date'] = DateConverter
-app.url_map.converters['id'] = IdConverter
 
 
 @app.route('/', methods=['GET'])
@@ -55,9 +55,6 @@ def show_entries_byday(day):
 
 @app.route('/a/<id:aid>', methods=['GET'])
 def show_article(aid):
-    from model import get_article
-    import os
-
     a = get_article(aid)
     if a is None:
         raise NotFound('article not existed')
@@ -75,9 +72,6 @@ def show_article(aid):
 
 @app.route('/p/<id:spid>', methods=['GET'])
 def show_entries_byspider(spid):
-    from collections import namedtuple
-    from model import get_spiders
-
     Spider = namedtuple('Spider', ['id', 'source'])
     spid = str(spid)
     spiders = get_spiders()
@@ -99,15 +93,3 @@ def sumbit_atom_feed():
 @app.route('/feed/blog', methods=['GET'])
 def submit_blog_feed():
     return render_template('blog.html')
-
-
-# api
-api = Api(app)
-api.add_resource(Spiders, '/api/spiders')
-api.add_resource(CrawlSpiders, '/submit/crawl')
-api.add_resource(AtomFeed, '/submit/rss')
-api.add_resource(BlogFeed, '/submit/blog')
-api.add_resource(Vote, '/api/vote')
-api.add_resource(Day, '/api/day')
-api.add_resource(Entries, '/api/entries')
-api.add_resource(Categories, '/api/categories')
