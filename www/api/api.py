@@ -10,6 +10,15 @@ from bson.errors import InvalidId
 from flask import current_app, request, session
 from flask_restful import Resource
 
+from model import (
+        get_article, vote_article,
+        get_begin_day, get_entries,
+        get_before_day, get_after_day,
+        get_last_aid, get_first_aid,
+        get_entries_next, get_entries_pre, get_entries_spider,
+        get_spiders,
+)
+
 
 Spider = namedtuple('Spider', ['id', 'source'])
 
@@ -25,8 +34,6 @@ def _is_master():
 class Vote(Resource):
 
     def post(self):
-        from model import get_article, vote_article
-
         if 'uid' not in session:
             return {'message': 'no uid'}, 401
 
@@ -52,10 +59,6 @@ class Vote(Resource):
 class Day(Resource):
 
     def get(self):
-        from model import (
-                get_begin_day, get_entries, get_before_day, get_after_day
-        )
-
         try:
             day = request.args['day']
         except KeyError:
@@ -109,8 +112,6 @@ class Categories(Resource):
 class Spiders(Resource):
 
     def get(self):
-        from model import get_spiders
-
         spiders = get_spiders()
         if _is_master():
             entries = [Spider(spid, name) for spid, name in spiders.items()]
@@ -126,11 +127,6 @@ class Spiders(Resource):
 class Entries(Resource):
 
     def get(self):
-        from model import (
-            get_spiders, get_last_aid, get_first_aid,
-            get_entries_next, get_entries_pre, get_entries_spider
-        )
-
         try:
             spid = request.args['spid']
         except KeyError:
