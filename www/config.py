@@ -26,12 +26,14 @@ LXMLSPIDER_KEY = 'lxmlspider'
 BLOGSPIDER_KEY = 'blogspider'
 
 # category
-ARTICLE_CATEGORIES = {u'技术',
-                      u'python',
-                      u'数据库',
-                      u'安全',
-                      u'科技',
-                      u'新闻'}
+ARTICLE_CATEGORIES = {
+        '技术',
+        'python',
+        '数据库',
+        '安全',
+        '科技',
+        '新闻',
+}
 
 # filter
 FEED_FILTER = []
