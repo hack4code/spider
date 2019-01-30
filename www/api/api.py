@@ -148,7 +148,7 @@ class Entries(Resource):
             return {'message': 'no article found'}, 400
 
 
-class Spider(Resource):
+class Spiders(Resource):
 
     def get(self):
         from model import get_spiders
