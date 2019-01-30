@@ -5,8 +5,8 @@ from .mongodb import (
         is_exists_feed, save_feed, is_exists_article,
         is_exists_spider,
         save_article, save_spider_settings,
-        update_spider_stats,
-        get_spider_settings, get_category_tags
+        get_spider_settings, get_category_tags,
+        log_spider_scrape_count,
 )
 
 
@@ -19,5 +19,5 @@ __all__ = [
         'save_feed',
         'save_article',
         'save_spider_settings',
-        'update_spider_stats',
+        'log_spider_scrape_count',
 ]

@@ -155,23 +155,12 @@ def get_category_tags():
     return {_['category']: _['tags'] for _ in cursor}
 
 
-def udate_spider_stats(spider, stats):
-    cursor = ScrapyDB.stats.find(
+def log_spider_scrape_count(spider, count):
+    result = ScrapyDB.feed.insert_one(
         {
-            'id': spider._id
+            'spider': spider._id,
+            'time': datetime.now(),
+            'count': count,
         }
-    ).limit(1)
-    if cursor.count() == 0:
-        r = {'id': spider._id,
-             'name': spider.name}
-        r.update(stats)
-        ScrapyDB.stats.insert_one(r)
-    else:
-        ScrapyDB.stats.update(
-            {
-                'id': cursor[0]['id']
-            },
-            {
-                '$inc': stats
-            }
-        )
+    )
+    return result.inserted_id
