@@ -86,27 +86,27 @@ def show_entries_byspider(spid):
 
 
 @app.route('/l/p', methods=['GET'])
-def spiders():
+def show_spiders():
     return render_template('spiders.html')
 
 
 @app.route('/feed/rss', methods=['GET'])
-def atom():
+def sumbit_atom_feed():
     return render_template('rss.html')
 
 
 @app.route('/feed/blog', methods=['GET'])
-def blog():
+def submit_blog_feed():
     return render_template('blog.html')
 
 
 # api
 api = Api(app)
+api.add_resource(Spiders, '/api/spiders')
 api.add_resource(CrawlSpiders, '/submit/crawl')
 api.add_resource(AtomFeed, '/submit/rss')
 api.add_resource(BlogFeed, '/submit/blog')
 api.add_resource(Vote, '/api/vote')
 api.add_resource(Day, '/api/day')
 api.add_resource(Entries, '/api/entries')
-api.add_resource(Spiders, '/api/spiders')
 api.add_resource(Categories, '/api/categories')
