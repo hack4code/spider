@@ -86,7 +86,6 @@ def main():
         (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])
     ]
     tasks = [(Process(target=task, args=_), _) for _ in TASKS]
-    sleep(60)
     for p, _ in tasks:
         p.start()
     logger.info('rpc task running ...')
