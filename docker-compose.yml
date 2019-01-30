@@ -35,8 +35,7 @@ services:
 
         spider:
                 build:
-                        context: .
-                        dockerfile: Dockerfile-spider
+                        context: spider/
                 container_name: spider
                 depends_on:
                         - rabbitmq
@@ -56,8 +55,7 @@ services:
 
         www:
                 build:
-                        context: .
-                        dockerfile: Dockerfile-www
+                        context: www/
                 container_name: www
                 depends_on:
                         - spider

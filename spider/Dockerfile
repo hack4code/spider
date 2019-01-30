@@ -1,8 +1,8 @@
 FROM python:3.6
 
 RUN mkdir /spider/
-ADD ./spider/requirements.txt /spider/requirements.txt
-WORKDIR /spider
+ADD requirements.txt /spider/requirements.txt
+WORKDIR /spider/
 
 RUN apt-get update -y
 RUN apt-get install -y build-essential
