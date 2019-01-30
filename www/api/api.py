@@ -93,15 +93,34 @@ class Day(Resource):
         if day_after is not None:
             day_after = day_after.strftime('%Y-%m-%d')
 
-        return {'day_before': day_before,
+        return {
+                'day_before': day_before,
                 'day_after': day_after,
-                'data': entries}
+                'data': entries
+        }
 
 
 class Categories(Resource):
 
     def get(self):
         return {'data': list(current_app.config['ARTICLE_CATEGORIES'])}
+
+
+class Spiders(Resource):
+
+    def get(self):
+        from model import get_spiders
+
+        spiders = get_spiders()
+        if _is_master():
+            entries = [Spider(spid, name) for spid, name in spiders.items()]
+        else:
+            entries = [
+                Spider(spid, name)
+                for spid, name in spiders.items()
+                if spid not in current_app.config['FEED_FILTER']
+            ]
+        return {'entries': entries}
 
 
 class Entries(Resource):
@@ -146,21 +165,3 @@ class Entries(Resource):
             return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
         else:
             return {'message': 'no article found'}, 400
-
-
-class Spiders(Resource):
-
-    def get(self):
-        from model import get_spiders
-
-        spiders = get_spiders()
-
-        if _is_master():
-            entries = [Spider(spid, name) for spid, name in spiders.items()]
-        else:
-            entries = [
-                Spider(spid, name)
-                for spid, name in spiders.items()
-                if spid not in current_app.config['FEED_FILTER']
-            ]
-        return {'entries': entries}
