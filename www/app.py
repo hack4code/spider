@@ -29,9 +29,11 @@ app.jinja_env.lstrip_blocks = True
 @app.errorhandler(BadRequest)
 def error(error):
     code = error.code
-    return render_template('error.html',
-                           status_code=code,
-                           message=error.description), code
+    return render_template(
+            'error.html',
+            status_code=code,
+            message=error.description
+    ), code
 
 
 # converter
@@ -57,17 +59,18 @@ def show_article(aid):
     import os
 
     a = get_article(aid)
+    if a is None:
+        raise NotFound('article not existed')
 
     def get_css(dom):
         path = '{}/css/{}.css'.format(app.static_folder, dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
 
-    if a is not None:
-        return render_template('article.html',
-                               article=a,
-                               dom_css=get_css(a.domain))
-    else:
-        raise NotFound('article not existed')
+    return render_template(
+            'article.html',
+            article=a,
+            dom_css=get_css(a.domain)
+    )
 
 
 @app.route('/p/<id:spid>', methods=['GET'])
@@ -78,11 +81,9 @@ def show_entries_byspider(spid):
     Spider = namedtuple('Spider', ['id', 'source'])
     spid = str(spid)
     spiders = get_spiders()
-    if spid in spiders:
-        return render_template('entries.html',
-                               spider=Spider(spid, spiders[spid]))
-    else:
+    if spid not in spiders:
         raise NotFound('spider not existed')
+    return render_template('entries.html', spider=Spider(spid, spiders[spid]))
 
 
 @app.route('/l/p', methods=['GET'])
