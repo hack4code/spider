@@ -19,35 +19,36 @@ class App extends React.Component {
 
     fetch(url)
     .then(function(response) {
-      let data = response.json()
-      if (response.status == 200) {
-        let nstate = {day_before: data["day_before"],
-                      day_after: data["day_after"]};
-        if (data["data"]) {
-          nstate["data"] = data["data"];
-        }
-        if (nstate["data"] == null) {
-          let now = new Date(document.title);
-          let t = new Date();
-          let today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-          if (now >= today && nstate["day_before"] != null) {
-            that.setDay(nstate["day_before"]);
-            return;
+      response.json().then(function(data) {
+        if (response.status == 200) {
+          let nstate = {day_before: data["day_before"],
+                        day_after: data["day_after"]};
+          if (data["data"]) {
+            nstate["data"] = data["data"];
+          }
+          if (nstate["data"] == null) {
+            let now = new Date(document.title);
+            let t = new Date();
+            let today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+            if (now >= today && nstate["day_before"] != null) {
+              that.setDay(nstate["day_before"]);
+              return;
+            }
+          }
+          else {
+            document.title = day;
+            window.history.pushState(day, day, "/d/" + day);
+            that.setState(nstate);
           }
         }
         else {
-          document.title = day;
-          window.history.pushState(day, day, "/d/" + day);
-          that.setState(nstate);
+          console.log(data['message']);
         }
-      }
-      else {
-        console.log(data['message']);
-      }
+      })
     })
     .catch(function(err) {
       console.log("fetch error");
-    });
+    })
   }
 
   componentWillMount(){

@@ -12,13 +12,14 @@ class App extends React.Component {
   componentDidMount() {
     let that = this;
     fetch("/api/spiders").then(function(response) {
-      let data = response.json();
-      if (response.status == 200) {
-        that.setState({entries: data["entries"]});
-      }
-      else {
-	console.log(data['message']);
-      }
+      response.json().then(function(data) {
+        if (response.status == 200) {
+          that.setState({entries: data["entries"]});
+        }
+        else {
+          console.log(data['message']);
+        }
+      })
     })
     .catch(function(err) {
       console.log("fetch error");

@@ -51,18 +51,20 @@ class SubmitForm extends React.Component {
         body: JSON.stringify(feed)
       })
       .then(function(response) {
-        if (response.status == 200) {
-          that.err.fadeIn("成功");
-          setTimeout(() => {that.err.fadeOut()}, 1000);
-          let state = that.getInitialState();
-          state["category"] = that.state.category;
-          that.setState(state);
-        }
-        else {
-          data = response.json();
-          that.err.fadeIn("失败: " + data["message"]);
-          setTimeout(() => {that.err.fadeOut()}, 1000);
-        }
+	response.json().then(function(data) {
+          if (response.status == 200) {
+            that.err.fadeIn("成功");
+            setTimeout(() => {that.err.fadeOut()}, 1000);
+            let state = that.getInitialState();
+            state["category"] = that.state.category;
+            that.setState(state);
+          }
+          else {
+            data = response.json();
+            that.err.fadeIn("失败: " + data["message"]);
+            setTimeout(() => {that.err.fadeOut()}, 1000);
+          }
+        })
       })
       .catch(function(err) {
         that.err.fadeIn("错误: fetch error");
