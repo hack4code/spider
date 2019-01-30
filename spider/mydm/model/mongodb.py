@@ -71,13 +71,15 @@ def save_feed(url):
 
 def _get_day_begin(item):
     d = item['crawl_date']
-    t = datetime(d.year,
-                 d.month,
-                 d.day,
-                 0,
-                 0,
-                 0,
-                 0)
+    t = datetime(
+            d.year,
+            d.month,
+            d.day,
+            0,
+            0,
+            0,
+            0
+    )
     return t
 
 
@@ -153,7 +155,7 @@ def get_category_tags():
     return {_['category']: _['tags'] for _ in cursor}
 
 
-def update_spider_stats(spider, stats):
+def udate_spider_stats(spider, stats):
     cursor = ScrapyDB.stats.find(
         {
             'id': spider._id

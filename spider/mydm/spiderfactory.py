@@ -5,9 +5,7 @@ from .spider import ErrbackSpider, SpiderMetaClses
 from .exceptions import SpiderFactoryException
 
 
-__all__ = [
-        'SpiderFactory'
-]
+__all__ = ['SpiderFactory']
 
 
 class SpiderFactory:
