@@ -6,24 +6,21 @@ from datetime import datetime, timedelta
 
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
-from app import app
-
-from .mongodata import Entry, EntryDay, Article
+from .mongodata import Entry, EntryDay, Article, AID
 
 
 class MongoDB:
-    __slots__ = ('_name', '_db')
 
-    def __init__(self, name):
+    def __init__(self, name, config):
         self._name = name
         self._db = None
+        self._config = config
 
     def _connect(self):
-        client = MongoClient(app.config['MONGODB_URI'],
-                             connect=False)
+        config = self._config
+        client = MongoClient(config['MONGODB_URI'], connect=False)
         db = client[self._name]
-        db.authenticate(app.config['MONGODB_USER'],
-                        app.config['MONGODB_PWD'])
+        db.authenticate(config['MONGODB_USER'], config['MONGODB_PWD'])
         self._db = db
 
     def __getattr__(self, key):
@@ -32,23 +29,24 @@ class MongoDB:
         try:
             return self._db[key]
         except KeyError:
-            raise AttributeError((
-                '{} db has no collection {}'
-                ).format(self._name,
-                         key))
+            raise AttributeError(
+                ('{} db has no collection {}').format(self._name, key)
+            )
 
 
-ScrapyDB = MongoDB(app.config['MONGODB_STOREDB_NAME'])
-ScoreDB = MongoDB(app.config['MONGODB_SCOREDB_NAME'])
+def init_db(app):
+    global ScrapyDB, ScoreDB
+
+    config = app.config
+    ScrapyDB = MongoDB(config['MONGODB_STOREDB_NAME'], config)
+    ScoreDB = MongoDB(config['MONGODB_SCOREDB_NAME'], config)
 
 
 def get_begin_day():
     cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date',
-           ASCENDING
-           ).limit(1)
+    ).sort('crawl_date', ASCENDING).limit(1)
     return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
@@ -56,9 +54,7 @@ def get_end_day():
     cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date',
-           DESCENDING
-           ).limit(1)
+    ).sort('crawl_date', DESCENDING).limit(1)
     return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
@@ -91,33 +87,36 @@ def get_article_score(aids):
 def get_score(entries):
     spscores = get_spider_score(list({_.spider for _ in entries}))
     ascores = get_article_score(list({_.id for _ in entries}))
-    max_spscore = max(spscores.items(),
-                      key=lambda i: i[1])[1] if spscores else 1.0
-    max_ascore = max(ascores.items(),
-                     key=lambda i: i[1])[1] if ascores else 1.0
+    max_spscore = max(
+            spscores.items(),
+            key=lambda i: i[1]
+    )[1] if spscores else 1.0
+    max_ascore = max(
+            ascores.items(),
+            key=lambda i: i[1]
+    )[1] if ascores else 1.0
 
     def get_score(e):
-        return (10.0*spscores.get(e.spider,
-                                  0)/max_spscore +
-                90.0*ascores.get(e.id,
-                                 0)/max_ascore)
+        return (10.0*spscores.get(e.spider, 0)/max_spscore +
+                90.0*ascores.get(e.id, 0)/max_ascore)
 
     return {_.id: get_score(_) for _ in entries}
 
 
 def get_entries(day):
-    begin = datetime(day.year,
-                     day.month,
-                     day.day,
-                     0,
-                     0,
-                     0,
-                     0)
+    begin = datetime(
+            day.year,
+            day.month,
+            day.day,
+            0,
+            0,
+            0,
+            0
+    )
     end = begin + timedelta(days=1)
     cursor = ScrapyDB.article.find(
         {
-            'crawl_date': {'$gte': begin,
-                           '$lt': end}
+            'crawl_date': {'$gte': begin, '$lt': end}
         },
         {
             'title': 1,
@@ -132,21 +131,21 @@ def get_entries(day):
     entries_ = [EntryDay(_) for _ in cursor]
     scores = get_score(entries_)
     entries = defaultdict(list)
-    for e in sorted(entries_,
-                    key=lambda i: scores[i.id],
-                    reverse=True):
+    for e in sorted(entries_, key=lambda i: scores[i.id], reverse=True):
         entries[e.category].append(e)
     return entries if entries else None
 
 
 def get_before_day(day):
-    t = datetime(day.year,
-                 day.month,
-                 day.day,
-                 0,
-                 0,
-                 0,
-                 0)
+    t = datetime(
+            day.year,
+            day.month,
+            day.day,
+            0,
+            0,
+            0,
+            0
+    )
     cursor = ScrapyDB.article.find(
         {
             'crawl_date': {'$lt': t}
@@ -154,20 +153,20 @@ def get_before_day(day):
         {
             'crawl_date': 1
         }
-    ).sort('crawl_date',
-           DESCENDING
-           ).limit(1)
+    ).sort('crawl_date', DESCENDING).limit(1)
     return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
 def get_after_day(day):
-    t = datetime(day.year,
-                 day.month,
-                 day.day,
-                 0,
-                 0,
-                 0,
-                 0)
+    t = datetime(
+            day.year,
+            day.month,
+            day.day,
+            0,
+            0,
+            0,
+            0
+    )
     nextday = t + timedelta(days=1)
     cursor = ScrapyDB.article.find(
         {
@@ -176,9 +175,7 @@ def get_after_day(day):
         {
             'crawl_date': 1
         }
-    ).sort('crawl_date',
-           ASCENDING
-           ).limit(1)
+    ).sort('crawl_date', ASCENDING).limit(1)
     return cursor[0]['crawl_date'].date() if cursor.count() else None
 
 
@@ -188,8 +185,7 @@ def get_after_day(day):
 
 
 def get_spiders():
-    cursor = ScrapyDB.spider.find({},
-                                  {'title': 1})
+    cursor = ScrapyDB.spider.find({}, {'title': 1})
     return {str(_['_id']): _['title'] for _ in cursor}
 
 
@@ -201,9 +197,7 @@ def get_first_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id',
-           ASCENDING
-           ).limit(1)
+    ).sort('_id', ASCENDING).limit(1)
     return cursor[0]['_id'] if cursor.count() else None
 
 
@@ -215,9 +209,7 @@ def get_last_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id',
-           DESCENDING
-           ).limit(1)
+    ).sort('_id', DESCENDING).limit(1)
     return cursor[0]['_id'] if cursor.count() else None
 
 
@@ -259,11 +251,10 @@ def get_entries_pre(spid, aid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id',
-           ASCENDING
-           ).limit(100)
-    return list(reversed([Entry(_)
-                         for _ in cursor])) if cursor.count() else None
+    ).sort('_id', ASCENDING).limit(100)
+    return list(
+            reversed([Entry(_) for _ in cursor])
+    ) if cursor.count() else None
 
 
 def get_entries_spider(spid):
@@ -275,9 +266,7 @@ def get_entries_spider(spid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id',
-           DESCENDING
-           ).limit(100)
+    ).sort('_id', DESCENDING).limit(100)
     return [Entry(_) for _ in cursor] if cursor.count() else None
 
 
@@ -337,8 +326,6 @@ def get_all_days():
 
 
 def get_all_articles(c):
-    from .mongodata import AID
-
     cursor = ScrapyDB.article.find(
         {
             'category': c
@@ -346,8 +333,7 @@ def get_all_articles(c):
         {
             '_id': 1
         }
-    ).sort('_id',
-           ASCENDING)
+    ).sort('_id', ASCENDING)
     return [AID(_['_id']) for _ in cursor] if cursor.count() else None
 
 

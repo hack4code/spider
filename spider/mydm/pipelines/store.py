@@ -25,14 +25,14 @@ class StorePipeline:
     def process_item(self, item, spider):
         if item is not None:
             doc = item['content']
-            if not isinstance(doc,
-                              (str, bytes)):
-                if isinstance(doc,
-                              HtmlElement):
-                    item['content'] = tostring(doc,
-                                               encoding='UTF-8',
-                                               pretty_print=True,
-                                               method='html')
+            if not isinstance(doc, (str, bytes)):
+                if isinstance(doc, HtmlElement):
+                    item['content'] = tostring(
+                        doc,
+                        encoding='UTF-8',
+                        pretty_print=True,
+                        method='html'
+                    )
                     item['encoding'] = 'UTF-8'
                 else:
                     raise Exception((

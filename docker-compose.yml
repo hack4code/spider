@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 services:
         rabbitmq:
                 image: rabbitmq
@@ -35,8 +35,7 @@ services:
 
         spider:
                 build:
-                        context: .
-                        dockerfile: Dockerfile-spider
+                        context: spider/
                 container_name: spider
                 depends_on:
                         - rabbitmq
@@ -52,12 +51,11 @@ services:
                         - mongodb
                 volumes:
                         - ./spider/:/spider/
-                command: su -m spider -c "python rpc.py"
+                command: ["./wait-for-it.sh", "rabbitmq:5672", "-q", "--", "python", "rpc.py"]
 
         www:
                 build:
-                        context: .
-                        dockerfile: Dockerfile-www
+                        context: www/
                 container_name: www
                 depends_on:
                         - spider
@@ -72,7 +70,7 @@ services:
                         - "8000"
                 volumes:
                         - ./www/:/www/
-                command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
+                command: ["uwsgi", "--ini-paste", "uwsgi.ini"] 
 
         nginx:
                 image: nginx
@@ -83,7 +81,6 @@ services:
                         - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
                         - ./nginx/www.conf:/etc/nginx/www.conf:ro
                         - ./www/static/:/www/static/:ro
-                        - /var/cache/:/var/cache/
                 networks:
                         - www
                 links:

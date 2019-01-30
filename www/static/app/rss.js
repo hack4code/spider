@@ -24,57 +24,55 @@ class SubmitForm extends React.Component {
   submit(e) {
     e.preventDefault();
 
-    let form = {}
-    for (let k in this.state) {
-      if (this.state[k].length > 0) {
-        form[k] = this.state[k];
+    let feed = {}
+    for (let key in this.state) {
+      if (this.state[key].length > 0) {
+        feed[key] = this.state[key];
       }
     }
-    if (form["url"] == null || form["url"] == "") {
+    if (feed["url"] == null || feed["url"] == "") {
       this.err.fadeIn("需要网址数据");
       setTimeout(() => {this.err.fadeOut()}, 800);
     }
     else {
       this.err.fadeIn("正在提交 .....");
 
-      let nodes = form["removed_xpath_nodes"].filter((e) => {return e != "";});
-      if (nodes.length > 0) {
-        form["removed_xpath_nodes"] = JSON.stringify(nodes);
-      }
-      else {
-        delete form["removed_xpath_nodes"];
-      }
-      let data  = new FormData();
-      for (let k in form) {
-        data.append(k, form[k]);
+      let nodes = feed["removed_xpath_nodes"].filter((e) => {return e != "";});
+      if (nodes.length == 0) {
+         delete feed["removed_xpath_nodes"];
       }
 
       let that = this;
-      fetch("/submit/rss", {method: "post",
-                            body: data}
-      )
-      .then(function(response) {
-        return response.json();
+      fetch("/submit/rss", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(feed)
       })
-      .then(function(r) {
-        if (r['err'] == 0) {
-          that.err.fadeIn("成功");
-          setTimeout(() => {that.err.fadeOut()}, 800);
-          let state = that.getInitialState();
-          state["category"] = that.state.category;
-          that.setState(state);
-        }
-        else {
-          that.err.fadeIn("失败: " + r["msg"]);
-          setTimeout(() => {that.err.fadeOut()}, 800);
-        }
+      .then(function(response) {
+	response.json().then(function(data) {
+          if (response.status == 200) {
+            that.err.fadeIn("成功");
+            setTimeout(() => {that.err.fadeOut()}, 800);
+            let state = that.getInitialState();
+            state["category"] = that.state.category;
+            that.setState(state);
+          }
+          else {
+            data = response.json();
+            that.err.fadeIn("失败: " + data["message"]);
+            setTimeout(() => {that.err.fadeOut()}, 800);
+          }
+        })
       })
       .catch(function(err) {
-        console.log("Error in fetch post function");
+        that.err.fadeIn("异常: fetch exception");
+        setTimeout(() => {that.err.fadeOut()}, 800);
       })
     }
-
-    findDOMNode(this.refs.Submit).blur();
+    findDOMNode(this.button).blur();
   }
 
   updateField(k, v) {

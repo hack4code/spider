@@ -83,18 +83,17 @@ class App extends React.Component {
 
     fetch(url)
     .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      let err = data["err"];
-      if (!err) {
-        that.setState({entries: data["entries"]});
-      }
-      else {
-        console.log(data);
-      }
+      response.json().then(function(data) {
+        if (response.status == 200) {
+          that.setState({entries: data["entries"]});
+        }
+        else {
+          console.log(data['message']);
+        }
+      })
     })
     .catch(function(err) {
+      console.log("fetch error");
     })
   }
 

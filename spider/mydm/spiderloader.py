@@ -13,9 +13,7 @@ from .model import get_spider_settings
 from .util import cache_property
 
 
-__all__ = [
-        'MongoSpiderLoader'
-]
+__all__ = ['MongoSpiderLoader']
 
 
 logger = logging.getLogger(__name__)
@@ -33,8 +31,9 @@ class MongoSpiderLoader:
                 cls = SpiderFactory.mkspider(setting)
             except SpiderFactoryException as e:
                 logger.error(
-                        'MongoSpiderLoader got SpiderFactoryException[%s]',
-                        e)
+                    'MongoSpiderLoader got SpiderFactoryException[%s]',
+                    e
+                )
             else:
                 spiders[spid] = cls
         return spiders
@@ -47,8 +46,11 @@ class MongoSpiderLoader:
         return self.spiders[spid]
 
     def find_by_request(self, request):
-        return [spid for spid, cls in self.spiders.items()
-                if cls.handles_request(request)]
+        return [
+            spid
+            for spid, cls in self.spiders.items()
+            if cls.handles_request(request)
+        ]
 
     def list(self):
         return list(self.spiders.keys())

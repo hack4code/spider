@@ -1,8 +1,8 @@
 FROM python
 
 RUN mkdir /www/
-ADD ./www/requirements.txt /www/requirements.txt
-WORKDIR /www
+ADD requirements.txt /www/requirements.txt
+WORKDIR /www/
 
 RUN apt-get update -y
 
@@ -11,6 +11,6 @@ RUN pip install -r requirements.txt
 
 RUN adduser --disabled-password --gecos '' www
 RUN mkdir /var/log/www/
-RUN chown www:www /var/log/www
+RUN chown www:www /var/log/www/
 RUN mkdir /var/run/www/
-RUN chown www:www /var/run/www
+RUN chown www:www /var/run/www/

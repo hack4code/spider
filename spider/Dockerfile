@@ -1,8 +1,9 @@
 FROM python:3.6
 
 RUN mkdir /spider/
-ADD ./spider/requirements.txt /spider/requirements.txt
-WORKDIR /spider
+ADD requirements.txt /spider/requirements.txt
+ADD wait-for-it.sh /spider/wait-for-it.sh
+WORKDIR /spider/
 
 RUN apt-get update -y
 RUN apt-get install -y build-essential
@@ -12,4 +13,4 @@ RUN apt-get install -y libffi-dev libxml2-dev libxslt1-dev libtiff5-dev libjpeg6
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-RUN adduser --disabled-password --gecos '' spider
+RUN chmod a+x wait-for-it.sh

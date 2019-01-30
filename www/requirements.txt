@@ -3,3 +3,5 @@ requests
 pymongo
 uWSGI
 pika
+marshmallow
+flask_restful
