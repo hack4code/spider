@@ -4,7 +4,7 @@
 from flask_restful import Api
 
 from .feed import CrawlSpiders, AtomFeed, BlogFeed
-from .api import Vote, Day, Categories, Entries, Spiders
+from .db import Vote, Day, Categories, Entries, Spiders
 
 
 __all__ = ['init_api']
