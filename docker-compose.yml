@@ -51,7 +51,7 @@ services:
                         - mongodb
                 volumes:
                         - ./spider/:/spider/
-                command: su -m spider -c "python rpc.py"
+                command: ["./wait-for-it.sh", "rabbitmq:5672", "-q", "--", "python", "rpc.py"]
 
         www:
                 build:
@@ -70,7 +70,7 @@ services:
                         - "8000"
                 volumes:
                         - ./www/:/www/
-                command: su -m www -c "uwsgi --ini-paste uwsgi.ini"
+                command: ["uwsgi", "--ini-paste", "uwsgi.ini"] 
 
         nginx:
                 image: nginx
