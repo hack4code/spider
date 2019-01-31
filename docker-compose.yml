@@ -53,7 +53,7 @@ services:
                         - mongodb
                 volumes:
                         - ./spider/:/spider/
-                command: ["./wait-for-it.sh", "rabbitmq:5672", "-q", "--", "python", "rpc.py"]
+                command: ["python", "rpc.py"]
 
         www:
                 build:
