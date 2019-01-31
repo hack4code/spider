@@ -7,10 +7,10 @@ from zope.interface import implementer
 
 from scrapy.interfaces import ISpiderLoader
 
-from .exceptions import SpiderFactoryException
-from .spiderfactory import SpiderFactory
-from .model import get_spider_settings
-from .util import cache_property
+from mydm.exceptions import SpiderFactoryException
+from mydm.spiderfactory import SpiderFactory
+from mydm.model import get_spider_settings
+from mydm.util import cache_property
 
 
 __all__ = ['MongoSpiderLoader']

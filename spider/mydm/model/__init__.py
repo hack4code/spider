@@ -9,6 +9,8 @@ from .mongodb import (
         log_spider_scrape_count,
 )
 
+from .redis import get_stats, save_stats
+
 
 __all__ = [
         'is_exists_feed',
@@ -20,4 +22,6 @@ __all__ = [
         'save_article',
         'save_spider_settings',
         'log_spider_scrape_count',
+        'save_stats',
+        'get_stats',
 ]

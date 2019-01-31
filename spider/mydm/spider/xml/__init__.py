@@ -4,6 +4,4 @@
 from .spider import LXMLSpiderMeta
 
 
-__all__ = [
-        'LXMLSpiderMeta',
-]
+__all__ = ['LXMLSpiderMeta']

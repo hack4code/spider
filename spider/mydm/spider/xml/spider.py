@@ -11,13 +11,14 @@ from lxml import etree
 from scrapy.spiders import Spider
 from scrapy import Request
 
+from mydm.spider import ErrbackSpider
+from mydm.items import ArticleItem
+from mydm.ai import extract_tags
 from .extractor import ItemExtractor
-from ..spider import ErrbackSpider
-from ...items import ArticleItem
-from ...ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
+
 XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
@@ -33,8 +34,7 @@ class LXMLSpider(Spider):
     """
 
     # attributes must contain
-    ATTRS = ('title',
-             'link')
+    ATTRS = ('title', 'link')
 
     def extract_content(self, response):
         item = response.meta['item']
@@ -50,11 +50,12 @@ class LXMLSpider(Spider):
             logger.error('spider[{}] extract content failed'.format(self.name))
 
     def parse(self, response):
-        parser = etree.XMLParser(ns_clean=True,
-                                 recover=True,
-                                 encoding=response.encoding)
-        root = etree.XML(response.body,
-                         parser)
+        parser = etree.XMLParser(
+                ns_clean=True,
+                recover=True,
+                encoding=response.encoding
+        )
+        root = etree.XML(response.body, parser)
         if root is None:
             logger.error('Error in LXMLSpider feed parse failed')
             yield None
@@ -69,12 +70,11 @@ class LXMLSpider(Spider):
                 item['domain'] = urlparse(response.request.url).netloc
                 item['data_type'] = 'html'
                 item['encoding'] = response.encoding
-                if all(item.get(_) is not None for _ in self.ATTRS):
+                if all(item.get(attr) is not None for attr in self.ATTRS):
                     if (item.get('tag') is None and
                             item.get('content') is not None):
                         set_item_tag(item['content'], item, item['encoding'])
-                    if hasattr(self,
-                               'item_content_xpath'):
+                    if hasattr(self, 'item_content_xpath'):
                         try:
                             link = '{}?{}'.format(
                                     item['link'],
@@ -82,18 +82,20 @@ class LXMLSpider(Spider):
                                     )
                         except AttributeError:
                             link = item['link']
-                        yield Request(link,
-                                      meta={'item': item},
-                                      callback=self.extract_content,
-                                      errback=self.errback,
-                                      dont_filter=True)
+                        yield Request(
+                                link,
+                                meta={'item': item},
+                                callback=self.extract_content,
+                                errback=self.errback,
+                                dont_filter=True
+                        )
                     elif item.get('content') is not None:
                         yield ArticleItem(item)
 
 
 class LXMLSpiderMeta(type):
     def __new__(cls, name, bases, attrs):
-        if all(_ in attrs for _ in XMLSPIDER_ATTRS):
+        if all(attr in attrs for attr in XMLSPIDER_ATTRS):
             def update_bases(bases):
                 assert LXMLSpider not in bases, 'LXMLSpider in bases'
                 bases_ = [LXMLSpider]
@@ -102,12 +104,18 @@ class LXMLSpiderMeta(type):
                     bases_.append(ErrbackSpider)
                 return tuple(bases_)
             bases = update_bases(bases)
-            return super().__new__(cls,
-                                   name,
-                                   bases,
-                                   attrs)
+            return super().__new__(
+                    cls,
+                    name,
+                    bases,
+                    attrs
+            )
         else:
-            miss_attrs = [_ for _ in XMLSPIDER_ATTRS if _ not in attrs]
-            raise AttributeError((
-                'Error in LXMLSpiderMeta miss attributes{}'
-                ).format(miss_attrs))
+            miss_attrs = [
+                    attr
+                    for attr in XMLSPIDER_ATTRS
+                    if attr not in attrs
+            ]
+            raise AttributeError(
+                f'Error in LXMLSpiderMeta miss attributes{miss_attrs}'
+            )

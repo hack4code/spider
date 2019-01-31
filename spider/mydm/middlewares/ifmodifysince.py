@@ -25,5 +25,6 @@ class IfModifySinceMiddleware(object):
             last = datetime.utcnow() - timedelta(days=self.delta)
             request.headers.setdefault(
                 'If-Modified-Since',
-                last.strftime('%a, %d %b %Y %H:%M:%S GMT'))
+                last.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            )
         return None

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from .spider import ErrbackSpider, SpiderMetaClses
-from .exceptions import SpiderFactoryException
+from mydm.spider import ErrbackSpider, SpiderMetaClses
+from mydm.exceptions import SpiderFactoryException
 
 
 __all__ = ['SpiderFactory']
@@ -17,16 +17,18 @@ class SpiderFactory:
         if 'name' not in setting or 'type' not in setting:
             raise SpiderFactoryException(
                 'Error in SpiderFactory no name|type setting attribute found'
-                )
+            )
         try:
             build = SpiderMetaClses[setting['type']]
         except KeyError:
             raise SpiderFactoryException((
-                'Error in SpiderFactory type[{}] not support'
-                ).format(setting['type']))
+                f'Error in SpiderFactory type[{setting["type"]}] not support'
+                ).format())
         try:
-            return build('{}Spider'.format(setting['name'].capitalize()),
-                         (ErrbackSpider,),
-                         setting)
+            return build(
+                    f'{setting["name"].capitalize()}Spider',
+                    (ErrbackSpider, ),
+                    setting
+            )
         except AttributeError as e:
-            raise SpiderFactoryException('{}'.format(e))
+            raise SpiderFactoryException(f'{e}')

@@ -3,13 +3,17 @@
 
 import redis
 
-from ..util import parse_redis_url
+from mydm.util import parse_redis_url
 
 
 class ETagMiddleware(object):
     def __init__(self, settings):
         conf = parse_redis_url(settings['ETAG_URL'])
-        self.r = redis.Redis(host=conf.host, port=conf.port, db=conf.database)
+        self.r = redis.Redis(
+                host=conf.host,
+                port=conf.port,
+                db=conf.database
+        )
 
     @classmethod
     def from_crawler(cls, crawler):

@@ -12,7 +12,7 @@ from PIL import Image as ImageLib
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
-from ..exceptions import ImgException
+from mydm.exceptions import ImgException
 
 
 logger = logging.getLogger(__name__)
@@ -41,9 +41,11 @@ class Image():
             image = self._image.resize((w, h),
                                        ImageLib.ANTIALIAS)
         buf = BytesIO()
-        image.save(buf,
-                   format=self._image.format,
-                   quality=q)
+        image.save(
+                buf,
+                format=self._image.format,
+                quality=q
+        )
         return buf.getvalue()
 
 
@@ -59,8 +61,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         doc = item['content']
         if isinstance(doc,
                       (str, bytes)):
-            doc = fromstring(doc,
-                             parser=HTMLParser(encoding=item['encoding']))
+            doc = fromstring(doc, parser=HTMLParser(encoding=item['encoding']))
             item['content'] = doc
 
         try:
@@ -73,8 +74,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if attr in e.attrib:
                 url = e.get(attr).strip(' \t\n')
                 if url.startswith('/'):
-                    url = urljoin(item['link'].strip(),
-                                  url)
+                    url = urljoin(item['link'].strip(), url)
                     if url.startswith('//'):
                         url = 'http:' + url
                 urls.append((url, e))
@@ -83,8 +83,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         for url, e in urls:
             if not url.startswith('data'):
                 try:
-                    r = Request(url,
-                                meta={'img': e})
+                    r = Request(url, meta={'img': e})
                 except ValueError:
                     logger.error((
                         'Error in pipeline image create Request[{}]'
@@ -96,14 +95,12 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def media_failed(self, failure, request, info):
         logger.error((
             'Error in spider {} pipeline image download[{}]'
-            ).format(self.spiderinfo.spider.name,
-                     request.url))
+            ).format(self.spiderinfo.spider.name, request.url))
         try:
             attr = self.spiderinfo.spider.image_url_attr
             img = request.meta['img']
             src = img.get(attr)
-            img.set('src',
-                    src)
+            img.set('src', src)
         except AttributeError:
             pass
 
@@ -128,22 +125,18 @@ class ImagesDlownloadPipeline(MediaPipeline):
             logger.error((
                 'Error in spider {} pipeline image Pillow '
                 'image type not support[{}]'
-                ).format(self.spiderinfo.spider.name,
-                         src))
+                ).format(self.spiderinfo.spider.name, src))
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
                 logger.error((
                     'Error in spider {} pipeline image Content-Type[{}]'
                     'not found'
-                    ).format(self.spiderinfo.spider.name,
-                             src))
+                    ).format(self.spiderinfo.spider.name, src))
                 return
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
-        img.set('src',
-                'data:image/{};base64,{}'.format(imgtype,
-                                                 data))
+        img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
 
     def item_completed(self, results, item, info):
         return item

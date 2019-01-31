@@ -87,8 +87,7 @@ class PubDateTag:
     def extract(self, e):
         if e.text is None:
             return
-        v = get_date(e.text,
-                     ignoretz=True)
+        v = get_date(e.text, ignoretz=True)
         if self.val is None or self.val < v:
             self.val = v
 
@@ -141,19 +140,25 @@ class ContentTag:
 
 class ItemExtractor:
     def __init__(self):
-        self.extractors = [TitleTag(),
-                           LinkTag(),
-                           PubDateTag(),
-                           CategoryTag(),
-                           ContentTag()]
+        self.extractors = [
+                TitleTag(),
+                LinkTag(),
+                PubDateTag(),
+                CategoryTag(),
+                ContentTag()
+        ]
 
     def __call__(self, entry):
         for e in entry:
-            for _ in self.extractors:
+            for ext in self.extractors:
                 try:
-                    if _.match(e):
-                        _.extract(e)
+                    if ext.match(e):
+                        ext.extract(e)
                         break
                 except ValueError:
                     continue
-        return {_.tag: _.val for _ in self.extractors if _.val is not None}
+        return {
+                item.tag: item.val
+                for item in self.extractors
+                if item.val is not None
+        }

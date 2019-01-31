@@ -5,8 +5,10 @@ from collections import namedtuple
 from urllib.parse import urlparse
 
 
+RedisConf = namedtuple('RedisUrl', ['host', 'port', 'database'])
+
+
 def parse_redis_url(url):
-    RedisConf = namedtuple('RedisUrl', ['host', 'port', 'database'])
     parser = urlparse(url)
     host = parser.hostname
     port = parser.port

@@ -9,18 +9,21 @@ from html import unescape
 from scrapy.spiders import Spider
 from scrapy import Request
 
-from ..spider import ErrbackSpider
-from ...items import ArticleItem
-from ...ai import extract_tags
+from mydm.spider import ErrbackSpider
+from mydm.items import ArticleItem
+from mydm.ai import extract_tags
 
 
 logger = logging.getLogger(__name__)
-BLOGSPIDER_ATTRS = ['start_urls',
-                    'category',
-                    'entry_xpath',
-                    'item_title_xpath',
-                    'item_link_xpath',
-                    'item_content_xpath']
+
+BLOGSPIDER_ATTRS = [
+        'start_urls',
+        'category',
+        'entry_xpath',
+        'item_title_xpath',
+        'item_link_xpath',
+        'item_content_xpath'
+]
 
 
 def set_item_tag(txt, item, encoding='utf-8'):
@@ -41,11 +44,15 @@ class BLOGSpider(Spider):
         return response.selector.xpath(self.entry_xpath)
 
     def extract_item(self, entry, encoding):
-        item = {attr: entry.xpath(xpath).extract_first()
-                for attr, xpath in self.item_extractors}
-        set_item_tag(entry.xpath('.').extract_first(),
-                     item,
-                     encoding)
+        item = {
+                attr: entry.xpath(xpath).extract_first()
+                for attr, xpath in self.item_extractors
+        }
+        set_item_tag(
+                entry.xpath('.').extract_first(),
+                item,
+                encoding
+        )
         if item.get('link') is not None:
             item['link'] = item['link'].strip('\t\n\r ')
         if item.get('title') is not None:
@@ -59,16 +66,24 @@ class BLOGSpider(Spider):
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
         if item.get('tag') is None:
-            set_item_tag(content,
-                         item,
-                         response.encoding)
-        if all(item.get(_) is not None for _ in self.ATTRS):
+            set_item_tag(
+                    content,
+                    item,
+                    response.encoding
+            )
+        if all(item.get(attr) is not None for attr in self.ATTRS):
             return ArticleItem(item)
         else:
-            miss_attrs = [_ for _ in self.ATTRS if item.get(_) is None]
-            logger.error('Error in spider %s extract content miss attrs%s',
-                         self.name,
-                         miss_attrs)
+            miss_attrs = [
+                    attr
+                    for attr in self.ATTRS
+                    if item.get(attr) is None
+            ]
+            logger.error(
+                    'Error in spider %s extract content miss attrs%s',
+                    self.name,
+                    miss_attrs
+            )
 
     def parse(self, response):
         try:
@@ -77,9 +92,11 @@ class BLOGSpider(Spider):
             pass
         else:
             prelink = response.xpath(xplink).extract_first()
-            yield Request(prelink,
-                          callback=self.parse,
-                          errback=self.errback)
+            yield Request(
+                    prelink,
+                    callback=self.parse,
+                    errback=self.errback
+            )
 
         for entry in self.extract_entries(response):
             item = self.extract_item(entry, response.encoding)
@@ -93,11 +110,13 @@ class BLOGSpider(Spider):
             link = link.strip('\r\n\t ')
             if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
-            yield Request(item['link'],
-                          meta={'item': item},
-                          callback=self.extract_content,
-                          errback=self.errback,
-                          dont_filter=True)
+            yield Request(
+                    item['link'],
+                    meta={'item': item},
+                    callback=self.extract_content,
+                    errback=self.errback,
+                    dont_filter=True
+            )
 
 
 class BLOGSpiderMeta(type):
@@ -126,12 +145,18 @@ class BLOGSpiderMeta(type):
 
             bases = update_bases(bases)
             attrs = update_attrs(attrs)
-            return super().__new__(cls,
-                                   name,
-                                   bases,
-                                   attrs)
+            return super().__new__(
+                    cls,
+                    name,
+                    bases,
+                    attrs
+            )
         else:
-            miss_attrs = [_ for _ in BLOGSPIDER_ATTRS if _ not in attrs]
-            raise AttributeError((
-                'Error in BLOGSpiderMeta miss attributes{}'
-                ).format(miss_attrs))
+            miss_attrs = [
+                    attr
+                    for attr in BLOGSPIDER_ATTRS
+                    if attr not in attrs
+            ]
+            raise AttributeError(
+                f'Error in BLOGSpiderMeta miss attributes{miss_attrs}'
+            )

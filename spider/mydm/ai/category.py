@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from ..model import get_category_tags
-from ..util import cache_property
+from mydm.model import get_category_tags
+from mydm.util import cache_property
 
 
 class CategoryAI():

@@ -4,9 +4,7 @@
 import scrapy
 
 
-__all__ = [
-        'ArticleItem'
-]
+__all__ = ['ArticleItem']
 
 
 class ArticleItem(scrapy.Item):
@@ -22,5 +20,4 @@ class ArticleItem(scrapy.Item):
     encoding = scrapy.Field()
 
     def __repr__(self):
-        return u'[{} : {}]'.format(self['title'],
-                                   self['link'])
+        return f'[{self["title"]} : {self["link"]}]'
