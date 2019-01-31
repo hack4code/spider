@@ -53,7 +53,7 @@ class Vote(Resource):
             vote_article(a)
             return {'aid': str(aid)}, 200
         else:
-            return {'message': 'no article'}, 400
+            return {'message': 'article not existed'}, 400
 
 
 class Day(Resource):
@@ -67,15 +67,15 @@ class Day(Resource):
             try:
                 day_entry = date(*(int(_) for _ in day.split('-')))
             except ValueError:
-                return {'message': 'invalid day'}, 400
+                return {'message': 'invalid date value'}, 400
 
         day_begin = get_begin_day()
 
         if day_begin is None:
-            return {'message': 'no articles'}, 204
+            return {'message': 'articles not found'}, 204
 
         if not day_begin <= day_entry <= datetime.utcnow().date():
-            return {'message': 'no articles'}, 204
+            return {'message': 'articles not found'}, 204
 
         entries = get_entries(day_entry)
 
@@ -130,7 +130,7 @@ class Entries(Resource):
         try:
             spid = request.args['spid']
         except KeyError:
-            return {'message': 'no spider id'}, 400
+            return {'message': 'spider id not found'}, 400
 
         spiders = get_spiders()
         if spid not in spiders:
@@ -160,4 +160,4 @@ class Entries(Resource):
         if entries:
             return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
         else:
-            return {'message': 'no article found'}, 400
+            return {'message': 'articles not found'}, 400

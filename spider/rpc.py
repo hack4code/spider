@@ -24,26 +24,24 @@ def task(callback, key):
     url = '{}?heartbeat=600'.format(SETTINGS['BROKER_URL'])
     connection = pika.BlockingConnection(pika.connection.URLParameters(url))
     channel = connection.channel()
-    channel.exchange_declare(exchange='direct_logs',
-                             exchange_type='direct')
+    channel.exchange_declare(exchange='direct_logs', exchange_type='direct')
     result = channel.queue_declare(exclusive=True)
     queue_name = result.method.queue
-    channel.queue_bind(exchange='direct_logs',
-                       queue=queue_name,
-                       routing_key=key)
+    channel.queue_bind(
+            exchange='direct_logs',
+            queue=queue_name,
+            routing_key=key
+    )
     channel.basic_qos(prefetch_count=1)
 
     def consume(ch, method, properties, body):
-        logger.info('new job[%s] from rabbitmq',
-                    callback.__name__)
+        logger.info('get job[%s] from rabbitmq', callback.__name__)
         args = json.loads(body)
-        p = Process(target=callback,
-                    args=(args,))
+        p = Process(target=callback, args=(args,))
         p.daemon = True
         consumers.append((p, ch, method))
 
-    channel.basic_consume(consume,
-                          queue=queue_name)
+    channel.basic_consume(consume, queue=queue_name)
     while True:
         connection.process_data_events()
         try:
@@ -51,21 +49,23 @@ def task(callback, key):
         except IndexError:
             pass
         else:
-            if not p.is_alive():
-                status = p.exitcode
-                if status is None:
-                    p.start()
+            if p.is_alive():
+                continue
+            status = p.exitcode
+            if status is None:
+                p.start()
+            else:
+                if status == 0:
+                    logger.info('job[%s] finished', callback.__name__)
                 else:
-                    if status == 0:
-                        logger.info('job[%s] finished',
-                                    callback.__name__)
-                    else:
-                        logger.error('job[%s] exited with %d',
-                                     callback.__name__,
-                                     status)
-                    p.join()
-                    ch.basic_ack(delivery_tag=method.delivery_tag)
-                    consumers.popleft()
+                    logger.error(
+                            'job[%s] exited with %d',
+                            callback.__name__,
+                            status
+                    )
+                p.join()
+                ch.basic_ack(delivery_tag=method.delivery_tag)
+                consumers.popleft()
 
 
 def main():
@@ -74,8 +74,12 @@ def main():
         root.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(sys.stdout)
         handler.setLevel(SETTINGS['LOG_LEVEL'])
-        handler.setFormatter(logging.Formatter(SETTINGS['LOG_FORMAT'],
-                                               SETTINGS['LOG_DATEFORMAT']))
+        handler.setFormatter(
+                logging.Formatter(
+                    SETTINGS['LOG_FORMAT'],
+                    SETTINGS['LOG_DATEFORMAT']
+                )
+        )
         root.addHandler(handler)
 
     init_logger()
@@ -85,22 +89,24 @@ def main():
         (gen_lxmlspider, SETTINGS['LXMLSPIDER_KEY']),
         (gen_blogspider, SETTINGS['BLOGSPIDER_KEY'])
     ]
+    sleep(60)
     tasks = [(Process(target=task, args=_), _) for _ in TASKS]
     for p, _ in tasks:
         p.start()
     logger.info('rpc task running ...')
     while True:
-        for i, (p, args) in enumerate(tasks):
-            if not p.is_alive():
-                logger.error(
-                    'Error in main task %s quit unexpected',
-                    TASKS[i][0].__name__
-                )
-                p.join()
-                np = Process(target=task, args=args)
-                np.start()
-                tasks[i] = (np, args)
         sleep(60)
+        for i, (p, args) in enumerate(tasks):
+            if p.is_alive():
+                continue
+            logger.error(
+                'Error in main task %s quit unexpected',
+                TASKS[i][0].__name__
+            )
+            p.join()
+            np = Process(target=task, args=args)
+            np.start()
+            tasks[i] = (np, args)
 
 
 if __name__ == '__main__':
