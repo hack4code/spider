@@ -9,9 +9,9 @@ from html import unescape
 from scrapy.spiders import Spider
 from scrapy import Request
 
-from mydm.spider import ErrbackSpider
 from mydm.items import ArticleItem
 from mydm.ai import extract_tags
+from mydm.spider.spider import ErrbackSpider
 
 
 logger = logging.getLogger(__name__)

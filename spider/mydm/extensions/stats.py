@@ -5,7 +5,7 @@ import logging
 
 from scrapy import signals
 
-from mydm.model import log_spider_scraped_count, save_stats
+from mydm.model import log_spider_scrape_count, save_stats
 
 
 logger = logging.getLogger(__name__)
@@ -33,4 +33,4 @@ class ExtensionStats:
         if spider.settings['BOT_NAME'] == 'TestSpider':
             save_stats(spider, item_scraped_count)
         else:
-            log_spider_scraped_count(spider, item_scraped_count)
+            log_spider_scrape_count(spider, item_scraped_count)

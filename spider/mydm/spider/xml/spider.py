@@ -11,7 +11,7 @@ from lxml import etree
 from scrapy.spiders import Spider
 from scrapy import Request
 
-from mydm.spider import ErrbackSpider
+from mydm.spider.spider import ErrbackSpider
 from mydm.items import ArticleItem
 from mydm.ai import extract_tags
 from .extractor import ItemExtractor
