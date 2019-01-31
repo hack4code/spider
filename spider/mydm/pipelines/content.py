@@ -6,7 +6,7 @@ import re
 
 from lxml.html import fromstring, HTMLParser, defs, HtmlElement
 from lxml.html.clean import Cleaner
-from lxml.etree import XPathEvalError
+from lxml.etree import XPathEvalError, ParserError
 
 from mydm.exceptions import ContentException
 
@@ -118,16 +118,8 @@ class ContentPipeline(object):
             )
             for e in doc.iter():
                 if 'style' in e.attrib:
-                    style_ = re.sub(
-                            pattern,
-                            '',
-                            e.get('style')
-                    ).strip()
-                    style = re.sub(
-                            r'\s{2,}',
-                            ' ',
-                            style_
-                    ).strip()
+                    style_ = re.sub(pattern, '', e.get('style')).strip()
+                    style = re.sub(r'\s{2,}', ' ', style_).strip()
                     if style:
                         e.attrib['style'] = style
                     else:
@@ -153,17 +145,25 @@ class ContentPipeline(object):
 
     def process_item(self, item, spider):
         item['title'] = self.format_title(item['title'])
+
         doc = item['content']
-        if not isinstance(doc, HtmlElement):
-            if isinstance(doc, (str, bytes)):
+        if not isinstance(doc, (HtmlElement, str, bytes)):
+            raise ContentException((
+                'Error in content pipeline unsupported doc type[{}]'
+                ).format(doc.__class__.__name__))
+        if isinstance(doc, (str, bytes)):
+            try:
                 doc = fromstring(
-                        bytes(bytearray(doc, encoding=item['encoding'])),
-                        parser=HTMLParser(encoding=item['encoding'])
+                    bytes(bytearray(doc, encoding=item['encoding'])),
+                    parser=HTMLParser(encoding=item['encoding'])
                 )
-            else:
-                raise ContentException((
-                    'Error in content pipeline unsupported doc type[{}]'
-                    ).format(doc.__class__.__name__))
+            except ParserError as e:
+                logger.Error(
+                        'Error in content pipeline %s for link is %s',
+                        str(e),
+                        item['link']
+                )
+                return
 
         # remove element with class name for clean display
         removed_classes = getattr(
