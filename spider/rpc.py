@@ -39,10 +39,12 @@ def task(callback, key):
         args = json.loads(body)
         p = Process(target=callback, args=(args,))
         p.daemon = True
+        p.start()
         consumers.append((p, ch, method))
 
     channel.basic_consume(consume, queue=queue_name)
     while True:
+        sleep(2)
         connection.process_data_events()
         try:
             p, ch, method = consumers[0]
