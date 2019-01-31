@@ -44,7 +44,7 @@ def task(callback, key):
 
     channel.basic_consume(consume, queue=queue_name)
     while True:
-        sleep(2)
+        sleep(60)
         connection.process_data_events()
         try:
             p, ch, method = consumers[0]
