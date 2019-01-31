@@ -50,12 +50,10 @@ MONGODB_PWD = 'scrapy'
 # rabbitmq
 BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
 CRAWL_KEY = 'crawl'
-CRAWL2_KEY = 'crawl2'
 LXMLSPIDER_KEY = 'lxmlspider'
 BLOGSPIDER_KEY = 'blogspider'
 
 # redis
-SPIDER_STATS_URL = 'redis://redis:6379/0'
 ETAG_URL = 'redis://redis:6379/1'
 TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
 

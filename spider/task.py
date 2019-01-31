@@ -70,7 +70,6 @@ def test_spider(setting):
                        'scrapy.extensions.logstats.LogStats': None,
                        'scrapy.extensions.spiderstate.SpiderState': None,
                        'scrapy.extensions.telnet.TelnetConsole': None, },
-        'SPIDER_STATS_URL': url,
         'BOT_NAME': 'TestSpider',
         'WEBSERVICE_ENABLED': False,
         'TELNETCONSOLE_ENABLED': False,
