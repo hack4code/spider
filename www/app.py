@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 import os
 import logging
 from datetime import datetime
@@ -8,10 +9,10 @@ from collections import namedtuple
 from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
 
-from user import need_uid
-from util import DateConverter, IdConverter
+from converter import init_converter
 from model import init_db, get_article, get_spiders
 from api import init_api
+from user import need_uid
 
 
 app = Flask(__name__)
@@ -21,8 +22,7 @@ app.logger.setLevel(logging.INFO)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 # converter
-app.url_map.converters['date'] = DateConverter
-app.url_map.converters['id'] = IdConverter
+init_converter(app)
 # db
 init_db(app)
 # api
@@ -57,7 +57,7 @@ def show_entries_byday(day):
 def show_article(aid):
     a = get_article(aid)
     if a is None:
-        raise NotFound('article not existed')
+        raise NotFound(f'article[{str(aid)} not existed')
 
     def get_css(dom):
         path = '{}/css/{}.css'.format(app.static_folder, dom)
@@ -70,13 +70,15 @@ def show_article(aid):
     )
 
 
+Spider = namedtuple('Spider', ['id', 'source'])
+
+
 @app.route('/p/<id:spid>', methods=['GET'])
 def show_entries_byspider(spid):
-    Spider = namedtuple('Spider', ['id', 'source'])
     spid = str(spid)
     spiders = get_spiders()
     if spid not in spiders:
-        raise NotFound('spider not existed')
+        raise NotFound(f'spider[{spid}] not existed')
     return render_template('entries.html', spider=Spider(spid, spiders[spid]))
 
 
