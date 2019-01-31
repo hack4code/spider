@@ -20,20 +20,17 @@ class MongoDB:
         self._db = None
 
     def _create_indexes(self):
-        feed = self._db['feed']
+        db = self._db
+        feed = db['feed']
         feed.create_index('url', name='idx_url')
-        article = self._db['article']
+        article = db['article']
         article.create_index('crawl_date', name='idx_crawl_date')
         article.create_index(
                 [('spider', ASCENDING), ('crawl_date', ASCENDING)],
                 name='idx_spider_crawl_date'
         )
-        stats = self._db['stats']
-        stats.create_index(
-                'id',
-                unique=True,
-                name='idx_id'
-        )
+        scrape_count = db['scrape_count']
+        scrape_count.create_index('spider', name='idx_spider')
 
     def _connect(self):
         client = MongoClient(SETTINGS['MONGODB_URI'], connect=False)
@@ -108,7 +105,7 @@ def is_exists_article(item):
     ).limit(1)
     if (cursor.count() > 0 and
        len(cursor[0]['content']) > len(item['content'])):
-            return True
+        return True
     return False
 
 
@@ -156,7 +153,7 @@ def get_category_tags():
 
 
 def log_spider_scrape_count(spider, count):
-    result = ScrapyDB.feed.insert_one(
+    result = ScrapyDB.scrape_count.insert_one(
         {
             'spider': spider._id,
             'time': datetime.now(),
