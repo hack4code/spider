@@ -21,9 +21,10 @@ from scrapy.utils.log import configure_logging
 from mydm.model import save_spider_settings, save_feed, is_exists_spider
 from mydm.exceptions import SpiderFactoryException
 from mydm.spiderfactory import SpiderFactory
-from mydm.util import get_stats
+from mydm.model import get_stats
 
 logger = logging.getLogger(__name__)
+
 SETTINGS = get_project_settings()
 
 
@@ -34,9 +35,11 @@ def _send(key, data):
     )
     channel = connection.channel()
     channel.exchange_declare(exchange='direct_logs', type='direct')
-    channel.basic_publish(exchange='direct_logs',
-                          routing_key=key,
-                          body=body)
+    channel.basic_publish(
+            exchange='direct_logs',
+            routing_key=key,
+            body=body
+    )
     connection.close()
 
 
@@ -44,15 +47,17 @@ def _get_feed_name(url):
     parser = urlparse(url)
     fields = parser.hostname.split('.')
     if len(fields) == 1:
-        return re.sub(r'[^a-zA-Z]',
-                      '',
-                      fields[0]
-                      ).lower().capitalize()
+        return re.sub(
+                r'[^a-zA-Z]',
+                '',
+                fields[0]
+        ).lower().capitalize()
     else:
-        return ''.join([re.sub(r'[^a-zA-Z]',
-                               '',
-                               _).lower().capitalize()
-                        for _ in fields[:-1] if _.lower() != 'www'])
+        return ''.join(
+                re.sub(r'[^a-zA-Z]', '', _).lower().capitalize()
+                for _ in fields[:-1]
+                if _.lower() != 'www'
+        )
 
 
 def test_spider(setting):
@@ -64,12 +69,13 @@ def test_spider(setting):
     except SpiderFactoryException as e:
         logger.error('Error in test_spider SpiderFactory[%s]', e)
         return False
-    url = SETTINGS['TEMP_SPIDER_STATS_URL']
     TEST_SETTINGS = {
-        'EXTENSIONS': {'mydm.extensions.ExtensionStats': 900,
-                       'scrapy.extensions.logstats.LogStats': None,
-                       'scrapy.extensions.spiderstate.SpiderState': None,
-                       'scrapy.extensions.telnet.TelnetConsole': None, },
+        'EXTENSIONS': {
+            'mydm.extensions.ExtensionStats': 900,
+            'scrapy.extensions.logstats.LogStats': None,
+            'scrapy.extensions.spiderstate.SpiderState': None,
+            'scrapy.extensions.telnet.TelnetConsole': None,
+        },
         'BOT_NAME': 'TestSpider',
         'WEBSERVICE_ENABLED': False,
         'TELNETCONSOLE_ENABLED': False,
@@ -86,7 +92,7 @@ def test_spider(setting):
     logger.info('test_spider reator starting ...')
     reactor.run()
     logger.info('test_spider reator stopped')
-    stats = get_stats(url, [spid])
+    stats = get_stats([spid])
     n = stats[spid]
     return True if n > 0 else False
 
@@ -103,16 +109,20 @@ def gen_lxmlspider(setting):
         logger.error('Error in gen_lxmlspider connection[%s]', url)
         return False
     if r.status_code != 200:
-        logger.error('Error in gen_lxmlspider requests[%s, status=%d]',
-                     url,
-                     r.status_code)
+        logger.error(
+                'Error in gen_lxmlspider requests[%s, status=%d]',
+                url,
+                r.status_code
+        )
         return False
 
-    parser = etree.XMLParser(encoding=r.encoding,
-                             ns_clean=True,
-                             remove_blank_text=True,
-                             dtd_validation=False,
-                             load_dtd=True)
+    parser = etree.XMLParser(
+            encoding=r.encoding,
+            ns_clean=True,
+            remove_blank_text=True,
+            dtd_validation=False,
+            load_dtd=True
+    )
     try:
         root = etree.XML(r.content, parser)
     except Exception:
@@ -127,10 +137,13 @@ def gen_lxmlspider(setting):
         except ValueError:
             continue
         else:
-            if en == 'title':
-                setting['title'] = re.sub(r'^(\r|\n|\s)+|(\r|\n|\s)+$',
-                                          '',
-                                          e.text)
+            if en != 'title':
+                continue
+            setting['title'] = re.sub(
+                    r'^(\r|\n|\s)+|(\r|\n|\s)+$',
+                    '',
+                    e.text
+            )
     setting['name'] = _get_feed_name(url)
     if 'title' not in setting:
         setting['title'] = setting['name']
@@ -173,18 +186,19 @@ def crawl(args):
     if 'all' in spids:
         spids = loader.list()
     spiders = [
-        loader.load(_)
-        for _ in filter(lambda __: __ in loader.list(), spids)
+        loader.load(spid)
+        for spid in spids
+        if spid in loader.list()
     ]
     if not spiders:
         return False
 
     random.shuffle(spiders)
-    for __ in spiders:
-        runner.crawl(__)
+    for spider in spiders:
+        runner.crawl(spider)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
 
-    logger.info('crawl reator starting ...')
+    logger.info('crawl reator starting...')
     reactor.run()
     logging.info('crawl reator stopped')
