@@ -29,8 +29,8 @@ class MongoDB:
                 [('spider', ASCENDING), ('crawl_date', ASCENDING)],
                 name='idx_spider_crawl_date'
         )
-        scrape_count = db['scrape_count']
-        scrape_count.create_index('spider', name='idx_spider')
+        scrapecount = db['scrapecount']
+        scrapecount.create_index('spider', name='idx_spider')
 
     def _connect(self):
         client = MongoClient(SETTINGS['MONGODB_URI'], connect=False)
@@ -153,7 +153,7 @@ def get_category_tags():
 
 
 def log_spider_scrape_count(spider, count):
-    result = ScrapyDB.scrape_count.insert_one(
+    result = ScrapyDB.scrapecount.insert_one(
         {
             'spider': spider._id,
             'time': datetime.now(),
