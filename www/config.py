@@ -33,6 +33,7 @@ ARTICLE_CATEGORIES = {
         '安全',
         '科技',
         '新闻',
+        '漫画',
 }
 
 # filter
