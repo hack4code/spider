@@ -420,8 +420,7 @@ class ContentDiv extends React.Component {
            "数据库": [],
            "安全": [],
            "python": [],
-           "艺术": [],
-	   "文化": []}
+           "漫画": [],
   };
 
   constructor(props) {
@@ -446,8 +445,7 @@ class ContentDiv extends React.Component {
         "安全": 3,
         "科技": 4,
         "新闻": 5,
-        "艺术": 6,
-	"文化": 7
+        "漫画": 6,
       };
       return (sortList[a] > sortList[b]) ? 1 : -1;
     });
