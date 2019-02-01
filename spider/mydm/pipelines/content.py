@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import re
+import logging
 
-from lxml.html import fromstring, HTMLParser, defs, HtmlElement
 from lxml.html.clean import Cleaner
 from lxml.etree import XPathEvalError, ParserError
+from lxml.html import fromstring, HTMLParser, defs, HtmlElement
 
-from mydm.exceptions import ContentException
+from scrapy.exceptions import DropItem
 
 
 logger = logging.getLogger(__name__)
 
 
-class ContentPipeline(object):
+class ContentPipeline:
 
+    DEFAULT_SAFE_ATTRS = 'safe_attrs'
     DEFAULT_ALLOW_CLASSES_NAME = 'allow_classes'
     DEFAULT_REMOVED_CLASSES_NAME = 'removed_classes'
     DEFAULT_REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
-    DEFAULT_SAFE_ATTRS = 'safe_attrs'
 
     SAFE_ATTRS = {
             'style',
@@ -148,9 +148,11 @@ class ContentPipeline(object):
 
         doc = item['content']
         if not isinstance(doc, (HtmlElement, str, bytes)):
-            raise ContentException((
-                'Error in content pipeline unsupported doc type[{}]'
-                ).format(doc.__class__.__name__))
+            logger.error(
+                (f'Error in content pipeline unsupported doc type'
+                 '[{doc.__class__.__name__}]')
+            )
+            raise DropItem('unknown document type')
         if isinstance(doc, (str, bytes)):
             try:
                 doc = fromstring(
@@ -163,7 +165,7 @@ class ContentPipeline(object):
                         str(e),
                         item['link']
                 )
-                return
+                raise DropItem('document parse error')
 
         # remove element with class name for clean display
         removed_classes = getattr(
@@ -182,6 +184,7 @@ class ContentPipeline(object):
         )
         if removed_xpath_nodes is not None:
             doc = self.remove_element_with_xpath(doc, removed_xpath_nodes)
+
         allow_classes = getattr(
                 spider,
                 self.ALLOW_CLASSES_NAME,
