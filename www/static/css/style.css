@@ -4,32 +4,38 @@
 @font-face      { font-family: 'Source Code Pro';
                   font-style: lighter;
                   font-weight: lighter;
-                  src: url('/static/fonts/SourceCodePro-Light.ttf') format('truetype');}
+                  src: url('/static/fonts/SourceCodePro-Light.ttf') format('truetype');
+		  font-display: block; }
 
 @font-face      { font-family: 'Source Code Pro';
                   font-style: normal;
                   font-weight: normal;
-                  src: url('/static/fonts/SourceCodePro-Regular.ttf') format('truetype');}
+                  src: url('/static/fonts/SourceCodePro-Regular.ttf') format('truetype');
+		  font-display: block; }
 
 @font-face      { font-family: 'Source Code Pro';
                   font-style: bold;
                   font-weight: bold;
-                  src: url('/static/fonts/SourceCodePro-Bold.ttf') format('truetype');}
+                  src: url('/static/fonts/SourceCodePro-Bold.ttf') format('truetype');
+		  font-display: block; }
 
 @font-face      { font-family: 'Nunito';
                   font-style: lighter;
                   font-weight: lighter;
-                  src: url('/static/fonts/Nunito-Light.ttf') format('truetype');}
+                  src: url('/static/fonts/Nunito-Light.ttf') format('truetype');
+		  font-display: block; }
 
 @font-face      { font-family: 'Nunito';
                   font-style: normal;
                   font-weight: normal;
-                  src: url('/static/fonts/Nunito-Regular.ttf') format('truetype');}
+                  src: url('/static/fonts/Nunito-Regular.ttf') format('truetype');
+		  font-display: block; }
 
 @font-face      { font-family: 'Nunito';
                   font-style: bold;
                   font-weight: bold;
-                  src: url('/static/fonts/Nunito-Bold.ttf') format('truetype');}
+                  src: url('/static/fonts/Nunito-Bold.ttf') format('truetype');
+		  font-display: block; }
 
 /*
  *
