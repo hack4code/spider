@@ -315,17 +315,7 @@ def get_categories():
 
 # function for test
 
-def get_all_days():
-    cursor = ScrapyDB.article.find(
-        {},
-        {
-            'crawl_date': 1
-        }
-    )
-    return {_['crawl_date'].date() for _ in cursor} if cursor.count() else None
-
-
-def get_all_articles(c):
+def get_aids_by_category(c):
     cursor = ScrapyDB.article.find(
         {
             'category': c
@@ -334,18 +324,20 @@ def get_all_articles(c):
             '_id': 1
         }
     ).sort('_id', ASCENDING)
-    return [AID(_['_id']) for _ in cursor] if cursor.count() else None
+    return [
+            AID(item['_id'])
+            for item in cursor
+    ] if cursor.count() else None
 
 
-def get_articles():
+def get_all_aids():
     cursor = ScrapyDB.article.find(
         {},
         {
             '_id': 1
         }
     )
-    return [_['_id'] for _ in cursor] if cursor.count() else None
-
-
-def get_max_aid_all():
-    pass
+    return [
+            item['_id']
+            for item in cursor
+    ] if cursor.count() else None
