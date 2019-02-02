@@ -8,7 +8,7 @@ import pika
 from flask import request, current_app
 
 from marshmallow import (
-        Schema, fields, validates, pre_load, post_load, ValidationError
+        Schema, fields, validates, pre_load, ValidationError
 )
 from flask_restful import Resource
 
@@ -28,6 +28,9 @@ def _send(key, data):
 
 
 class StripSchema(Schema):
+
+    def __init__(self, strict=True, **kwargs):
+        super(Schema, self).__init__(strict=strict, **kwargs)
 
     @pre_load
     def strip(self, data):
