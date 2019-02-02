@@ -19,7 +19,6 @@ class ErrbackSpider(Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            logger.info('request for %s', url)
             yield Request(
                     url,
                     callback=self.parse,
@@ -43,7 +42,7 @@ class ErrbackSpider(Spider):
             )
         else:
             logger.error(
-                    'SpiderError on url[%s, error=%s',
+                    'SpiderError on url[%s, error=%s]',
                     failure.request.url,
                     repr(failure)
             )

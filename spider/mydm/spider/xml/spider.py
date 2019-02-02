@@ -8,12 +8,12 @@ from datetime import datetime
 
 from lxml import etree
 
-from scrapy.spiders import Spider
 from scrapy import Request
+from scrapy.spiders import Spider
 
-from mydm.spider.spider import ErrbackSpider
-from mydm.items import ArticleItem
 from mydm.ai import extract_tags
+from mydm.items import ArticleItem
+from mydm.spider.spider import ErrbackSpider
 from .extractor import ItemExtractor
 
 
@@ -39,15 +39,19 @@ class LXMLSpider(Spider):
     def extract_content(self, response):
         item = response.meta['item']
         content = response.xpath(self.item_content_xpath).extract_first()
-        if content is not None:
-            item['content'] = content
-            item['encoding'] = response.encoding
-            item['link'] = response.url
-            if item.get('tag') is None:
-                set_item_tag(content, item, item['encoding'])
-            return ArticleItem(item)
-        else:
-            logger.error('spider[{}] extract content failed'.format(self.name))
+        if not content:
+            logger.error(
+                    'spider[%s] extract content failed[%s]',
+                    self.name,
+                    response.url
+            )
+            return
+        item['content'] = content
+        item['encoding'] = response.encoding
+        item['link'] = response.url
+        if item.get('tag') is None:
+            set_item_tag(content, item, item['encoding'])
+        return ArticleItem(item)
 
     def parse(self, response):
         parser = etree.XMLParser(
@@ -57,7 +61,7 @@ class LXMLSpider(Spider):
         )
         root = etree.XML(response.body, parser)
         if root is None:
-            logger.error('Error in LXMLSpider feed parse failed')
+            logger.error('spider[%s] rss feed parse failed', self.name)
             yield None
         else:
             while len(root) == 1:
@@ -89,20 +93,22 @@ class LXMLSpider(Spider):
                                 errback=self.errback,
                                 dont_filter=True
                         )
-                    elif item.get('content') is not None:
+                    elif item.get('content'):
                         yield ArticleItem(item)
 
 
 class LXMLSpiderMeta(type):
+
     def __new__(cls, name, bases, attrs):
         if all(attr in attrs for attr in XMLSPIDER_ATTRS):
+
             def update_bases(bases):
-                assert LXMLSpider not in bases, 'LXMLSpider in bases'
-                bases_ = [LXMLSpider]
-                bases_.extend(bases)
-                if ErrbackSpider not in bases_:
-                    bases_.append(ErrbackSpider)
-                return tuple(bases_)
+                new_bases = [LXMLSpider]
+                new_bases.extend(bases)
+                if ErrbackSpider not in new_bases:
+                    new_bases.append(ErrbackSpider)
+                return tuple(new_bases)
+
             bases = update_bases(bases)
             return super().__new__(
                     cls,
@@ -116,6 +122,4 @@ class LXMLSpiderMeta(type):
                     for attr in XMLSPIDER_ATTRS
                     if attr not in attrs
             ]
-            raise AttributeError(
-                f'Error in LXMLSpiderMeta miss attributes{miss_attrs}'
-            )
+            raise AttributeError(f'miss attributes[{miss_attrs}]')

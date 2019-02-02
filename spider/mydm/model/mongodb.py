@@ -45,7 +45,7 @@ class MongoDB:
         try:
             return self._db[key]
         except KeyError:
-            raise AttributeError('MongoDb has no collection {}'.format(key))
+            raise AttributeError('collection[{key}] not found')
 
 
 ScrapyDB = MongoDB()
@@ -140,16 +140,16 @@ def save_spider_settings(settings):
 def get_spider_settings():
     settings = []
     cursor = ScrapyDB.spider.find()
-    for _ in cursor:
-        setting = dict(_)
-        setting['_id'] = str(_['_id'])
+    for item in cursor:
+        setting = dict(item)
+        setting['_id'] = str(item['_id'])
         settings.append(setting)
     return settings
 
 
 def get_category_tags():
     cursor = ScrapyDB.category.find()
-    return {_['category']: _['tags'] for _ in cursor}
+    return {item['category']: item['tags'] for item in cursor}
 
 
 def log_spider_scrape_count(spider, count):

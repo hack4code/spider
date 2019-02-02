@@ -30,10 +30,7 @@ class MongoSpiderLoader:
             try:
                 cls = SpiderFactory.mkspider(setting)
             except SpiderFactoryException as e:
-                logger.error(
-                    'MongoSpiderLoader got SpiderFactoryException[%s]',
-                    e
-                )
+                logger.error('spider loader error[%s]', e)
             else:
                 spiders[spid] = cls
         return spiders
