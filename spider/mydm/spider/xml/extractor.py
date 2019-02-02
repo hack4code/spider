@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 from zope.interface import Interface, implementer
 from dateutil.parser import parse as get_date
+
 from lxml.etree import QName
 
 

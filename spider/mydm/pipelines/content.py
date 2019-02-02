@@ -69,9 +69,7 @@ class ContentPipeline:
         try:
             doc.make_links_absolute(link)
         except ValueError:
-            logger.error(
-                f'Error in pipeline content make_links_absolute[{link}]'
-            )
+            logger.error('make_links_absolute error [%s]', link)
         return doc
 
     def remove_element_with_class(self, doc, removed_classes):
@@ -85,9 +83,7 @@ class ContentPipeline:
             try:
                 nodes = doc.xpath(xpath)
             except XPathEvalError:
-                logger.error(
-                    f'Error in pipeline content invalid xpath[{xpath}]'
-                )
+                logger.error('invalid xpath expression [%s]', xpath)
             else:
                 for node in nodes:
                     node.drop_tree()
@@ -148,10 +144,7 @@ class ContentPipeline:
 
         doc = item['content']
         if not isinstance(doc, (HtmlElement, str, bytes)):
-            logger.error(
-                    'process_item: unknown doc type %s',
-                    doc.__class__.__name__
-            )
+            logger.error('unknown doc type %s', doc.__class__.__name__)
             raise DropItem('unknown document type')
         if isinstance(doc, (str, bytes)):
             try:
@@ -160,7 +153,7 @@ class ContentPipeline:
                     parser=HTMLParser(encoding=item['encoding'])
                 )
             except ParserError as e:
-                logger.error('process_item: %s', e)
+                logger.error('html parse error %s', e)
                 raise DropItem('document parse error')
 
         # remove element with class name for clean display

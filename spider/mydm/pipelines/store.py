@@ -3,8 +3,10 @@
 
 from lxml.html import tostring, HtmlElement
 
-from mydm.model import is_exists_article, save_article
+from scrapy.exceptions import DropItem
+
 from mydm.ai import get_category
+from mydm.model import is_exists_article, save_article
 
 
 def get_article_lang(item):
@@ -23,28 +25,25 @@ class StorePipeline:
         return cls()
 
     def process_item(self, item, spider):
-        if not item:
-            return
         doc = item['content']
         if not isinstance(doc, (str, bytes)):
-            if isinstance(doc, HtmlElement):
-                item['content'] = tostring(
-                    doc,
-                    encoding='UTF-8',
-                    pretty_print=True,
-                    method='html'
+            if not isinstance(doc, HtmlElement):
+                raise DropItem(
+                        f'unknown document type {doc.__class__.__name__}'
                 )
-                item['encoding'] = 'UTF-8'
-            else:
-                raise Exception((
-                    'Error in store pipeline unsupported doc type[{}]'
-                    ).format(doc.__class__.__name__))
+            item['content'] = tostring(
+                doc,
+                encoding='UTF-8',
+                pretty_print=True,
+                method='html'
+            )
+            item['encoding'] = 'UTF-8'
 
-        item_ = dict(item)
-        item_['lang'] = get_article_lang(item)
-        item_['spider'] = spider._id
-        item_['source'] = spider.title
-        item_['category'] = get_category(item_)
-        if not is_exists_article(item_):
-            save_article(item_)
+        itemd = dict(item)
+        itemd['lang'] = get_article_lang(item)
+        itemd['spider'] = spider._id
+        itemd['source'] = spider.title
+        itemd['category'] = get_category(itemd)
+        if not is_exists_article(itemd):
+            save_article(itemd)
         return item

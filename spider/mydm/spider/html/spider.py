@@ -62,7 +62,7 @@ class BLOGSpider(Spider):
     def extract_content(self, response):
         item = response.meta['item']
         item['encoding'] = response.encoding
-        item['link'] = response.url
+        item['link'] = response.url.strip('\t\n\r ')
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
         if item.get('tag') is None:
@@ -80,7 +80,7 @@ class BLOGSpider(Spider):
                     if item.get(attr) is None
             ]
             logger.error(
-                    'Error in spider %s extract content miss attrs%s',
+                    'spider[%s] extract content miss attrs[%s]',
                     self.name,
                     miss_attrs
             )
@@ -107,7 +107,6 @@ class BLOGSpider(Spider):
             link = item.get('link')
             if link is None:
                 continue
-            link = link.strip('\r\n\t ')
             if not link.startswith('http'):
                 item['link'] = response.urljoin(link)
             yield Request(
@@ -157,6 +156,4 @@ class BLOGSpiderMeta(type):
                     for attr in BLOGSPIDER_ATTRS
                     if attr not in attrs
             ]
-            raise AttributeError(
-                f'Error in BLOGSpiderMeta miss attributes{miss_attrs}'
-            )
+            raise AttributeError(f'miss attributes{miss_attrs}')
