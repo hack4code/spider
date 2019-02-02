@@ -184,12 +184,13 @@ def crawl(args):
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     runner = CrawlerRunner(SETTINGS)
     loader = runner.spider_loader
+    spids_all = loader.list()
     if 'all' in spids:
-        spids = loader.list()
+        spids = spids_all
     spiders = [
         loader.load(spid)
         for spid in spids
-        if spid in loader.list()
+        if spid in spids_all
     ]
     if not spiders:
         return False
@@ -202,4 +203,4 @@ def crawl(args):
 
     logger.info('crawl reator starting...')
     reactor.run()
-    logging.info('crawl reator stopped')
+    logger.info('crawl reator stopped')
