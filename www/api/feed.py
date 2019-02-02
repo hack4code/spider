@@ -83,7 +83,6 @@ class AtomFeedSchema(FeedSchema):
 class AtomFeed(Resource):
 
     def post(self):
-        current_app.logger.info(f'feed: {request.get_json()}')
         schema = AtomFeedSchema()
         try:
             feed = schema.load(request.get_json()).data
