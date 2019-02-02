@@ -30,7 +30,7 @@ def get_stats(spids):
             n = r.get(spid)
             r.delete(spid)
         except redis.exceptions.ConnectionError:
-            logger.error('Error in get_stats failed to connect redis server')
+            logger.error('get_stats failed to connect redis server')
         n = 0 if n is None else int(n)
         stats[spid] = n
     return stats
@@ -47,4 +47,4 @@ def save_stats(spider, value):
     try:
         r.set(spid, value)
     except redis.exceptions.ConnectionError:
-        logger.error('Error in save_stats failed to connect redis server')
+        logger.error('save_stats failed to connect redis server')
