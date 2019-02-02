@@ -149,8 +149,8 @@ class ContentPipeline:
         doc = item['content']
         if not isinstance(doc, (HtmlElement, str, bytes)):
             logger.error(
-                (f'Error in content pipeline unsupported doc type'
-                 '[{doc.__class__.__name__}]')
+                    'process_item: unknown doc type %s',
+                    doc.__class__.__name__
             )
             raise DropItem('unknown document type')
         if isinstance(doc, (str, bytes)):
@@ -160,11 +160,7 @@ class ContentPipeline:
                     parser=HTMLParser(encoding=item['encoding'])
                 )
             except ParserError as e:
-                logger.Error(
-                        'Error in content pipeline %s for link is %s',
-                        str(e),
-                        item['link']
-                )
+                logger.error('process_item: %s', e)
                 raise DropItem('document parse error')
 
         # remove element with class name for clean display

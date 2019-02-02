@@ -4,6 +4,7 @@
 import logging
 import re
 
+from lxml.etree import ParserError
 from lxml.html import fromstring, HTMLParser, HtmlElement
 
 
@@ -77,12 +78,16 @@ class TagExtractor:
 
     def __call__(self, doc, encoding='UTF-8'):
         if isinstance(doc, (str, bytes)):
-            doc = fromstring(
-                    bytes(bytearray(doc, encoding=encoding)),
-                    parser=HTMLParser(encoding=encoding)
-            )
+            try:
+                doc = fromstring(
+                        bytes(bytearray(doc, encoding=encoding)),
+                        parser=HTMLParser(encoding=encoding)
+                )
+            except ParserError as e:
+                logger.error('TagExtractor %s', e)
+                return
         if not isinstance(doc, HtmlElement):
-            return None
+            return
         for cls in self.EXTRACTORS:
             extract = cls()
             tags_ = extract(doc)

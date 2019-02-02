@@ -14,17 +14,18 @@ from lxml import etree
 
 from twisted.internet import reactor
 
-from scrapy.utils.project import get_project_settings
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.log import configure_logging
+from scrapy.utils.project import get_project_settings
 
-from mydm.model import save_spider_settings, save_feed, is_exists_spider
-from mydm.exceptions import SpiderFactoryException
 from mydm.spiderfactory import SpiderFactory
-from mydm.model import get_stats
+from mydm.exceptions import SpiderFactoryException
+from mydm.model import (
+        save_spider_settings, save_feed, is_exists_spider, get_stats
+)
+
 
 logger = logging.getLogger(__name__)
-
 SETTINGS = get_project_settings()
 
 
