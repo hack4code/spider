@@ -27,10 +27,14 @@ services:
                 container_name: mongodb
                 expose:
                         - "27017"
+                environment:
+                        MONGO_INITDB_ROOT_USERNAME: admin
+                        MONGO_INITDB_ROOT_PASSWORD: admin
                 volumes:
                         - ./mongo/script/:/script/
                         - ./mongo/data/:/data/db/
                         - ./mongo/dump/:/dump/
+                        - ./mongo/init/:/docker-entrypoint-initdb.d/
                 networks:
                         - mongodb
                 command: ["--auth", "--storageEngine", "wiredTiger"]
