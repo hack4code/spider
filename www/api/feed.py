@@ -19,11 +19,15 @@ def _send(key, data):
         pika.connection.URLParameters(current_app.config['BROKER_URL'])
     )
     channel = connection.channel()
-    channel.exchange_declare(exchange='direct_logs',
-                             exchange_type='direct')
-    channel.basic_publish(exchange='direct_logs',
-                          routing_key=key,
-                          body=body)
+    channel.exchange_declare(
+            exchange='direct_logs',
+            exchange_type='direct'
+    )
+    channel.basic_publish(
+            exchange='direct_logs',
+            routing_key=key,
+            body=body
+    )
     connection.close()
 
 
@@ -39,20 +43,24 @@ class StripSchema(Schema):
             if isinstance(val, str):
                 val = val.strip(' \r\t\n')
             elif isinstance(val, (list, tuple)):
-                val = list(filter(lambda _: _,
-                                  (item.strip(' \r\t\n') for item in val)))
+                val = list(
+                        filter(
+                            lambda _: _,
+                            (item.strip(' \r\t\n') for item in val)
+                        )
+                )
             if val:
                 new_data[key] = val
         return new_data
 
 
-class SpiderListSchema(StripSchema):
-    spiders = fields.List(fields.String())
-
-
 class CrawlSpiders(Resource):
 
     def post(self):
+
+        class SpiderListSchema(StripSchema):
+            spiders = fields.List(fields.String())
+
         schema = SpiderListSchema()
         try:
             spiders = schema.load(request.get_json()).data
@@ -73,16 +81,16 @@ class FeedSchema(StripSchema):
             raise ValidationError(f'category value {category} is invalid')
 
 
-class AtomFeedSchema(FeedSchema):
-    url = fields.Url(required=True)
-    category = fields.String(required=True)
-    item_content_xpath = fields.String()
-    removed_xpath_nodes = fields.List(fields.String())
-
-
 class AtomFeed(Resource):
 
     def post(self):
+
+        class AtomFeedSchema(FeedSchema):
+            url = fields.Url(required=True)
+            category = fields.String(required=True)
+            item_content_xpath = fields.String()
+            removed_xpath_nodes = fields.List(fields.String())
+
         schema = AtomFeedSchema()
         try:
             feed = schema.load(request.get_json()).data
@@ -95,19 +103,19 @@ class AtomFeed(Resource):
         return '', 200
 
 
-class BlogFeedSchema(FeedSchema):
-    url = fields.Url(required=True)
-    category = fields.String(required=True)
-    entry_xpath = fields.String(required=True)
-    item_title_xpath = fields.String(required=True)
-    item_link_xpath = fields.String(required=True)
-    item_content_xpath = fields.String(required=True)
-    removed_xpath_nodes = fields.List(fields.String())
-
-
 class BlogFeed(Resource):
 
     def post(self):
+
+        class BlogFeedSchema(FeedSchema):
+            url = fields.Url(required=True)
+            category = fields.String(required=True)
+            entry_xpath = fields.String(required=True)
+            item_title_xpath = fields.String(required=True)
+            item_link_xpath = fields.String(required=True)
+            item_content_xpath = fields.String(required=True)
+            removed_xpath_nodes = fields.List(fields.String())
+
         schema = BlogFeedSchema()
         try:
             feed = schema.load(request.get_json()).data

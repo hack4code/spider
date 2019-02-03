@@ -16,7 +16,7 @@ class SpiderFactory:
     def mkspider(setting):
         if 'name' not in setting or 'type' not in setting:
             raise SpiderFactoryException(
-                    'no name|type setting attribute found'
+                    'miss attribute[name|type]'
             )
         try:
             build = SpiderMetaClses[setting['type']]
