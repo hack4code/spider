@@ -107,11 +107,11 @@ def gen_lxmlspider(setting):
     try:
         r = requests.get(url, headers=headers)
     except requests.exceptions.ConnectionError:
-        logger.error('Error in gen_lxmlspider connection[%s]', url)
+        logger.error('xml spider connection[%s] failed', url)
         return False
     if r.status_code != 200:
         logger.error(
-                'Error in gen_lxmlspider requests[%s, status=%d]',
+                'requests[%s, status=%d]',
                 url,
                 r.status_code
         )
@@ -127,7 +127,7 @@ def gen_lxmlspider(setting):
     try:
         root = etree.XML(r.content, parser)
     except Exception:
-        logger.exception('Error in gen_lxmlspider parse feed[%s] failed', url)
+        logger.exception('xml spider parse feed[%s] failed', url)
         return False
 
     while len(root) == 1:
@@ -156,7 +156,7 @@ def gen_lxmlspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_lxmlspider[%s]', url)
+        logger.error('rss spider feed[%s] create failed', url)
         return False
 
 
@@ -174,7 +174,7 @@ def gen_blogspider(setting):
         save_spider_settings(setting)
         return True
     else:
-        logger.error('Error in gen_blogspider[%s]', url)
+        logger.error('blog spider feed[%s] create failed', url)
         return False
 
 

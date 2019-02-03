@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import sys
 import json
-from collections import deque
+import logging
 from time import sleep
+from collections import deque
 from multiprocessing import Process
 
 import pika
-
 from scrapy.utils.project import get_project_settings
 
 from task import crawl, gen_lxmlspider, gen_blogspider
@@ -35,7 +34,7 @@ def task(callback, key):
     channel.basic_qos(prefetch_count=1)
 
     def consume(ch, method, properties, body):
-        logger.info('get job[%s] from rabbitmq', callback.__name__)
+        logger.info('get job[%s] from queue', callback.__name__)
         args = json.loads(body)
         p = Process(target=callback, args=(args,))
         p.daemon = True
@@ -71,6 +70,7 @@ def task(callback, key):
 
 
 def main():
+
     def init_logger():
         root = logging.getLogger()
         root.setLevel(logging.DEBUG)
@@ -101,10 +101,7 @@ def main():
         for i, (p, args) in enumerate(tasks):
             if p.is_alive():
                 continue
-            logger.error(
-                'Error in main task %s quit unexpected',
-                TASKS[i][0].__name__
-            )
+            logger.error('task %s quit unexpected', TASKS[i][0].__name__)
             p.join()
             np = Process(target=task, args=args)
             np.start()
