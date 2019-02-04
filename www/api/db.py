@@ -77,16 +77,14 @@ class Day(Resource):
             return {'message': 'articles not found'}, 204
 
         entries = get_entries(day_entry)
-
+        dentries = {}
         if not _is_master() and entries:
-            entries_ = {}
             for category, alist in entries.items():
-                entries_[category] = [
+                dentries[category] = [
                     a
                     for a in alist
                     if a.spider not in current_app.config['FEED_FILTER']
                 ]
-            entries = entries_
 
         day_before = get_before_day(day_entry)
         if day_before is not None:
@@ -98,7 +96,7 @@ class Day(Resource):
         return {
                 'day_before': day_before,
                 'day_after': day_after,
-                'data': entries
+                'data': dentries
         }
 
 
