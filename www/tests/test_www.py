@@ -32,7 +32,7 @@ class TestWWW:
         aids = get_all_aids()
         random.shuffle(aids)
         for aid in aids[:8]:
-            rv = client.get('/a/{}'.format(aid))
+            rv = client.get(f'/a/{aid}')
             assert '<article' in rv.data.decode('utf8')
 
     def test_invalid_aid(self, client):
@@ -77,18 +77,16 @@ class TestWWW:
 
         # invalid day
         rv = client.get('/api/day')
-        assert 400 in rv.status_code
+        assert 400 == rv.status_code
         rv = client.get('/api/day?day=2.3.2')
-        assert 400 in rv.status_code
+        assert 400 == rv.status_code
         noday = firstday - timedelta(days=1)
         rv = client.get(f'/api/day?day={noday}')
         assert 204 == rv.status_code
-        data = json.loads(rv.data)
-        assert 'message' in data
 
     def test_api_entries(self, client):
-        spiders = get_spiders()
-        spid = random.choice(spiders)
+        spids = list(get_spiders().keys())
+        spid = random.choice(spids)
 
         rv = client.get(f'/api/entries?spid={spid}')
         data = json.loads(rv.data)
