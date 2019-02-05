@@ -96,7 +96,7 @@ class Day(Resource):
         return {
                 'day_before': day_before,
                 'day_after': day_after,
-                'data': dentries
+                'data': dentries or None,
         }
 
 
