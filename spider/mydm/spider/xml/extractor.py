@@ -118,7 +118,7 @@ class CategoryTag:
             return
         if self.val is None:
             self.val = []
-        self.val.append(v.strip('\t\n '))
+        self.val.append(v.strip('\t\n\r '))
 
 
 @implementer(ITagExtractor)

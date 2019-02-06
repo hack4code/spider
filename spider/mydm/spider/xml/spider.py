@@ -80,10 +80,8 @@ class LXMLSpider(Spider):
                         set_item_tag(item['content'], item, item['encoding'])
                     if hasattr(self, 'item_content_xpath'):
                         try:
-                            link = '{}?{}'.format(
-                                    item['link'],
-                                    self.item_content_link_parameter
-                                    )
+                            link = (f'{item["link"]}?'
+                                    '{self.item_content_link_parameter}')
                         except AttributeError:
                             link = item['link']
                         yield Request(
@@ -122,4 +120,4 @@ class LXMLSpiderMeta(type):
                     for attr in XMLSPIDER_ATTRS
                     if attr not in attrs
             ]
-            raise AttributeError(f'miss attributes[{miss_attrs}]')
+            raise AttributeError(f'miss attributes{miss_attrs}')

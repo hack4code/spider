@@ -80,7 +80,7 @@ class BLOGSpider(Spider):
                     if item.get(attr) is None
             ]
             logger.error(
-                    'spider[%s] extract content miss attrs[%s]',
+                    'spider[%s] extract content miss attrs%s',
                     self.name,
                     miss_attrs
             )
