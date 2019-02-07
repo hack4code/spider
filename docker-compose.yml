@@ -76,7 +76,7 @@ services:
                         - "8000"
                 volumes:
                         - ./www/:/www/
-                command: ["uwsgi", "--ini-paste", "uwsgi.ini"] 
+                command: ["uwsgi", "--ini-paste", "uwsgi.ini"]
 
         nginx:
                 image: nginx
