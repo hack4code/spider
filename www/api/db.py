@@ -4,8 +4,8 @@
 from datetime import datetime, date
 from collections import namedtuple
 
-from bson.objectid import ObjectId
 from bson.errors import InvalidId
+from bson.objectid import ObjectId
 
 from flask import current_app, request, session
 from flask_restful import Resource
@@ -20,14 +20,6 @@ from model import (
 
 
 Spider = namedtuple('Spider', ['id', 'source'])
-
-
-def _is_master():
-    try:
-        master = request.headers['master']
-    except KeyError:
-        master = 'no'
-    return True if master.lower() == 'yes' else False
 
 
 class Vote(Resource):
@@ -61,30 +53,32 @@ class Day(Resource):
         try:
             day = request.args['day']
         except KeyError:
-            return {'message': 'no day'}, 400
+            return {'message': 'argument day not found'}, 400
         else:
             try:
-                day_entry = date(*(int(_) for _ in day.split('-')))
+                day_entry = date(*(int(item) for item in day.split('-')))
             except ValueError:
                 return {'message': 'invalid date value'}, 400
 
         day_begin = get_begin_day()
 
         if day_begin is None:
-            return {'message': 'articles not found'}, 204
+            return {'message': 'no articles found'}, 204
 
         if not day_begin <= day_entry <= datetime.utcnow().date():
-            return {'message': 'articles not found'}, 204
+            return {'message': 'no articles found'}, 204
 
-        entries = get_entries(day_entry)
-        dentries = {}
-        if not _is_master() and entries:
-            for category, alist in entries.items():
-                dentries[category] = [
+        entries = {}
+        data = get_entries(day_entry)
+        if data:
+            for category, alist in data.items():
+                entries[category] = [
                     a
                     for a in alist
                     if a.spider not in current_app.config['FEED_FILTER']
                 ]
+        if not entries:
+            entries = None
 
         day_before = get_before_day(day_entry)
         if day_before is not None:
@@ -96,7 +90,7 @@ class Day(Resource):
         return {
                 'day_before': day_before,
                 'day_after': day_after,
-                'data': dentries or None,
+                'data': entries,
         }
 
 
@@ -110,14 +104,11 @@ class Spiders(Resource):
 
     def get(self):
         spiders = get_spiders()
-        if _is_master():
-            entries = [Spider(spid, name) for spid, name in spiders.items()]
-        else:
-            entries = [
-                Spider(spid, name)
-                for spid, name in spiders.items()
-                if spid not in current_app.config['FEED_FILTER']
-            ]
+        entries = [
+            Spider(spid, name)
+            for spid, name in spiders.items()
+            if spid not in current_app.config['FEED_FILTER']
+        ]
         return {'entries': entries}
 
 
