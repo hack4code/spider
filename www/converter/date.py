@@ -10,9 +10,9 @@ class DateConverter(BaseConverter):
 
     def to_python(self, value):
         try:
-            return date(*(int(_) for _ in value.split('-')))
+            return date(*(int(item) for item in value.split('-')))
         except ValueError:
-            raise ValidationError('invalid date format')
+            raise ValidationError('invalid date value')
 
     def to_url(self, value):
         return str(value)

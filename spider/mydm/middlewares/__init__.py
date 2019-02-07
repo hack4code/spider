@@ -1,4 +1,11 @@
+# -*- coding: utf-8 -*-
 
 
-from .ifmodifysince import IfModifySinceMiddleware
 from .etag import ETagMiddleware
+from .ifmodifysince import IfModifySinceMiddleware
+
+
+__all__ = [
+        'ETagMiddleware',
+        'IfModifySinceMiddleware',
+]

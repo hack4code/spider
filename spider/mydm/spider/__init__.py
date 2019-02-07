@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from .html import BLOGSpiderMeta
 from .xml import LXMLSpiderMeta
+from .html import BLOGSpiderMeta
 from .spider import ErrbackSpider
 
 

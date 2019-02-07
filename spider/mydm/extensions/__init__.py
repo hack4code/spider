@@ -3,6 +3,5 @@
 
 from .stats import ExtensionStats
 
-__all__ = [
-        'ExtensionStats'
-]
+
+__all__ = ['ExtensionStats']
