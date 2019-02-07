@@ -57,7 +57,7 @@ def show_entries_byday(day):
 def show_article(aid):
     a = get_article(aid)
     if a is None:
-        raise NotFound(f'article[{str(aid)} not existed')
+        raise NotFound(f'article[{aid}] not existed')
 
     def get_css(dom):
         path = '{}/css/{}.css'.format(app.static_folder, dom)
