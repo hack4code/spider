@@ -68,17 +68,7 @@ class Day(Resource):
         if not day_begin <= day_entry <= datetime.utcnow().date():
             return {'message': 'no articles found'}, 204
 
-        entries = {}
-        data = get_entries(day_entry)
-        if data:
-            for category, alist in data.items():
-                entries[category] = [
-                    a
-                    for a in alist
-                    if a.spider not in current_app.config['FEED_FILTER']
-                ]
-        if not entries:
-            entries = None
+        entries = get_entries(day_entry) or None
 
         day_before = get_before_day(day_entry)
         if day_before is not None:
@@ -107,7 +97,6 @@ class Spiders(Resource):
         entries = [
             Spider(spid, name)
             for spid, name in spiders.items()
-            if spid not in current_app.config['FEED_FILTER']
         ]
         return {'entries': entries}
 
