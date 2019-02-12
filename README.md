@@ -3,7 +3,7 @@
 ## Init
 
 ### javascript
-  * docker container run --rm -v \`pwd\`/www/static/app/:/app/ -w /app/ node ./build.sh
+  * docker container run --rm -v \`pwd\`/www/src/static/app/:/app/ -w /app/ node ./build.sh
 
 ## Run
  * docker-compose up --build -d
