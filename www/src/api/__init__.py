@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+from flask import Blueprint
 from flask_restful import Api
 
 from .feed import CrawlSpiders, AtomFeed, BlogFeed
@@ -11,7 +12,8 @@ __all__ = ['init_api']
 
 
 def init_api(app):
-    api = Api(app)
+    api_bp = Blueprint('api', __name__)
+    api = Api(api_bp)
     api.add_resource(Day, '/api/day')
     api.add_resource(Entries, '/api/entries')
     api.add_resource(Categories, '/api/categories')
@@ -20,3 +22,4 @@ def init_api(app):
     api.add_resource(CrawlSpiders, '/submit/crawl')
     api.add_resource(AtomFeed, '/submit/rss')
     api.add_resource(BlogFeed, '/submit/blog')
+    app.register_blueprint(api_bp)
