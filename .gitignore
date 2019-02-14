@@ -6,6 +6,6 @@ __pycache__
 mongo/data/
 mongo/dump/
 
-www/static/app/js/
-www/static/app/node_modules/
-www/static/app/*.json
+www/src/static/app/js/
+www/src/static/app/node_modules/
+www/src/static/app/*.json
