@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-from datetime import datetime, date
 from collections import namedtuple
+from datetime import datetime, date
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
 from flask import current_app, request, session
+
 from flask_restful import Resource
 
 from model import (

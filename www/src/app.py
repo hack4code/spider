@@ -44,17 +44,17 @@ def error(error):
 @app.route('/', methods=['GET'])
 def home():
     today = datetime.utcnow().date()
-    return show_entries_byday(today)
+    return entries_by_day(today)
 
 
 @app.route('/d/<date:day>', methods=['GET'])
 @need_uid
-def show_entries_byday(day):
+def entries_by_day(day):
     return render_template('day.html', day_entry=day)
 
 
 @app.route('/a/<id:aid>', methods=['GET'])
-def show_article(aid):
+def article(aid):
     a = get_article(aid)
     if a is None:
         raise NotFound(f'article[{aid}] not existed')
@@ -74,7 +74,7 @@ Spider = namedtuple('Spider', ['id', 'source'])
 
 
 @app.route('/p/<id:spid>', methods=['GET'])
-def show_entries_byspider(spid):
+def entries_by_spider(spid):
     spid = str(spid)
     spiders = get_spiders()
     if spid not in spiders:
@@ -83,7 +83,7 @@ def show_entries_byspider(spid):
 
 
 @app.route('/l/p', methods=['GET'])
-def show_spiders():
+def spiders():
     return render_template('spiders.html')
 
 
