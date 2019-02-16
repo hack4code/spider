@@ -58,7 +58,8 @@ services:
                         - mongodb
                 volumes:
                         - ./spider/:/spider/
-                command: ["python", "rpc.py"]
+                working_dir: /spider/src/
+                command: ["python3", "rpc.py"]
 
         www:
                 build:
