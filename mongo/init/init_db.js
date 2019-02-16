@@ -21,7 +21,6 @@ db.createUser({user: "flask",
 	       pwd: flask_pwd,
 	       roles: [ { role: "read", db: "scrapy" } ]})
 
-/* create user score */
 db = conn.getDB("score");
 db.createUser({user: "flask",
 	       pwd: flask_pwd,
