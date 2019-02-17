@@ -19,7 +19,3 @@ while (cursor.hasNext()) {
 		print(url);
 	}
 }
-
-
-
-
