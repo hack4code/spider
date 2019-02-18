@@ -1,7 +1,7 @@
 FROM python
 
 RUN mkdir /www/
-ADD requirements.txt /www/requirements.txt
+COPY requirements.txt /www/
 
 RUN apt-get update -y
 
