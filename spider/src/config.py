@@ -60,3 +60,6 @@ TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
 
 # if-modify-since
 MODIFY_DELTA = 1
+
+# image
+IMAGE_OPTIMIZE_FILTER = []

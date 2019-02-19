@@ -51,9 +51,19 @@ class ImagesDlownloadPipeline(MediaPipeline):
     MEDIA_NAME = 'image'
     IMAGE_MAX_SIZE = 1024*256
 
+    def __init__(self, filters):
+        self.filters = filters
+
     @classmethod
     def from_settings(cls, settings):
-        return cls()
+        return cls(settings['IMAGE_OPTIMIZE_FILTER'])
+
+    def _need_optimize(self, size):
+        if self.spiderinfo.spider._id in self.filters:
+            return False
+        if size < self.IMAGE_MAX_SIZE:
+            return False
+        return True
 
     def get_media_requests(self, item, info):
         doc = item['content']
@@ -113,12 +123,12 @@ class ImagesDlownloadPipeline(MediaPipeline):
         img = response.meta['img']
         src = response.url
         data = response.body
-        imglen = len(data)
+        imgsize = len(data)
         img.set('src', src)
         try:
             image = Image(data)
             w, _ = image.size
-            if imglen > self.IMAGE_MAX_SIZE:
+            if self._need_optimize(imgsize):
                 data = image.optimize()
             imgtype = image.type
         except OSError:
