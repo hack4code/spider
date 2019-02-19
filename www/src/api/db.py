@@ -7,9 +7,13 @@ from datetime import datetime, date
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
+from marshmallow import (
+        Schema, fields, validates, ValidationError
+)
+from flask_restful import Resource
+
 from flask import current_app, request, session
 
-from flask_restful import Resource
 
 from model import (
         get_article, vote_article,
@@ -105,37 +109,57 @@ class Spiders(Resource):
 class Entries(Resource):
 
     def get(self):
-        try:
-            spid = request.args['spid']
-        except KeyError:
-            return {'message': 'spider id not found'}, 400
-
         spiders = get_spiders()
-        if spid not in spiders:
-            return {'message': 'invalid spider id'}, 400
 
-        lastaid = get_last_aid(spid)
-        firstaid = get_first_aid(spid)
-        try:
-            aid = request.form['aid']
-        except KeyError:
-            entries = get_entries_spider(spid)
-        else:
+        class EntryRequestScheme(Schema):
+            spid = fields.String(required=True)
+            aid = fields.String()
+            q = fields.String()
+
+        @validates('spid')
+        def validate_spid(self, spid):
+            if spid not in spiders:
+                raise ValidationError('invalid spider ID')
+            try:
+                ObjectId(spid)
+            except InvalidId:
+                raise ValidationError('invalid spider ID value')
+
+        @validates('q')
+        def validate_q(self, q):
+            if q not in ('p', 'n'):
+                raise ValidationError('invalid q value')
+
+        @validates('aid')
+        def validate_aid(self, aid):
             try:
                 aid = ObjectId(aid)
             except InvalidId:
-                return {'message': 'invalid aid'}, 400
+                raise ValidationError('invalid aid value')
+            last_aid = get_last_aid(spid)
+            first_aid = get_first_aid(spid)
+            if not first_aid <= aid <= last_aid:
+                raise ValidationError('aid not existed')
 
-            if not firstaid <= aid <= lastaid:
-                return {'message': 'aid not found'}, 400
+        schema = EntryRequestScheme()
+        try:
+            entry_request = schema.load(request.args).data
+        except ValidationError as err:
+            return {'message': err.messages['_schema']}, 400
+        except Exception:
+            return {'message': 'invalid request argument'}, 400
 
-            q = request.form.get('q', None)
-            if q == 'p':
-                entries = get_entries_pre(spid, aid)
-            else:
-                entries = get_entries_next(spid, aid)
-
-        if entries:
-            return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
+        spid = entry_request.get('spid')
+        aid = entry_request.get('aid', None)
+        q = entry_request.get('q', None)
+        if aid is None:
+            entries = get_entries_spider(spid)
+        elif q == 'p':
+            entries = get_entries_pre(spid, aid)
         else:
-            return {'message': 'articles not found'}, 400
+            entries = get_entries_next(spid, aid)
+
+        if not entries:
+            return {'message': 'no articles found'}, 400
+        else:
+            return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
