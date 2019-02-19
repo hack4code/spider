@@ -8,7 +8,7 @@ from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
 from marshmallow import (
-        Schema, fields, validates, ValidationError
+        Schema, fields, validates, post_load, ValidationError
 )
 from flask_restful import Resource
 
@@ -130,16 +130,20 @@ class Entries(Resource):
             if q not in ('p', 'n'):
                 raise ValidationError('invalid q value')
 
-        @validates('aid')
-        def validate_aid(self, aid):
+        @post_load
+        def validate_aid(self, data):
+            spid = data['spid']
+            aid = data.get('aid', None)
+            if aid is None:
+                return
             try:
                 aid = ObjectId(aid)
             except InvalidId:
-                raise ValidationError('invalid aid value')
+                raise ValidationError(f'invalid aid value {aid}')
             last_aid = get_last_aid(spid)
             first_aid = get_first_aid(spid)
             if not first_aid <= aid <= last_aid:
-                raise ValidationError('aid not existed')
+                raise ValidationError(f'aid {aid} not existed')
 
         schema = EntryRequestScheme()
         try:
