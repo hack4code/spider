@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
-from .mongodata import Entry, EntryDay, Article, AID
+from .mongodata import Entry, EntryDay, Article, Spider, AID
 
 
 class MongoDB:
@@ -68,7 +68,7 @@ def get_spider_score(spids):
             'score': 1
         }
     )
-    return {_['id']: _['score'] for _ in cursor}
+    return {item['id']: item['score'] for item in cursor}
 
 
 def get_article_score(aids):
@@ -81,7 +81,7 @@ def get_article_score(aids):
             'score': 1
         }
     )
-    return {_['id']: _['score'] for _ in cursor}
+    return {item['id']: item['score'] for item in cursor}
 
 
 def get_score(entries):
@@ -100,7 +100,7 @@ def get_score(entries):
         return (10.0*spscores.get(e.spider, 0)/max_spscore +
                 90.0*ascores.get(e.id, 0)/max_ascore)
 
-    return {_.id: get_score(_) for _ in entries}
+    return {item.id: get_score(item) for item in entries}
 
 
 def get_entries(day):
@@ -128,7 +128,7 @@ def get_entries(day):
             'link': 1,
         }
     )
-    entries_ = [EntryDay(_) for _ in cursor]
+    entries_ = [EntryDay(item) for item in cursor]
     scores = get_score(entries_)
     entries = defaultdict(list)
     for e in sorted(entries_, key=lambda i: scores[i.id], reverse=True):
@@ -186,7 +186,22 @@ def get_after_day(day):
 
 def get_spiders():
     cursor = ScrapyDB.spider.find({}, {'title': 1})
-    return {str(_['_id']): _['title'] for _ in cursor}
+    return {str(item['_id']): item['title'] for item in cursor}
+
+
+def get_spider(spid):
+    cursor = ScrapyDB.spider.find(
+            {
+                '_id': spid
+            },
+            {
+                'title': 1,
+            }
+    )
+    if cursor.count() == 0:
+        return
+    spider = cursor[0]
+    return Spider(spider['_id'], spider['title'])
 
 
 def get_first_aid(spid):
@@ -235,10 +250,8 @@ def get_entries_next(spid, aid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id',
-           DESCENDING
-           ).limit(100)
-    return [Entry(_) for _ in cursor] if cursor.count() else None
+    ).sort('_id', DESCENDING).limit(100)
+    return [Entry(item) for item in cursor] if cursor.count() else None
 
 
 def get_entries_pre(spid, aid):
@@ -253,7 +266,7 @@ def get_entries_pre(spid, aid):
         }
     ).sort('_id', ASCENDING).limit(100)
     return list(
-            reversed([Entry(_) for _ in cursor])
+            reversed([Entry(item) for item in cursor])
     ) if cursor.count() else None
 
 
@@ -267,7 +280,7 @@ def get_entries_spider(spid):
             'title': 1
         }
     ).sort('_id', DESCENDING).limit(100)
-    return [Entry(_) for _ in cursor] if cursor.count() else None
+    return [Entry(item) for item in cursor] if cursor.count() else None
 
 
 def get_article(aid):

@@ -6,6 +6,7 @@ from collections import namedtuple
 
 
 AID = namedtuple('AID', ['id'])
+Spider = namedtuple('Spider', ['id', 'source'])
 EntryBase = namedtuple('Entry', ['id', 'title'])
 
 

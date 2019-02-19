@@ -4,13 +4,12 @@
 import os
 import logging
 from datetime import datetime
-from collections import namedtuple
 
 from werkzeug.exceptions import NotFound, BadRequest
 from flask import Flask, render_template
 
 from converter import init_converter
-from model import init_db, get_article, get_spiders
+from model import init_db, get_article, get_spider
 from api import init_api
 from user import need_uid
 
@@ -70,16 +69,12 @@ def article(aid):
     )
 
 
-Spider = namedtuple('Spider', ['id', 'source'])
-
-
 @app.route('/p/<id:spid>', methods=['GET'])
 def entries_by_spider(spid):
-    spid = str(spid)
-    spiders = get_spiders()
-    if spid not in spiders:
+    spider = get_spider(spid)
+    if spider is None:
         raise NotFound(f'spider[{spid}] not existed')
-    return render_template('entries.html', spider=Spider(spid, spiders[spid]))
+    return render_template('entries.html', spider=spider)
 
 
 @app.route('/l/p', methods=['GET'])
