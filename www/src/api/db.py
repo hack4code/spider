@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
+from datetime import datetime
 from collections import namedtuple
-from datetime import datetime, date
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
@@ -55,33 +55,32 @@ class Vote(Resource):
 class Day(Resource):
 
     def get(self):
+
+        class DayRequestSchema(Schema):
+            day = fields.Date(required=True)
+
+            @validates('day')
+            def validate_day(self, day):
+                day_begin = get_begin_day()
+                if not day_begin <= day <= datetime.utcnow().date():
+                    raise ValidationError('invalid day value')
+
+        schema = DayRequestSchema()
         try:
-            day = request.args['day']
-        except KeyError:
-            return {'message': 'argument day not found'}, 400
-        else:
-            try:
-                day_entry = date(*(int(item) for item in day.split('-')))
-            except ValueError:
-                return {'message': 'invalid date value'}, 400
+            day_request = schema.load(request.args).data
+        except ValidationError as err:
+            return {'message': err.message['_schema']}, 400
+        except Exception as err:
+            return {'message': f'invalid request[{err}]'}, 400
 
-        day_begin = get_begin_day()
-
-        if day_begin is None:
-            return {'message': 'no articles found'}, 204
-
-        if not day_begin <= day_entry <= datetime.utcnow().date():
-            return {'message': 'no articles found'}, 204
-
-        entries = get_entries(day_entry) or None
-
+        day_entry = day_request['day']
         day_before = get_before_day(day_entry)
         if day_before is not None:
             day_before = day_before.strftime('%Y-%m-%d')
         day_after = get_after_day(day_entry)
         if day_after is not None:
             day_after = day_after.strftime('%Y-%m-%d')
-
+        entries = get_entries(day_entry) or None
         return {
                 'day_before': day_before,
                 'day_after': day_after,
