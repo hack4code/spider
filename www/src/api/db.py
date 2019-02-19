@@ -27,29 +27,44 @@ from model import (
 Spider = namedtuple('Spider', ['id', 'source'])
 
 
+class ObjectIdField(fields.Field):
+
+    def _serialize(self, value, attr, obj, **kwargs):
+        return str(value)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        try:
+            return ObjectId(value)
+        except InvalidId:
+            raise ValidationError(f'invalid ObjectId {value}')
+
+
 class Vote(Resource):
 
     def post(self):
+
+        class VoteRequestSchema(Schema):
+            aid = ObjectIdField(required=True)
+
         if 'uid' not in session:
             return {'message': 'no uid'}, 401
 
+        schema = VoteRequestSchema()
         try:
-            aid = request.form['aid']
-        except KeyError:
-            return {'message': 'no aid'}, 400
+            vote_request = schema.load(request.get_json()).data
+        except ValidationError as err:
+            return {'message': err.message['_schema']}, 400
+        except Exception:
+            return {'message': 'invalid request'}, 400
 
-        try:
-            aid = ObjectId(aid)
-        except InvalidId:
-            return {'message': 'invalid aid'}, 400
-
+        aid = vote_request['aid']
         a = get_article(aid)
 
-        if a:
-            vote_article(a)
-            return {'aid': str(aid)}, 200
-        else:
+        if not a:
             return {'message': 'article not existed'}, 400
+
+        vote_article(a)
+        return {'aid': str(aid)}, 200
 
 
 class Day(Resource):
@@ -70,8 +85,8 @@ class Day(Resource):
             day_request = schema.load(request.args).data
         except ValidationError as err:
             return {'message': err.message['_schema']}, 400
-        except Exception as err:
-            return {'message': f'invalid request[{err}]'}, 400
+        except Exception:
+            return {'message': 'invalid request'}, 400
 
         day_entry = day_request['day']
         day_before = get_before_day(day_entry)
@@ -164,5 +179,5 @@ class Entries(Resource):
 
         if not entries:
             return {'message': 'no articles found'}, 400
-        else:
-            return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
+
+        return {'spider': Spider(spid, spiders[spid]), 'entries': entries}

@@ -29,13 +29,16 @@ class Voter extends React.Component {
     else {
       this.setState({voted: 1});
 
-      let form = new FormData();
-      form.append("aid", aid);
       let that = this;
-      fetch("/api/vote", {method: "POST",
-                          credentials: "same-origin",
-                          body: form}
-      )
+      fetch("/api/vote", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'aid': aid}),
+      })
       .then(function(response) {
         return response.json();
       })
