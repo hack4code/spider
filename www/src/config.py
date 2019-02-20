@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
+
 """
     flask config
 """
 # cookie
 SECRET_KEY = 'qweasdzxcrty'
-
-# log
-LOGGER_HANDLER_POLICY = 'always'
 
 """
     app config
@@ -19,11 +17,8 @@ MONGODB_SCOREDB_NAME = 'score'
 MONGODB_USER = 'flask'
 MONGODB_PWD = 'flask'
 
-# rabbitmq
-BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
-CRAWL_KEY = 'crawl'
-LXMLSPIDER_KEY = 'lxmlspider'
-BLOGSPIDER_KEY = 'blogspider'
+# grpc
+GRPC_HOST = 'spider:50051'
 
 # category
 ARTICLE_CATEGORIES = {
@@ -35,6 +30,3 @@ ARTICLE_CATEGORIES = {
         '新闻',
         '漫画',
 }
-
-# filter
-FEED_FILTER = []

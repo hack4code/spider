@@ -2,6 +2,7 @@ Flask
 requests
 pymongo
 uWSGI
-pika
 marshmallow
 flask_restful
+protobuf
+grpcio

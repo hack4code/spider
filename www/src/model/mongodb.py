@@ -9,37 +9,61 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 from .mongodata import Entry, EntryDay, Article, Spider, AID
 
 
+class MongoBase:
+
+    def __init__(self, uri):
+        self.client = MongoClient(uri, connect=False)
+
+    def get_db(self, name, user, passwd):
+        db = self.client[name]
+        db.authenticate(user, passwd)
+        return db
+
+
 class MongoDB:
 
-    def __init__(self, name, config):
-        self._name = name
-        self._db = None
-        self._config = config
+    def __init__(self, uri, name, user, passwd):
+        self._base = MongoBase(uri)
+        self.name = name
+        self.user = user
+        self.passwd = passwd
+        self.db = None
 
-    def _connect(self):
-        config = self._config
-        client = MongoClient(config['MONGODB_URI'], connect=False)
-        db = client[self._name]
-        db.authenticate(config['MONGODB_USER'], config['MONGODB_PWD'])
-        self._db = db
-
-    def __getattr__(self, key):
-        if self._db is None:
-            self._connect()
+    def __getattr__(self, collection_name):
+        if self.db is None:
+            self.db = self._base.get_db(
+                    self.name,
+                    self.user,
+                    self.passwd
+            )
         try:
-            return self._db[key]
+            return self.db[collection_name]
         except KeyError:
             raise AttributeError(
-                ('{} db has no collection {}').format(self._name, key)
+                    f'invalid collection {collection_name}'
             )
 
 
 def init_db(app):
     global ScrapyDB, ScoreDB
 
-    config = app.config
-    ScrapyDB = MongoDB(config['MONGODB_STOREDB_NAME'], config)
-    ScoreDB = MongoDB(config['MONGODB_SCOREDB_NAME'], config)
+    uri = app.config['MONGODB_URI']
+    user = app.config['MONGODB_USER']
+    passwd = app.config['MONGODB_PWD']
+
+    ScrapyDB = MongoDB(
+            uri,
+            app.config['MONGODB_STOREDB_NAME'],
+            user,
+            passwd
+    )
+
+    ScoreDB = MongoDB(
+            uri,
+            app.config['MONGODB_SCOREDB_NAME'],
+            user,
+            passwd
+    )
 
 
 def get_begin_day():

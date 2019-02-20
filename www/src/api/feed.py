@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import json
-
-import pika
-
+import grpc
 from flask import request, current_app
 
 from marshmallow import (
@@ -12,23 +9,14 @@ from marshmallow import (
 )
 from flask_restful import Resource
 
+import spider_pb2
+import spider_pb2_grpc
 
-def _send(key, data):
-    body = json.dumps(data)
-    connection = pika.BlockingConnection(
-        pika.connection.URLParameters(current_app.config['BROKER_URL'])
-    )
-    channel = connection.channel()
-    channel.exchange_declare(
-            exchange='direct_logs',
-            exchange_type='direct'
-    )
-    channel.basic_publish(
-            exchange='direct_logs',
-            routing_key=key,
-            body=body
-    )
-    connection.close()
+
+def create_grpc_stub():
+    channel = grpc.insecure_channel(current_app.config['GRPC_HOST'])
+    stub = spider_pb2_grpc.SpiderRpcStub(channel)
+    return stub
 
 
 class StripSchema(Schema):
@@ -54,7 +42,7 @@ class StripSchema(Schema):
         return new_data
 
 
-class CrawlSpiders(Resource):
+class CrawlArticles(Resource):
 
     def post(self):
 
@@ -68,8 +56,14 @@ class CrawlSpiders(Resource):
             return {'message': 'invalid spiders'}, 400
         if not spiders:
             return {'message': 'no spider found'}, 400
-        current_app.logger.info(f'crawl: {spiders}')
-        _send(current_app.config['CRAWL_KEY'], spiders)
+        current_app.logger.info(f'spiders for crawl [{spiders}]')
+        splist = spider_pb2.SpiderList()
+        splist.spider.extend(spiders['spiders'])
+        stub = create_grpc_stub()
+        try:
+            stub.CrawlArticles(splist)
+        except Exception as e:
+            return {'message': f'unknow error[{e}]'}, 400
         return '', 200
 
 
@@ -81,7 +75,7 @@ class FeedSchema(StripSchema):
             raise ValidationError(f'category value {category} is invalid')
 
 
-class AtomFeed(Resource):
+class RssFeed(Resource):
 
     def post(self):
 
@@ -98,9 +92,23 @@ class AtomFeed(Resource):
             return {'message': err.messages}, 400
         except Exception:
             return {'message': 'invalid atom feed'}, 400
-        current_app.logger.info(f'atom feed: {feed}')
-        _send(current_app.config['LXMLSPIDER_KEY'], feed)
-        return '', 200
+        current_app.logger.info(f'atom feed[{feed}]')
+        if 'removed_xpath_nodes' in feed:
+            nodes = feed.pop('removed_xpath_nodes')
+        else:
+            nodes = None
+        rss_feed = spider_pb2.RssFeed(**feed)
+        if nodes:
+            rss_feed.removed_xpath_nodes.extend(nodes)
+        stub = create_grpc_stub()
+        try:
+            result = stub.SubmitRssFeed(rss_feed)
+        except Exception as e:
+            return {'message': f'unknow error[{e}]'}, 400
+        if result.error:
+            return {'message': result.message}, 400
+        else:
+            return '', 200
 
 
 class BlogFeed(Resource):
@@ -123,6 +131,20 @@ class BlogFeed(Resource):
             return {'message': err.messages}, 400
         except Exception:
             return {'message': 'invalid blog feed'}, 400
-        current_app.logger.info(f'blog feed: {feed}')
-        _send(current_app.config['BLOGSPIDER_KEY'], feed)
-        return '', 200
+        current_app.logger.info(f'blog feed[{feed}]')
+        if 'removed_xpath_nodes' in feed:
+            nodes = feed.pop('removed_xpath_nodes')
+        else:
+            nodes = None
+        blog_feed = spider_pb2.BlogFeed(**feed)
+        if nodes:
+            blog_feed.removed_xpath_nodes.extend(nodes)
+        stub = create_grpc_stub()
+        try:
+            result = stub.SubmitBlogFeed(blog_feed)
+        except Exception as e:
+            return {'message': f'unknow error[{e}]'}, 400
+        if result.error:
+            return {'message': result.message}, 400
+        else:
+            return '', 200

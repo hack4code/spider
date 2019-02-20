@@ -10,19 +10,18 @@ from mydm.model import is_exists_article, save_article
 
 
 def get_article_lang(item):
-    if any(ord(_) > 19967 for _ in item['title']):
+    if any(ord(cha) > 19967 for cha in item['title']):
         return 'zh'
     return 'en'
 
 
 class StorePipeline:
-    """
-        save data to mongodb
-    """
 
     @classmethod
-    def from_settings(cls, settings):
-        return cls()
+    def from_crawler(cls, crawler):
+        pipe = cls()
+        pipe.crawler = crawler
+        return pipe
 
     def process_item(self, item, spider):
         doc = item['content']

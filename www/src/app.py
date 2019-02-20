@@ -82,10 +82,10 @@ def spiders():
 
 
 @app.route('/feed/rss', methods=['GET'])
-def sumbit_atom_feed():
+def atom_feed():
     return render_template('rss.html')
 
 
 @app.route('/feed/blog', methods=['GET'])
-def submit_blog_feed():
+def blog_feed():
     return render_template('blog.html')

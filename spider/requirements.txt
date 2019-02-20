@@ -1,9 +1,10 @@
 pyOpenSSL
 service-identity
 Scrapy
-pika
 pymongo
 Pillow
 redis
 requests
 python-dateutil
+protobuf
+grpcio

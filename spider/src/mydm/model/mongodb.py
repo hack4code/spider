@@ -4,17 +4,10 @@
 from datetime import datetime
 
 from pymongo import MongoClient, ASCENDING
-
 from scrapy.utils.project import get_project_settings
 
 
-SETTINGS = get_project_settings()
-
-
 class MongoDB:
-    """
-        mongodb
-    """
 
     def __init__(self):
         self._db = None
@@ -33,9 +26,10 @@ class MongoDB:
         scrapecount.create_index('spider', name='idx_spider')
 
     def _connect(self):
-        client = MongoClient(SETTINGS['MONGODB_URI'], connect=False)
-        db = client[SETTINGS['MONGODB_DB_NAME']]
-        db.authenticate(SETTINGS['MONGODB_USER'], SETTINGS['MONGODB_PWD'])
+        settings = get_project_settings()
+        client = MongoClient(settings['MONGODB_URI'], connect=False)
+        db = client[settings['MONGODB_DB_NAME']]
+        db.authenticate(settings['MONGODB_USER'], settings['MONGODB_PWD'])
         self._db = db
         self._create_indexes()
 
@@ -45,7 +39,7 @@ class MongoDB:
         try:
             return self._db[key]
         except KeyError:
-            raise AttributeError('collection[{key}] not found')
+            raise AttributeError(f'collection[{key}] not found')
 
 
 ScrapyDB = MongoDB()
@@ -53,7 +47,10 @@ ScrapyDB = MongoDB()
 
 def is_exists_feed(url):
     cursor = ScrapyDB.feed.find({'url': url}).limit(1)
-    return False if cursor.count() == 0 else True
+    if cursor.count() == 0:
+        return False
+    else:
+        return True
 
 
 def save_feed(url):
@@ -129,7 +126,10 @@ def is_exists_spider(url):
                 'start_urls': {'$in': [url]}
             }
     )
-    return True if cursor.count() > 0 else False
+    if cursor.count() == 0:
+        return False
+    else:
+        return True
 
 
 def save_spider_settings(settings):
@@ -149,7 +149,10 @@ def get_spider_settings():
 
 def get_category_tags():
     cursor = ScrapyDB.category.find()
-    return {item['category']: item['tags'] for item in cursor}
+    return {
+            item['category']: item['tags']
+            for item in cursor
+    }
 
 
 def log_spider_scrape_count(spider, count):

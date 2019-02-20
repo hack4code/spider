@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from collections import namedtuple
 from urllib.parse import urlparse
+from collections import namedtuple
 
 
 RedisConf = namedtuple('RedisUrl', ['host', 'port', 'database'])

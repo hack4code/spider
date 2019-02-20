@@ -1,18 +1,6 @@
 version: "3"
 
 services:
-        rabbitmq:
-                image: rabbitmq
-                container_name: rabbitmq
-                expose:
-                        - "5672"
-                networks:
-                        - rabbitmq
-                environment:
-                        RABBITMQ_DEFAULT_USER: rabbitmq
-                        RABBITMQ_DEFAULT_PASS: rabbitmq
-                hostname: rabbitmq
-
         redis:
                 image: redis
                 container_name: redis
@@ -45,21 +33,21 @@ services:
                         context: spider/
                 container_name: spider
                 depends_on:
-                        - rabbitmq
                         - redis
                         - mongodb
+                expose:
+                        - "50051"
                 networks:
-                        - rabbitmq
+                        - spider
                         - redis
                         - mongodb
                 links:
-                        - rabbitmq
                         - redis
                         - mongodb
                 volumes:
                         - ./spider/:/spider/
                 working_dir: /spider/src/
-                command: ["python3", "rpc.py"]
+                command: ["python3", "server.py"]
 
         www:
                 build:
@@ -68,11 +56,11 @@ services:
                 depends_on:
                         - spider
                 networks:
-                        - rabbitmq
+                        - spider
                         - mongodb
                         - www
                 links:
-                        - rabbitmq
+                        - spider
                         - mongodb
                 expose:
                         - "8000"
@@ -99,7 +87,7 @@ services:
                         - "8080:8080"
 
 networks:
-        rabbitmq:
+        spider:
                 driver: bridge
         redis:
                 driver: bridge

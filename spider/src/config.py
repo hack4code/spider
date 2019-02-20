@@ -48,12 +48,6 @@ MONGODB_DB_NAME = 'scrapy'
 MONGODB_USER = 'scrapy'
 MONGODB_PWD = 'scrapy'
 
-# rabbitmq
-BROKER_URL = 'amqp://rabbitmq:rabbitmq@rabbitmq:5672/'
-CRAWL_KEY = 'crawl'
-LXMLSPIDER_KEY = 'lxmlspider'
-BLOGSPIDER_KEY = 'blogspider'
-
 # redis
 ETAG_URL = 'redis://redis:6379/1'
 TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
