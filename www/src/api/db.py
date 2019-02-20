@@ -46,6 +46,9 @@ class Vote(Resource):
         class VoteRequestSchema(Schema):
             aid = ObjectIdField(required=True)
 
+        def __init__(self, strict=True, **kwargs):
+            super().__init__(strict=strict, **kwargs)
+
         if 'uid' not in session:
             return {'message': 'no uid'}, 401
 
@@ -73,6 +76,9 @@ class Day(Resource):
 
         class DayRequestSchema(Schema):
             day = fields.Date(required=True)
+
+            def __init__(self, strict=True, **kwargs):
+                super().__init__(strict=strict, **kwargs)
 
             @validates('day')
             def validate_day(self, day):
@@ -129,6 +135,9 @@ class Entries(Resource):
             spid = fields.String(required=True)
             aid = fields.String()
             q = fields.String()
+
+            def __init__(self, strict=True, **kwargs):
+                super().__init__(strict=strict, **kwargs)
 
         @validates('spid')
         def validate_spid(self, spid):

@@ -28,7 +28,6 @@ init_db(app)
 init_api(app)
 
 
-# error handler
 @app.errorhandler(NotFound)
 @app.errorhandler(BadRequest)
 def error(error):

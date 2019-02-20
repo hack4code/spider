@@ -34,7 +34,7 @@ def _send(key, data):
 class StripSchema(Schema):
 
     def __init__(self, strict=True, **kwargs):
-        super(Schema, self).__init__(strict=strict, **kwargs)
+        super().__init__(strict=strict, **kwargs)
 
     @pre_load
     def strip(self, data):
