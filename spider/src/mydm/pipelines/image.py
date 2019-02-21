@@ -48,18 +48,23 @@ class Image():
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
+
     MEDIA_NAME = 'image'
     IMAGE_MAX_SIZE = 1024*256
 
-    def __init__(self, filters):
-        self.filters = filters
+    def __init__(self, settings):
+        super().__init__(settings=settings)
+        self.image_filters = settings['IMAGE_OPTIMIZE_FILTER']
 
     @classmethod
-    def from_settings(cls, settings):
-        return cls(settings['IMAGE_OPTIMIZE_FILTER'])
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        pipe = cls(settings)
+        pipe.crawler = crawler
+        return pipe
 
-    def _need_optimize(self, size):
-        if self.spiderinfo.spider._id in self.filters:
+    def need_optimize(self, size):
+        if self.spiderinfo.spider._id in self.image_filters:
             return False
         if size < self.IMAGE_MAX_SIZE:
             return False
@@ -127,8 +132,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         img.set('src', src)
         try:
             image = Image(data)
-            w, _ = image.size
-            if self._need_optimize(imgsize):
+            if self.need_optimize(imgsize):
                 data = image.optimize()
             imgtype = image.type
         except OSError:
