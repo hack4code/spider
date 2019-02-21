@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class Image():
-    IMAGE_MAX_WIDTH = 800
+
+    IMAGE_MAX_WIDTH = 1024
 
     def __init__(self, data):
         self._image = ImageLib.open(BytesIO(data))
@@ -54,7 +55,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def __init__(self, settings):
         super().__init__(settings=settings)
-        self.image_filters = settings['IMAGE_OPTIMIZE_FILTER']
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -64,8 +64,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
         return pipe
 
     def need_optimize(self, size):
-        if self.spiderinfo.spider._id in self.image_filters:
-            return False
         if size < self.IMAGE_MAX_SIZE:
             return False
         return True
