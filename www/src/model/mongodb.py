@@ -46,16 +46,26 @@ def get_begin_day():
     cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date', ASCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() else None
+    ).sort(
+        'crawl_date',
+        ASCENDING,
+    ).limit(1)
+    if 0 == cursor.count():
+        return
+    return cursor[0]['crawl_date'].date()
 
 
 def get_end_day():
     cursor = ScrapyDB.article.find(
         {},
         {'crawl_date': 1}
-    ).sort('crawl_date', DESCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() else None
+    ).sort(
+        'crawl_date',
+        DESCENDING
+    ).limit(1)
+    if 0 == cursor.count():
+        return
+    return cursor[0]['crawl_date'].date()
 
 
 def get_spider_score(spids):
@@ -133,7 +143,9 @@ def get_entries(day):
     entries = defaultdict(list)
     for e in sorted(entries_, key=lambda i: scores[i.id], reverse=True):
         entries[e.category].append(e)
-    return entries if entries else None
+    if not entries:
+        return
+    return entries
 
 
 def get_before_day(day):
@@ -154,7 +166,9 @@ def get_before_day(day):
             'crawl_date': 1
         }
     ).sort('crawl_date', DESCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return cursor[0]['crawl_date'].date()
 
 
 def get_after_day(day):
@@ -175,8 +189,13 @@ def get_after_day(day):
         {
             'crawl_date': 1
         }
-    ).sort('crawl_date', ASCENDING).limit(1)
-    return cursor[0]['crawl_date'].date() if cursor.count() else None
+    ).sort(
+        'crawl_date',
+        ASCENDING,
+    ).limit(1)
+    if 0 == cursor.count():
+        return
+    return cursor[0]['crawl_date'].date()
 
 
 """
@@ -198,7 +217,7 @@ def get_spider(spid):
                 'title': 1,
             }
     )
-    if cursor.count() == 0:
+    if 0 == cursor.count():
         return
     spider = cursor[0]
     return Spider(spider['_id'], spider['title'])
@@ -212,8 +231,13 @@ def get_first_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id', ASCENDING).limit(1)
-    return cursor[0]['_id'] if cursor.count() else None
+    ).sort(
+        '_id',
+        ASCENDING
+    ).limit(1)
+    if 0 == cursor.count():
+        return
+    return cursor[0]['_id']
 
 
 def get_last_aid(spid):
@@ -224,8 +248,13 @@ def get_last_aid(spid):
         {
             '_id': 1
         }
-    ).sort('_id', DESCENDING).limit(1)
-    return cursor[0]['_id'] if cursor.count() else None
+    ).sort(
+        '_id',
+        DESCENDING
+    ).limit(1)
+    if 0 == cursor.count():
+        return
+    return cursor[0]['_id']
 
 
 def get_crawl_date(aid):
@@ -237,7 +266,9 @@ def get_crawl_date(aid):
             'crawl_date': 1
         }
     )
-    return cursor[0]['crawl_date'] if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return cursor[0]['crawl_date']
 
 
 def get_entries_next(spid, aid):
@@ -250,8 +281,13 @@ def get_entries_next(spid, aid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id', DESCENDING).limit(100)
-    return [Entry(item) for item in cursor] if cursor.count() else None
+    ).sort(
+        '_id',
+        DESCENDING
+    ).limit(100)
+    if 0 == cursor.count():
+        return
+    return [Entry(item) for item in cursor]
 
 
 def get_entries_pre(spid, aid):
@@ -265,9 +301,9 @@ def get_entries_pre(spid, aid):
             'title': 1
         }
     ).sort('_id', ASCENDING).limit(100)
-    return list(
-            reversed([Entry(item) for item in cursor])
-    ) if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return list(reversed([Entry(item) for item in cursor]))
 
 
 def get_entries_spider(spid):
@@ -279,8 +315,13 @@ def get_entries_spider(spid):
             '_id': 1,
             'title': 1
         }
-    ).sort('_id', DESCENDING).limit(100)
-    return [Entry(item) for item in cursor] if cursor.count() else None
+    ).sort(
+        '_id',
+        DESCENDING
+    ).limit(100)
+    if 0 == cursor.count():
+        return
+    return [Entry(item) for item in cursor]
 
 
 def get_article(aid):
@@ -298,7 +339,9 @@ def get_article(aid):
             'spider': 1
         }
     ).limit(1)
-    return Article(cursor[0]) if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return Article(cursor[0])
 
 
 def vote_article(a):
@@ -337,10 +380,9 @@ def get_aids_by_category(c):
             '_id': 1
         }
     ).sort('_id', ASCENDING)
-    return [
-            AID(item['_id'])
-            for item in cursor
-    ] if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return [AID(item['_id']) for item in cursor]
 
 
 def get_all_aids():
@@ -350,7 +392,6 @@ def get_all_aids():
             '_id': 1
         }
     )
-    return [
-            item['_id']
-            for item in cursor
-    ] if cursor.count() else None
+    if 0 == cursor.count():
+        return
+    return [item['_id'] for item in cursor]

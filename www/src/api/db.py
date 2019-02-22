@@ -56,7 +56,7 @@ class Vote(Resource):
         try:
             vote_request = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': err.message['_schema']}, 400
+            return {'message': err.messages}, 400
         except Exception:
             return {'message': 'invalid request'}, 400
 
@@ -90,7 +90,7 @@ class Day(Resource):
         try:
             day_request = schema.load(request.args).data
         except ValidationError as err:
-            return {'message': err.message['_schema']}, 400
+            return {'message': err.messages}, 400
         except Exception:
             return {'message': 'invalid request'}, 400
 
@@ -172,7 +172,7 @@ class Entries(Resource):
         try:
             entry_request = schema.load(request.args).data
         except ValidationError as err:
-            return {'message': err.messages['_schema']}, 400
+            return {'message': err.messages}, 400
         except Exception:
             return {'message': 'invalid request argument'}, 400
 
