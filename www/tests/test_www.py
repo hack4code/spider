@@ -82,7 +82,7 @@ class TestWWW:
         assert 400 == rv.status_code
         noday = firstday - timedelta(days=1)
         rv = client.get(f'/api/day?day={noday}')
-        assert 204 == rv.status_code
+        assert 400 == rv.status_code
 
     def test_api_entries(self, client):
         spids = list(get_spiders().keys())
