@@ -76,6 +76,11 @@ a {
   max-width: 34em;
   height: auto;
  }
+
+ #article video {
+  max-width: 34em;
+  height: auto;
+ }
 }
 
 @media screen and (max-device-width: 599px) {
@@ -102,6 +107,11 @@ a {
  */
 
  #article img {
+  max-width: 300px !important;
+  height: auto !important;
+ }
+
+ #article video {
   max-width: 300px !important;
   height: auto !important;
  }
@@ -263,27 +273,4 @@ th {
 
 .spiders a:visited {
 	color: #aaa;
-}
-
-/* Error message */
-.err-enter {
-	opacity: 0.1;
-	color: #fff;
-}
-
-.err-enter.err-enter-active {
-	opacity: 1;
-	color: #aaa;
-	transition: opacity 1000ms ease-in;
-}
-
-.err-leave {
-	opacity: 1;
-	color: #aaa;
-}
-
-.err-leave.err-leave-active {
-	opacity: 0.1;
-	color: #fff;
-	transition: opacity 800ms ease-in;
 }
