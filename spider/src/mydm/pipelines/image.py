@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import base64
+import logging
 from io import BytesIO
 from urllib.parse import urlparse, urljoin
 
@@ -10,16 +10,17 @@ from PIL import Image as ImageLib
 from lxml.html import fromstring, HTMLParser
 
 from scrapy.http import Request
-from mydm.exceptions import ImgException
 from scrapy.pipelines.media import MediaPipeline
+
+from mydm.exceptions import ImgException
 
 
 logger = logging.getLogger(__name__)
 
 
-class Image():
+class Image:
 
-    IMAGE_MAX_WIDTH = 1024
+    MAX_WIDTH = 1024
 
     def __init__(self, data):
         self._image = ImageLib.open(BytesIO(data))
@@ -32,26 +33,29 @@ class Image():
     def type(self):
         return self._image.format
 
-    def optimize(self, q=75):
+    def optimize(self, quality=75):
         image = self._image
-        w, h = self._image.size
-        if w > self.IMAGE_MAX_WIDTH:
-            h = int(float(h)/w*self.IMAGE_MAX_WIDTH)
-            w = self.IMAGE_MAX_WIDTH
-            image = self._image.resize((w, h), ImageLib.ANTIALIAS)
-        buf = BytesIO()
+        width, height = image.size
+        if width > self.MAX_WIDTH:
+            height = int(float(height)/width*self.MAX_WIDTH)
+            width = self.MAX_WIDTH
+            image = image.resize(
+                    (width, height),
+                    ImageLib.ANTIALIAS
+            )
+        buffer = BytesIO()
         image.save(
-                buf,
-                format=self._image.format,
-                quality=q
+                buffer,
+                format=self.type,
+                quality=quality,
         )
-        return buf.getvalue()
+        return buffer.getvalue()
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
 
     MEDIA_NAME = 'image'
-    IMAGE_MAX_SIZE = 1024*256
+    MAX_SIZE = 1024*256
 
     def __init__(self, settings):
         super().__init__(settings=settings)
@@ -64,14 +68,17 @@ class ImagesDlownloadPipeline(MediaPipeline):
         return pipe
 
     def need_optimize(self, size):
-        if size < self.IMAGE_MAX_SIZE:
+        if size < self.MAX_SIZE:
             return False
         return True
 
     def get_media_requests(self, item, info):
         doc = item['content']
         if isinstance(doc, (str, bytes)):
-            doc = fromstring(doc, parser=HTMLParser(encoding=item['encoding']))
+            doc = fromstring(
+                    doc,
+                    parser=HTMLParser(encoding=item['encoding'])
+            )
             item['content'] = doc
 
         try:
@@ -83,14 +90,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
         for e in doc.xpath('//img'):
             if attr in e.attrib:
                 url = e.get(attr).strip('\t\n\r ')
-                if url.startswith('/'):
-                    url = urljoin(item['link'], url)
-                elif url.startswith('//'):
+                if url.startswith('//'):
                     r = urlparse(item['link'])
                     url = r.scheme + url
+                elif url.startswith('/'):
+                    url = urljoin(item['link'], url)
                 urls.append((url, e))
 
-        reqs = []
+        requests = []
         for url, e in urls:
             if url.startswith('data'):
                 continue
@@ -99,8 +106,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
             except ValueError:
                 logger.error('invalid url[%s]', url)
             else:
-                reqs.append(r)
-        return reqs
+                requests.append(r)
+        return requests
 
     def media_failed(self, failure, request, info):
         logger.error(
@@ -139,19 +146,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     self.spiderinfo.spider.name,
                     src
             )
-
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
-                logger.error(
-                        "spider[%s] can't find Content-Type header for %s",
-                        self.spiderinfo.spider.name,
-                        src
-                )
-                return
+                imgtype = src.split('.')[-1]
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
-        img.set('src', 'data:image/{};base64,{}'.format(imgtype, data))
+        img.set('src', f'data:image/{imgtype};base64,{data}')
 
     def item_completed(self, results, item, info):
         return item
