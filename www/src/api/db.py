@@ -46,8 +46,8 @@ class Vote(Resource):
         class VoteRequestSchema(Schema):
             aid = ObjectIdField(required=True)
 
-        def __init__(self, strict=True, **kwargs):
-            super().__init__(strict=strict, **kwargs)
+            def __init__(self, strict=True, **kwargs):
+                super().__init__(strict=strict, **kwargs)
 
         if 'uid' not in session:
             return {'message': 'no uid'}, 401
@@ -138,10 +138,10 @@ class Entries(Resource):
             def __init__(self, strict=True, **kwargs):
                 super().__init__(strict=strict, **kwargs)
 
-        @validates('q')
-        def validate_q(self, q):
-            if q not in ('p', 'n'):
-                raise ValidationError('invalid q value')
+            @validates('q')
+            def validate_q(self, q):
+                if q not in ('p', 'n'):
+                    raise ValidationError('invalid q value')
 
         schema = EntryRequestScheme()
         try:
