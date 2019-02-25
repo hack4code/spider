@@ -113,7 +113,7 @@ def get_score(entries):
     return {item.id: get_score(item) for item in entries}
 
 
-def get_entries(day):
+def get_entries_by_day(day):
     begin = datetime(
             day.year,
             day.month,
@@ -275,7 +275,7 @@ def get_entries_next(spid, aid):
     cursor = ScrapyDB.article.find(
         {
             '_id': {'$lt': aid},
-            'spider': spid
+            'spider': str(spid),
         },
         {
             '_id': 1,
@@ -294,7 +294,7 @@ def get_entries_pre(spid, aid):
     cursor = ScrapyDB.article.find(
         {
             '_id': {'$gt': aid},
-            'spider': spid
+            'spider': str(spid),
         },
         {
             '_id': 1,
@@ -306,10 +306,10 @@ def get_entries_pre(spid, aid):
     return list(reversed([Entry(item) for item in cursor]))
 
 
-def get_entries_spider(spid):
+def get_entries_by_spider(spid):
     cursor = ScrapyDB.article.find(
         {
-            'spider': spid
+            'spider': str(spid)
         },
         {
             '_id': 1,

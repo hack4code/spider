@@ -8,7 +8,7 @@ from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
 from marshmallow import (
-        Schema, fields, validates, post_load, ValidationError
+        Schema, fields, validates, ValidationError
 )
 from flask_restful import Resource
 
@@ -18,8 +18,8 @@ from flask import current_app, request, session
 from model import (
         get_article, vote_article,
         get_begin_day, get_before_day, get_after_day,
-        get_last_aid, get_first_aid,
-        get_entries, get_entries_next, get_entries_pre, get_entries_spider,
+        get_entries_by_day,
+        get_entries_next, get_entries_pre, get_entries_by_spider,
         get_spiders,
 )
 
@@ -101,7 +101,7 @@ class Day(Resource):
         day_after = get_after_day(day_entry)
         if day_after is not None:
             day_after = day_after.strftime('%Y-%m-%d')
-        entries = get_entries(day_entry) or None
+        entries = get_entries_by_day(day_entry)
         return {
                 'day_before': day_before,
                 'day_after': day_after,
@@ -129,44 +129,19 @@ class Spiders(Resource):
 class Entries(Resource):
 
     def get(self):
-        spiders = get_spiders()
 
         class EntryRequestScheme(Schema):
-            spid = fields.String(required=True)
-            aid = fields.String()
+            spid = ObjectIdField(required=True)
+            aid = ObjectIdField()
             q = fields.String()
 
             def __init__(self, strict=True, **kwargs):
                 super().__init__(strict=strict, **kwargs)
 
-        @validates('spid')
-        def validate_spid(self, spid):
-            if spid not in spiders:
-                raise ValidationError('invalid spider ID')
-            try:
-                ObjectId(spid)
-            except InvalidId:
-                raise ValidationError('invalid spider ID value')
-
         @validates('q')
         def validate_q(self, q):
             if q not in ('p', 'n'):
                 raise ValidationError('invalid q value')
-
-        @post_load
-        def validate_aid(self, data):
-            spid = data['spid']
-            aid = data.get('aid', None)
-            if aid is None:
-                return
-            try:
-                aid = ObjectId(aid)
-            except InvalidId:
-                raise ValidationError(f'invalid aid value {aid}')
-            last_aid = get_last_aid(spid)
-            first_aid = get_first_aid(spid)
-            if not first_aid <= aid <= last_aid:
-                raise ValidationError(f'aid {aid} not existed')
 
         schema = EntryRequestScheme()
         try:
@@ -180,13 +155,15 @@ class Entries(Resource):
         aid = entry_request.get('aid', None)
         q = entry_request.get('q', None)
         if aid is None:
-            entries = get_entries_spider(spid)
+            entries = get_entries_by_spider(spid)
         elif q == 'p':
             entries = get_entries_pre(spid, aid)
-        else:
+        elif q == 'n':
             entries = get_entries_next(spid, aid)
 
         if not entries:
             return {'message': 'no articles found'}, 400
 
+        spid = str(spid)
+        spiders = get_spiders()
         return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
