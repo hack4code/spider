@@ -6,6 +6,7 @@ import re
 import uuid
 import random
 from urllib.parse import urlparse
+from multiprocessing import Process
 
 import requests
 from lxml import etree
@@ -56,19 +57,24 @@ def get_feed_name(url):
         )
 
 
-def dry_run_feed_spider(feed):
-    feed = feed.copy()
-    spid = str(uuid.uuid4())
-    feed['_id'] = spid
-    cls = SpiderFactory.mkspider(feed)
+def _run_feed_spider(feed):
     configure_logging(TEST_SETTINGS, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
+    cls = SpiderFactory.mkspider(feed)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
     reactor.run(installSignalHandlers=False)
-    stats = get_stats([spid])
-    n = stats[spid]
+
+
+def dry_run_feed_spider(feed):
+    feed = feed.copy()
+    spid = str(uuid.uuid4())
+    feed['_id'] = spid
+    p = Process(target=_run_feed_spider, args=(feed,))
+    p.start()
+    p.join()
+    n = get_stats([spid])[spid]
     return True if n > 0 else False
 
 
