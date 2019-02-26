@@ -57,30 +57,34 @@ def get_feed_name(url):
         )
 
 
-def _run_feed_spider(feed):
+def _run_feed_spider(url, feed):
+    spid = str(uuid.uuid4())
+    feed['_id'] = spid
     configure_logging(TEST_SETTINGS, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
+    save_feed(url)
     cls = SpiderFactory.mkspider(feed)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
     reactor.run(installSignalHandlers=False)
+    n = get_stats([spid])[spid]
+    if n == 0:
+        raise Exception(f'feed spider crawled 0 articles')
+    if is_exists_spider(url):
+        raise Exception(f'feed[url] existed')
+    save_spider_settings(feed)
 
 
-def dry_run_feed_spider(feed):
-    feed = feed.copy()
-    spid = str(uuid.uuid4())
-    feed['_id'] = spid
-    p = Process(target=_run_feed_spider, args=(feed,))
+def dry_run_feed_spider(url, feed):
+    p = Process(target=_run_feed_spider, args=(url, feed))
     p.start()
     p.join()
-    n = get_stats([spid])[spid]
-    return True if n > 0 else False
+    return p.exitcode == 0
 
 
 def submit_rss_feed(feed):
     url = feed.pop('url')
-    save_feed(url)
     settings = get_project_settings()
     headers = settings['DEFAULT_REQUEST_HEADERS'].copy()
     headers['User-Agent'] = settings['USER_AGENT']
@@ -130,25 +134,18 @@ def submit_rss_feed(feed):
         feed['title'] = feed['name']
     feed['type'] = 'xml'
     feed['start_urls'] = [url]
-    if is_exists_spider(url):
-        return
-    if not dry_run_feed_spider(feed):
-        raise Exception(f'spider crawled nothing from feed[{url}]')
-    save_spider_settings(feed)
+    if not dry_run_feed_spider(url, feed):
+        raise Exception('feed spider dry run failed')
 
 
 def submit_blog_feed(feed):
     url = feed.pop('url')
-    save_feed(url)
     feed['name'] = get_feed_name(url)
     feed['title'] = feed['name']
     feed['type'] = 'blog'
     feed['start_urls'] = [url]
-    if is_exists_spider(url):
-        return
-    if not dry_run_feed_spider(feed):
-        raise Exception(f'spider crawled nothing from feed[{url}]')
-    save_spider_settings(feed)
+    if not dry_run_feed_spider(url, feed):
+        raise Exception('feed spider dry run failed')
 
 
 def crawl_articles(spids):
