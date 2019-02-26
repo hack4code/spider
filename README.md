@@ -12,5 +12,5 @@
   * docker-compose exec mongodb mongodump -u scrapy -p scrapy -d scrapy -c spider --gzip --archive=/dump/spider.gz
   * docker-compose exec mongodb mongodump -u scrapy -p scrapy -d scrapy -c category --gzip --archive=/dump/category.gz
 
-### javascript
+## React JS Build
   * docker container run --rm -v \`pwd\`/www/src/static/app/:/app/ -w /app/ node ./build.sh
