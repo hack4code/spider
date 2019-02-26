@@ -124,10 +124,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
             pass
 
     def media_downloaded(self, response, request, info):
-        if response.status != 200:
-            raise ImgException(
-                f'download image[{response.url}] got status[{response.status}]'
-            )
         if not response.body:
             raise ImgException('image size is 0')
         img = response.meta['img']
@@ -149,10 +145,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
-                imgtype = src.split('.')[-1]
+                imgtype = src.split('.')[-1].upper()
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
-        img.set('src', f'data:image/{imgtype};base64,{data}')
+        img.set('src', f'data:image/{imgtype.upper()};base64,{data}')
 
     def item_completed(self, results, item, info):
         return item

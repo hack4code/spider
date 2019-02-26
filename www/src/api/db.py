@@ -153,7 +153,7 @@ class Entries(Resource):
 
         spid = entry_request.get('spid')
         aid = entry_request.get('aid', None)
-        q = entry_request.get('q', None)
+        q = entry_request.get('q', 'n')
         if aid is None:
             entries = get_entries_by_spider(spid)
         elif q == 'p':
