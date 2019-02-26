@@ -58,7 +58,7 @@ def article(aid):
         raise NotFound(f'article[{aid}] not existed')
 
     def get_css(dom):
-        path = '{}/css/{}.css'.format(app.static_folder, dom)
+        path = '{}/css/site/{}.css'.format(app.static_folder, dom)
         return '{}.css'.format(dom) if os.path.isfile(path) else None
 
     return render_template(
