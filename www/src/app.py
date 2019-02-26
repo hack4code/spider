@@ -57,14 +57,25 @@ def article(aid):
     if a is None:
         raise NotFound(f'article[{aid}] not existed')
 
-    def get_css(dom):
-        path = '{}/css/site/{}.css'.format(app.static_folder, dom)
-        return '{}.css'.format(dom) if os.path.isfile(path) else None
+    def get_site_css(site):
+        path = f'{app.static_folder}/css/site/{site}.css'
+        if not os.path.isfile(path):
+            return
+        return f'{site}.css'
 
+    def get_site_script(site):
+        path = f'{app.static_folder}/script/site/{site}.script'
+        if not os.path.isfile(path):
+            return
+        with open(path) as f:
+            return f.read().strip()
+
+    site = a.domain
     return render_template(
             'article.html',
             article=a,
-            dom_css=get_css(a.domain)
+            sitecss=get_site_css(site),
+            sitescript=get_site_script(site),
     )
 
 
