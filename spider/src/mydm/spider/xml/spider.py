@@ -3,8 +3,8 @@
 
 import logging
 
-from urllib.parse import urlparse
 from datetime import datetime
+from urllib.parse import urlparse
 
 from lxml import etree
 
@@ -13,12 +13,11 @@ from scrapy.spiders import Spider
 
 from mydm.ai import extract_tags
 from mydm.items import ArticleItem
-from mydm.spider.spider import ErrbackSpider
 from .extractor import ItemExtractor
+from mydm.spider.spider import ErrbackSpider
 
 
 logger = logging.getLogger(__name__)
-
 XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
@@ -29,9 +28,6 @@ def set_item_tag(txt, item, encoding='utf-8'):
 
 
 class LXMLSpider(Spider):
-    """
-        spider crawling rss|atom
-    """
 
     # attributes must contain
     ATTRS = ('title', 'link')

@@ -2,20 +2,19 @@
 
 
 import logging
-from urllib.parse import urlparse
-from datetime import datetime
 from html import unescape
+from datetime import datetime
+from urllib.parse import urlparse
 
-from scrapy.spiders import Spider
 from scrapy import Request
+from scrapy.spiders import Spider
 
-from mydm.items import ArticleItem
 from mydm.ai import extract_tags
+from mydm.items import ArticleItem
 from mydm.spider.spider import ErrbackSpider
 
 
 logger = logging.getLogger(__name__)
-
 BLOGSPIDER_ATTRS = [
         'start_urls',
         'category',
@@ -33,9 +32,6 @@ def set_item_tag(txt, item, encoding='utf-8'):
 
 
 class BLOGSpider(Spider):
-    """
-        blog spider crawling with xpath
-    """
 
     # must contained attribute
     ATTRS = ('title', 'link', 'content')
@@ -119,28 +115,29 @@ class BLOGSpider(Spider):
 
 
 class BLOGSpiderMeta(type):
+
     def __new__(cls, name, bases, attrs):
-        if all(_ in attrs for _ in BLOGSPIDER_ATTRS):
+        if all(attr in attrs for attr in BLOGSPIDER_ATTRS):
+
             def update_bases(bases):
-                assert BLOGSpider not in bases, 'BLOGSpider in bases'
-                bases_ = [BLOGSpider]
-                bases_.extend(bases)
-                if ErrbackSpider not in bases_:
-                    bases_.append(ErrbackSpider)
-                return tuple(bases_)
+                new_bases = [BLOGSpider]
+                new_bases.extend(bases)
+                if ErrbackSpider not in new_bases:
+                    new_bases.append(ErrbackSpider)
+                return tuple(new_bases)
 
             def update_attrs(attrs):
-                attrs_ = attrs.copy()
+                new_attrs = attrs.copy()
                 extractors = []
-                for k, v in attrs_.items():
+                for k, v in new_attrs.items():
                     fields = k.split('_')
                     if (len(fields) == 3 and fields[0] == 'item' and
                             fields[1] != 'content' and fields[2] == 'xpath'):
                         extractors.append((fields[1], v))
-                attrs_['item_extractors'] = extractors
+                new_attrs['item_extractors'] = extractors
                 for k, _ in extractors:
-                    del attrs_['item_{}_xpath'.format(k)]
-                return attrs_
+                    del new_attrs[f'item_{k}_xpath']
+                return new_attrs
 
             bases = update_bases(bases)
             attrs = update_attrs(attrs)

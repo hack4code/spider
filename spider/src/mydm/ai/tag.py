@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 import re
+import logging
 
 from lxml.etree import ParserError
 from lxml.html import fromstring, HTMLParser, HtmlElement
@@ -52,6 +52,7 @@ class ReExtractor:
 
 
 class LXMLExtractor:
+
     p = re.compile(
             r'^\s*(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*$',
             re.IGNORECASE
@@ -61,12 +62,12 @@ class LXMLExtractor:
         for e in doc.xpath('//*[count(child::*)=0]'):
             if self.p.match(e.text_content()) is not None:
                 container = e.getparent()
-                for idx, _ in enumerate(container):
-                    if _ is e:
+                for idx, item in enumerate(container):
+                    if item is e:
                         break
                 tags = []
-                for _ in container[idx+1:]:
-                    tag = _.text_content().strip(',\r\n\t ')
+                for item in container[idx+1:]:
+                    tag = item.text_content().strip(',\r\n\t ')
                     if tag:
                         tags.append(tag)
                 return tags

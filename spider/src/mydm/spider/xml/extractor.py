@@ -3,9 +3,9 @@
 
 from html import unescape
 
+from lxml.etree import QName
 from dateutil.parser import parse as get_date
 from zope.interface import Interface, implementer
-from lxml.etree import QName
 
 from mydm.util import is_url
 

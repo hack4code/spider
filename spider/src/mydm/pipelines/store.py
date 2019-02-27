@@ -25,11 +25,7 @@ class StorePipeline:
 
     def process_item(self, item, spider):
         doc = item['content']
-        if not isinstance(doc, (str, bytes)):
-            if not isinstance(doc, HtmlElement):
-                raise DropItem(
-                        f'unknown document type {doc.__class__.__name__}'
-                )
+        if isinstance(doc, HtmlElement):
             item['content'] = tostring(
                 doc,
                 encoding='UTF-8',
@@ -37,12 +33,15 @@ class StorePipeline:
                 method='html'
             )
             item['encoding'] = 'UTF-8'
-
-        itemd = dict(item)
-        itemd['lang'] = get_article_lang(item)
-        itemd['spider'] = spider._id
-        itemd['source'] = spider.title
-        itemd['category'] = get_category(itemd)
-        if not is_exists_article(itemd):
-            save_article(itemd)
+        if not isinstance(doc, (str, bytes)):
+            raise DropItem(
+                    f'unknown document type {doc.__class__.__name__}'
+            )
+        article = dict(item)
+        article['lang'] = get_article_lang(item)
+        article['spider'] = spider._id
+        article['source'] = spider.title
+        article['category'] = get_category(article)
+        if not is_exists_article(article):
+            save_article(article)
         return item

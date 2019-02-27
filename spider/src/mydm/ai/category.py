@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from mydm.model import get_category_tags
 from mydm.util import cache_property
+from mydm.model import get_category_tags
 
 
 class CategoryAI():
@@ -10,7 +10,7 @@ class CategoryAI():
     @cache_property
     def tags(self):
         tags = get_category_tags()
-        return {c: [_.lower() for _ in t] for c, t in tags.items()}
+        return {c: [item.lower() for item in t] for c, t in tags.items()}
 
     def category(self, item):
         if 'tag' not in item:
