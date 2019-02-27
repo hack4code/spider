@@ -79,7 +79,7 @@ class ContentPipeline:
         return doc
 
     def remove_element_with_xpath(self, doc, removed_xpath_nodes):
-        for xpath in filter(lambda _: _.strip(), removed_xpath_nodes):
+        for xpath in removed_xpath_nodes:
             try:
                 nodes = doc.xpath(xpath)
             except XPathEvalError:

@@ -25,11 +25,8 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
         feed = {
                 'url': request.url,
                 'category': request.category,
+                'removed_xpath_nodes': request.removed_xpath_nodes[:]
         }
-        if len(request.removed_xpath_nodes) > 0:
-            feed['removed_xpath_nodes'] = []
-            for xpath in request.removed_xpath_nodes:
-                feed['removed_xpath_nodes'].append(xpath)
         try:
             submit_rss_feed(feed)
         except Exception as e:
@@ -46,12 +43,9 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
                 'entry_xpath': request.entry_xpath,
                 'item_title_xpath': request.item_title_xpath,
                 'item_link_xpath': request.item_link_xpath,
-                'item_content_xpath': request.item_content_xpath
+                'item_content_xpath': request.item_content_xpath,
+                'removed_xpath_nodes': request.removed_xpath_nodes[:]
         }
-        if len(request.removed_xpath_nodes) > 0:
-            feed['removed_xpath_nodes'] = []
-            for xpath in request.removed_xpath_nodes:
-                feed['removed_xpath_nodes'].append(xpath)
         try:
             submit_blog_feed(feed)
         except Exception as e:
