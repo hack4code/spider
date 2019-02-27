@@ -11,7 +11,7 @@ __all__ = ['SpiderFactory']
 class SpiderFactory:
 
     @staticmethod
-    def mkspider(setting):
+    def create_spider(setting):
         if 'name' not in setting or 'type' not in setting:
             raise SpiderFactoryException(
                     'miss attribute[name|type]'

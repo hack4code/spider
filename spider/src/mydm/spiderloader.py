@@ -4,13 +4,12 @@
 import logging
 
 from zope.interface import implementer
-
 from scrapy.interfaces import ISpiderLoader
 
-from mydm.exceptions import SpiderFactoryException
-from mydm.spiderfactory import SpiderFactory
-from mydm.model import get_spider_settings
 from mydm.util import cache_property
+from mydm.model import get_spider_settings
+from mydm.spiderfactory import SpiderFactory
+from mydm.exceptions import SpiderFactoryException
 
 
 __all__ = ['MongoSpiderLoader']
@@ -28,9 +27,9 @@ class MongoSpiderLoader:
         for setting in get_spider_settings():
             spid = setting['_id']
             try:
-                cls = SpiderFactory.mkspider(setting)
+                cls = SpiderFactory.create_spider(setting)
             except SpiderFactoryException as e:
-                logger.error('spider loader error[%s]', e)
+                logger.error('spider create error[%s]', e)
             else:
                 spiders[spid] = cls
         return spiders

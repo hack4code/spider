@@ -4,6 +4,4 @@
 from .spider import BLOGSpiderMeta
 
 
-__all__ = [
-        'BLOGSpiderMeta',
-]
+__all__ = ['BLOGSpiderMeta']

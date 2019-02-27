@@ -4,11 +4,11 @@
 import logging
 from urllib.parse import urlparse
 
-from scrapy.spiders import Spider
 from scrapy import Request
+from scrapy.spiders import Spider
 
-from scrapy.spidermiddlewares.httperror import HttpError
 from twisted.internet.error import DNSLookupError
+from scrapy.spidermiddlewares.httperror import HttpError
 from twisted.internet.error import TimeoutError, TCPTimedOutError
 
 
