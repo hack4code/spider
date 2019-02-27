@@ -30,5 +30,6 @@ removedSpider.forEach(function(item, index, array) {
 		db.discardspider.insert(spider);
 		printjson(spider);
 		db.spider.remove({_id: ObjectId(item)}, {justOne: true});
-	}}
+	};
+	db.scrapecount.remove({spider: item}, {justOne: false});}
 )
