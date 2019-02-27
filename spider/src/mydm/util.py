@@ -27,3 +27,12 @@ class cache_property:
         value = self.func(obj)
         setattr(obj, self.func.__name__, value)
         return value
+
+
+def is_url(v):
+    try:
+        r = urlparse(v)
+    except Exception:
+        return False
+    else:
+        return all([r.scheme, r.netloc, r.path])

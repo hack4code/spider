@@ -7,12 +7,12 @@ from io import BytesIO
 from urllib.parse import urlparse, urljoin
 
 from PIL import Image as ImageLib
-from lxml.html import fromstring, HTMLParser
+from lxml.html import HtmlElement
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
 
-from mydm.exceptions import ImgException
+from mydm.util import is_url
 
 
 logger = logging.getLogger(__name__)
@@ -67,6 +67,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
         pipe.crawler = crawler
         return pipe
 
+    @property
+    def spider(self):
+        return self.spiderinfo.spider
+
+    @property
+    def spider_name(self):
+        return self.spiderinfo.spider.name
+
     def need_optimize(self, size):
         if size < self.MAX_SIZE:
             return False
@@ -74,28 +82,39 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def get_media_requests(self, item, info):
         doc = item['content']
-        if isinstance(doc, (str, bytes)):
-            doc = fromstring(
-                    doc,
-                    parser=HTMLParser(encoding=item['encoding'])
-            )
-            item['content'] = doc
-
-        try:
-            attr = self.spiderinfo.spider.image_url_attr
-        except AttributeError:
-            attr = 'src'
+        assert isinstance(doc, HtmlElement)
+        attrs = {'src'}
+        imgattr = getattr(
+                self.spider,
+                'image_url_attr',
+                None,
+        )
+        if isinstance(imgattr, (list, tuple)):
+            attrs = attrs.union(imgattr)
+        elif imgattr:
+            attrs.add(imgattr)
 
         urls = []
         for e in doc.xpath('//img'):
-            if attr in e.attrib:
+            for attr in attrs:
+                if attr not in e.attrib:
+                    continue
                 url = e.get(attr).strip('\t\n\r ')
                 if url.startswith('//'):
                     r = urlparse(item['link'])
                     url = r.scheme + url
                 elif url.startswith('/'):
                     url = urljoin(item['link'], url)
-                urls.append((url, e))
+                if not is_url(url):
+                    continue
+                else:
+                    urls.append((url, e))
+                    break
+            else:
+                logger.error(
+                        "spider[%s] can't find link attribute of image",
+                        self.spider_name
+                )
 
         requests = []
         for url, e in urls:
@@ -111,26 +130,23 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def media_failed(self, failure, request, info):
         logger.error(
-                'spider[%s] failed to download image[%s]',
-                self.spiderinfo.spider.name,
+                'spider[%s] download image[%s] failed',
+                self.spider_name,
                 request.url
         )
-        try:
-            attr = self.spiderinfo.spider.image_url_attr
-            img = request.meta['img']
-            src = img.get(attr)
-            img.set('src', src)
-        except AttributeError:
-            pass
+        request.meta['img'].set('src', request.url)
 
     def media_downloaded(self, response, request, info):
         if not response.body:
-            raise ImgException('image size is 0')
+            logger.error(
+                    'spider[%s] got size 0 image[%s]',
+                    self.spider_name
+            )
+            return
         img = response.meta['img']
         src = response.url
         data = response.body
         imgsize = len(data)
-        img.set('src', src)
         try:
             image = Image(data)
             if self.need_optimize(imgsize):
@@ -138,14 +154,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
             imgtype = image.type
         except OSError:
             logger.error(
-                    'spider[%s] got unsupported image type[%s]',
-                    self.spiderinfo.spider.name,
+                    'spider[%s] PIL open image[%s] failed',
+                    self.spider_name,
                     src
             )
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
-                imgtype = src.split('.')[-1].upper()
+                imgtype = src.split('.')[-1]
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
         img.set('src', f'data:image/{imgtype.upper()};base64,{data}')

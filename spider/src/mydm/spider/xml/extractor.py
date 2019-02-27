@@ -2,24 +2,16 @@
 
 
 from html import unescape
-from urllib.parse import urlparse
 
-from zope.interface import Interface, implementer
 from dateutil.parser import parse as get_date
-
+from zope.interface import Interface, implementer
 from lxml.etree import QName
 
-
-def is_url(v):
-    try:
-        r = urlparse(v)
-    except Exception:
-        return False
-    else:
-        return all([r.scheme, r.netloc, r.path])
+from mydm.util import is_url
 
 
 class ITagExtractor(Interface):
+
     def match(self, e):
         """ check if the element  match the tag """
 
@@ -140,6 +132,7 @@ class ContentTag:
 
 
 class ItemExtractor:
+
     def __init__(self):
         self.extractors = [
                 TitleTag(),
