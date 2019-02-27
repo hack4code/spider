@@ -63,8 +63,7 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
         return spider_pb2.CrawlTaskResult(isrunning=True)
 
 
-def init_logger():
-    settings = get_project_settings()
+def init_logger(settings):
     root = logging.getLogger()
     root.setLevel(logging.INFO)
     handler = logging.StreamHandler(sys.stdout)
@@ -78,14 +77,16 @@ def init_logger():
     root.addHandler(handler)
 
 
-def serve():
+def serve(settings):
+    logger = logging.getLogger(__name__)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=3))
     spider_pb2_grpc.add_SpiderRpcServicer_to_server(
             SpiderRpcServicer(),
             server
     )
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(settings['GRPC_URI'])
     server.start()
+    logger.info('grpc server running...')
     try:
         while True:
             time.sleep(60)
@@ -107,7 +108,6 @@ def serve():
 
 
 if __name__ == '__main__':
-    init_logger()
-    logger = logging.getLogger(__name__)
-    logger.info('grpc server running...')
-    serve()
+    settings = get_project_settings()
+    init_logger(settings)
+    serve(settings)

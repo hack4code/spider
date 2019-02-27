@@ -36,7 +36,10 @@ DOWNLOADER_MIDDLEWARES = {
 spider settings
 """
 
-LOGGER_NAME = 'SPIDERLOGGER'
+LOGGER_NAME = 'mydm'
+
+# grpc
+GRPC_URI = '[::]:50051'
 
 # mongodb
 MONGODB_URI = 'mongodb://mongodb:27017/'
