@@ -39,37 +39,6 @@ class ObjectIdField(fields.Field):
             raise ValidationError(f'invalid ObjectId {value}')
 
 
-class Vote(Resource):
-
-    def post(self):
-
-        class VoteRequestSchema(Schema):
-            aid = ObjectIdField(required=True)
-
-            def __init__(self, strict=True, **kwargs):
-                super().__init__(strict=strict, **kwargs)
-
-        if 'uid' not in session:
-            return {'message': 'no uid'}, 401
-
-        schema = VoteRequestSchema()
-        try:
-            vote_request = schema.load(request.get_json()).data
-        except ValidationError as err:
-            return {'message': err.messages}, 400
-        except Exception:
-            return {'message': 'invalid request'}, 400
-
-        aid = vote_request['aid']
-        a = get_article(aid)
-
-        if not a:
-            return {'message': 'article not existed'}, 400
-
-        vote_article(a)
-        return {'aid': str(aid)}, 200
-
-
 class Day(Resource):
 
     def get(self):
@@ -167,3 +136,34 @@ class Entries(Resource):
         spid = str(spid)
         spiders = get_spiders()
         return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
+
+
+class Vote(Resource):
+
+    def post(self):
+
+        class VoteRequestSchema(Schema):
+            aid = ObjectIdField(required=True)
+
+            def __init__(self, strict=True, **kwargs):
+                super().__init__(strict=strict, **kwargs)
+
+        if 'uid' not in session:
+            return {'message': 'no uid'}, 401
+
+        schema = VoteRequestSchema()
+        try:
+            vote_request = schema.load(request.get_json()).data
+        except ValidationError as err:
+            return {'message': err.messages}, 400
+        except Exception:
+            return {'message': 'invalid request'}, 400
+
+        aid = vote_request['aid']
+        a = get_article(aid)
+
+        if not a:
+            return {'message': 'article not existed'}, 400
+
+        vote_article(a)
+        return {'aid': str(aid)}, 200
