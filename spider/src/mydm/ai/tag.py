@@ -85,7 +85,7 @@ class TagExtractor:
                         parser=HTMLParser(encoding=encoding)
                 )
             except ParserError as e:
-                logger.error('TagExtractor %s', e)
+                logger.error('doc parse failed[%s]', e)
                 return
         if not isinstance(doc, HtmlElement):
             return

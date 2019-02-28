@@ -26,12 +26,13 @@ class StorePipeline:
     def process_item(self, item, spider):
         doc = item['content']
         if isinstance(doc, HtmlElement):
-            item['content'] = tostring(
+            doc = tostring(
                 doc,
                 encoding='UTF-8',
                 pretty_print=True,
                 method='html'
             )
+            item['content'] = doc
             item['encoding'] = 'UTF-8'
         if not isinstance(doc, (str, bytes)):
             raise DropItem(

@@ -140,7 +140,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
         if not response.body:
             logger.error(
                     'spider[%s] got size 0 image[%s]',
-                    self.spider_name
+                    self.spider_name,
+                    request.url
             )
             return
         img = response.meta['img']
