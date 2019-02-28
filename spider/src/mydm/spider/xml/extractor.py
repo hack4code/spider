@@ -50,17 +50,19 @@ class LinkTag:
         return name in ('link', 'guid')
 
     def extract(self, e):
-        if 'href' in e.attrib:
-            v = e.attrib['href']
+        for attr in e.attrib:
+            if 'href' in attr:
+                v = e.attrib[attr]
+                break
         else:
             v = e.text
-        if v is not None:
-            v = v.strip('\r\t\n ')
-        if not v:
+        if v is None:
             return
+        else:
+            v = v.strip('\r\t\n ')
         if not is_url(v):
             return
-        if self.val is None:
+        if not self.val:
             self.val = v
         elif 'isPermaLink' in e.attrib:
             self.val = v
