@@ -35,10 +35,8 @@ class MongoSpiderLoader:
         return spiders
 
     @classmethod
-    def from_crawler(cls, crawler):
-        loader = cls()
-        loader.crawler = crawler
-        return loader
+    def from_settings(cls, settings):
+        return cls()
 
     def load(self, spider_id):
         return self.spiders[spider_id]
