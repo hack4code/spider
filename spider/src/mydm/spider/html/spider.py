@@ -135,7 +135,7 @@ class BLOGSpiderMeta(SpiderFactory, type, spider_type='blog'):
                     if (len(fields) == 3 and fields[0] == 'item' and
                             fields[1] != 'content' and fields[2] == 'xpath'):
                         extractors.append((fields[1], v))
-                new_attrs['item_extractors'] = extractors
+                new_attrs['item_extractors'] = tuple(extractors)
                 for k, _ in extractors:
                     del new_attrs[f'item_{k}_xpath']
                 return new_attrs
