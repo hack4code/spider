@@ -14,4 +14,4 @@ def register_meta_classes():
         if not spider_path.exists():
             continue
         spider_module = f'.{item.absolute().name}.spider'
-    importlib.import_module(spider_module, __package__)
+        importlib.import_module(spider_module, __package__)
