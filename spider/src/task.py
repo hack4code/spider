@@ -63,7 +63,7 @@ def _run_feed_spider(url, feed):
     configure_logging(TEST_SETTINGS, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
     save_feed(url)
-    cls = SpiderFactory.mkspider(feed)
+    cls = SpiderFactory.create_spider(feed)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
