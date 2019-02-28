@@ -70,7 +70,7 @@ class SubmitForm extends React.Component {
         setTimeout(() => {that.err.fadeOut()}, 1000);
       })
     }
-    findDOMNode(this.button).blur();
+    findDOMNode(this.refs.Button).blur();
   }
 
   updateField(k, v) {
@@ -95,7 +95,7 @@ class SubmitForm extends React.Component {
           <EditBox desc="链接Selector:" updateField={this.updateField} type="text" field="item_link_xpath" value={this.state.item_link_xpath} />
           <EditBox desc="内容Selector:" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
           <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
-          <Button ref={(com) => this.button = com} />
+          <Button ref="Button" />
         </form>
       </div>
     )

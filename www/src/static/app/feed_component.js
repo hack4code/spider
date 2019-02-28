@@ -233,7 +233,7 @@ class Select extends React.Component {
       }
     })
     .catch(function(err) {
-      console.log("Error in get category list");
+      console.log("get category list failed");
     })
   }
 
