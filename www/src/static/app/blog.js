@@ -51,7 +51,7 @@ class SubmitForm extends React.Component {
         body: JSON.stringify(feed)
       })
       .then(function(response) {
-	response.json().then(function(data) {
+        response.json().then(function(data) {
           if (response.status == 200) {
             that.err.fadeIn("成功");
             setTimeout(() => {that.err.fadeOut()}, 1000);
@@ -60,7 +60,6 @@ class SubmitForm extends React.Component {
             that.setState(state);
           }
           else {
-            data = response.json();
             that.err.fadeIn("失败: " + data["message"]);
             setTimeout(() => {that.err.fadeOut()}, 1000);
           }

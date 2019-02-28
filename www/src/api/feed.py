@@ -89,7 +89,7 @@ class RssFeed(Resource):
         try:
             feed = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': err.messages}, 400
+            return {'message': str(err.messages)}, 400
         except Exception:
             return {'message': 'invalid atom feed'}, 400
         current_app.logger.info(f'atom feed[{feed}]')
@@ -128,7 +128,7 @@ class BlogFeed(Resource):
         try:
             feed = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': err.messages}, 400
+            return {'message': str(err.messages)}, 400
         except Exception:
             return {'message': 'invalid blog feed'}, 400
         current_app.logger.info(f'blog feed[{feed}]')
