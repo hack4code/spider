@@ -25,26 +25,28 @@ class MongoSpiderLoader:
     def spiders(self):
         spiders = {}
         for setting in get_spider_settings():
-            spid = setting['_id']
+            spider_id = setting['_id']
             try:
                 cls = SpiderFactory.create_spider(setting)
             except SpiderFactoryException as e:
                 logger.error('spider create error[%s]', e)
             else:
-                spiders[spid] = cls
+                spiders[spider_id] = cls
         return spiders
 
     @classmethod
-    def from_settings(cls, settings):
-        return cls()
+    def from_crawler(cls, crawler):
+        loader = cls()
+        loader.crawler = crawler
+        return loader
 
-    def load(self, spid):
-        return self.spiders[spid]
+    def load(self, spider_id):
+        return self.spiders[spider_id]
 
     def find_by_request(self, request):
         return [
-            spid
-            for spid, cls in self.spiders.items()
+            spider_id
+            for spider_id, cls in self.spiders.items()
             if cls.handles_request(request)
         ]
 

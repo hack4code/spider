@@ -16,26 +16,28 @@ from mydm.spiderfactory import SpiderFactory
 
 
 logger = logging.getLogger(__name__)
-BLOGSPIDER_ATTRS = [
-        'start_urls',
-        'category',
-        'entry_xpath',
-        'item_title_xpath',
-        'item_link_xpath',
-        'item_content_xpath'
-]
-
-
-def set_item_tag(txt, item, encoding='utf-8'):
-    tags = extract_tags(txt, encoding)
-    if tags:
-        item['tag'] = tags
 
 
 class BLOGSpider(Spider):
 
-    # must contained attribute
     ATTRS = ('title', 'link', 'content')
+
+    def extract_tags(self, item, content=None):
+        if 'tag' in item:
+            return
+        if 'content' not in item:
+            return
+        if content is None:
+            content = item['content']
+        tags = extract_tags(content, item['encoding'])
+        if not tags:
+            return
+        logger.info(
+                'spider[%s] extract tags %s',
+                self.name,
+                tags
+        )
+        item['tag'] = tags
 
     def extract_entries(self, response):
         return response.selector.xpath(self.entry_xpath)
@@ -45,10 +47,10 @@ class BLOGSpider(Spider):
                 attr: entry.xpath(xpath).extract_first()
                 for attr, xpath in self.item_extractors
         }
-        set_item_tag(
-                entry.xpath('.').extract_first(),
+        item['encoding'] = encoding
+        self.extract_tags(
                 item,
-                encoding
+                content=entry.xpath('.').extract_first()
         )
         if item.get('link') is not None:
             item['link'] = item['link'].strip('\t\n\r ')
@@ -62,12 +64,7 @@ class BLOGSpider(Spider):
         item['link'] = response.url.strip('\t\n\r ')
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
-        if item.get('tag') is None:
-            set_item_tag(
-                    content,
-                    item,
-                    response.encoding
-            )
+        self.extract_tags(item)
         if all(item.get(attr) is not None for attr in self.ATTRS):
             return ArticleItem(item)
         else:
@@ -113,6 +110,16 @@ class BLOGSpider(Spider):
                     errback=self.errback,
                     dont_filter=True
             )
+
+
+BLOGSPIDER_ATTRS = [
+        'start_urls',
+        'category',
+        'entry_xpath',
+        'item_title_xpath',
+        'item_link_xpath',
+        'item_content_xpath'
+]
 
 
 class BLOGSpiderMeta(SpiderFactory, type, spider_type='blog'):

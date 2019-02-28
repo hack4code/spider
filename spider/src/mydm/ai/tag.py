@@ -2,13 +2,9 @@
 
 
 import re
-import logging
 
 from lxml.etree import ParserError
 from lxml.html import fromstring, HTMLParser, HtmlElement
-
-
-logger = logging.getLogger(__name__)
 
 
 class ReExtractor:
@@ -84,24 +80,21 @@ class TagExtractor:
                         bytes(bytearray(doc, encoding=encoding)),
                         parser=HTMLParser(encoding=encoding)
                 )
-            except ParserError as e:
-                logger.error('doc parse failed[%s]', e)
+            except ParserError:
                 return
         if not isinstance(doc, HtmlElement):
             return
         for cls in self.EXTRACTORS:
             extract = cls()
-            tags_ = extract(doc)
-            if tags_:
+            ext_tags = extract(doc)
+            if ext_tags:
                 tags = []
-                for idx, tag in enumerate(tags_):
+                for idx, tag in enumerate(ext_tags):
                     if idx < 2 and len(tag) > 16:
                         break
                     elif len(tag) < 16:
                         tags.append(tag)
                 else:
-                    if tags:
-                        logger.info('TagExtractor got tags %s', tags)
                     return tags
 
 

@@ -10,11 +10,11 @@ __all__ = ['SpiderFactory']
 
 class SpiderFactory:
 
-    metaclses = {}
+    meta_classes = {}
 
     def __init_subclass__(cls, spider_type, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls.metaclses[spider_type] = cls
+        cls.meta_classes[spider_type] = cls
 
     @classmethod
     def create_spider(cls, setting):
@@ -23,7 +23,7 @@ class SpiderFactory:
                     'miss attribute[name|type]'
             )
         try:
-            metacls = cls.metaclses[setting['type']]
+            metacls = cls.meta_classes[setting['type']]
         except KeyError:
             raise SpiderFactoryException(
                     f'unknown spider type[{setting["type"]}]'

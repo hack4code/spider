@@ -19,19 +19,27 @@ from mydm.spiderfactory import SpiderFactory
 
 
 logger = logging.getLogger(__name__)
-XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
-
-
-def set_item_tag(txt, item, encoding='utf-8'):
-    tags = extract_tags(txt, encoding)
-    if tags:
-        item['tag'] = tags
 
 
 class LXMLSpider(Spider):
 
     # attributes must contain
     ATTRS = ('title', 'link')
+
+    def extract_tags(self, item):
+        if 'tag' in item:
+            return
+        if 'content' not in item:
+            return
+        tags = extract_tags(item['content'], item['encoding'])
+        if not tags:
+            return
+        logger.info(
+                'spider[%s] extract tags %s',
+                self.name,
+                tags
+        )
+        item['tag'] = tags
 
     def extract_content(self, response):
         item = response.meta['item']
@@ -46,8 +54,7 @@ class LXMLSpider(Spider):
         item['content'] = content
         item['encoding'] = response.encoding
         item['link'] = response.url
-        if item.get('tag') is None:
-            set_item_tag(content, item, item['encoding'])
+        self.extract_tags(item)
         return ArticleItem(item)
 
     def parse(self, response):
@@ -72,9 +79,7 @@ class LXMLSpider(Spider):
                 item['data_type'] = 'html'
                 item['encoding'] = response.encoding
                 if all(item.get(attr) is not None for attr in self.ATTRS):
-                    if (item.get('tag') is None and
-                            item.get('content') is not None):
-                        set_item_tag(item['content'], item, item['encoding'])
+                    self.extract_tags(item)
                     if hasattr(self, 'item_content_xpath'):
                         try:
                             link = (f'{item["link"]}?'
@@ -90,6 +95,9 @@ class LXMLSpider(Spider):
                         )
                     elif item.get('content'):
                         yield ArticleItem(item)
+
+
+XMLSPIDER_ATTRS = ['start_urls', 'category', 'name']
 
 
 class LXMLSpiderMeta(SpiderFactory, type, spider_type='xml'):

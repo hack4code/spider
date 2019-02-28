@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 class ContentPipeline:
 
-    DEFAULT_SAFE_ATTRS = 'safe_attrs'
-    DEFAULT_ALLOW_CLASSES_NAME = 'allow_classes'
-    DEFAULT_REMOVED_CLASSES_NAME = 'removed_classes'
-    DEFAULT_REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
+    SAFE_ATTRS_NAME = 'safe_attrs'
+    ALLOW_CLASSES_NAME = 'allow_classes'
+    REMOVED_CLASSES_NAME = 'removed_classes'
+    REMOVED_XPATH_NODES_NAME = 'removed_xpath_nodes'
 
     SAFE_ATTRS = {
             'style',
@@ -43,24 +43,10 @@ class ContentPipeline:
     )
 
     @classmethod
-    def from_settings(cls, settings):
-        cls.ALLOW_CLASSES_NAME = settings.get(
-            'SPIDER_ALLOW_CLASSES_NAME',
-            cls.DEFAULT_ALLOW_CLASSES_NAME
-        )
-        cls.REMOVED_CLASSES_NAME = settings.get(
-            'SPIDER_REMOVED_CLASSES_NAME',
-            cls.DEFAULT_REMOVED_CLASSES_NAME
-        )
-        cls.REMOVED_XPATH_NODES_NAME = settings.get(
-            'SPIDER_REMOVED_XPATH_NODES_NAME',
-            cls.DEFAULT_REMOVED_XPATH_NODES_NAME
-        )
-        cls.SAFE_ATTRS_NAME = settings.get(
-            'SPIDER_SAFE_ATTRS_NAME',
-            cls.DEFAULT_SAFE_ATTRS
-        )
-        return cls()
+    def from_crawler(cls, crawler):
+        pipe = cls()
+        pipe.crawler = crawler
+        return pipe
 
     def format_title(self, title):
         return re.sub(r'(\r|\n|\s)+', ' ', title)
@@ -137,6 +123,7 @@ class ContentPipeline:
                 e.drop_tree()
 
         remove_tags(doc)
+
         return doc
 
     def process_item(self, item, spider):
@@ -145,7 +132,7 @@ class ContentPipeline:
         doc = item['content']
         if not isinstance(doc, (HtmlElement, str, bytes)):
             logger.error('unknown doc type %s', doc.__class__.__name__)
-            raise DropItem('unknown document type')
+            raise DropItem(f'unknown document type[{doc.__class__.__name__}]')
         if isinstance(doc, (str, bytes)):
             try:
                 doc = fromstring(
@@ -154,7 +141,7 @@ class ContentPipeline:
                 )
             except ParserError as e:
                 logger.error('html parse error %s', e)
-                raise DropItem('document parse error')
+                raise DropItem(f'document parse error[{e}]')
 
         # remove element with class name for clean display
         removed_classes = getattr(
