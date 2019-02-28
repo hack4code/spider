@@ -25,6 +25,7 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
         feed = {
                 'url': request.url,
                 'category': request.category,
+                'item_content_xpath': request.item_content_xpath,
                 'removed_xpath_nodes': request.removed_xpath_nodes[:]
         }
         try:

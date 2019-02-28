@@ -21,6 +21,7 @@ from mydm.spiderfactory import SpiderFactory
 from mydm.model import (
         save_spider_settings, save_feed, is_exists_spider, get_stats
 )
+from mydm.util import is_url
 
 
 logger = logging.getLogger(__name__)
@@ -83,8 +84,31 @@ def dry_run_feed_spider(url, feed):
     return p.exitcode == 0
 
 
+def validate_rss_feed(feed):
+    url = feed['url']
+    if not is_url(url):
+        raise Exception(f'invalid url value[{url}]')
+    item_content_xpath = feed['item_content_xpath'].strip('\r\n\t ')
+    if not item_content_xpath:
+        feed.pop('item_content_xpath')
+    else:
+        feed['item_content_xpath'] = item_content_xpath
+    removed_xpath_nodes = feed['removed_xpath_nodes']
+    new_removed_xpath_nodes = []
+    for node in removed_xpath_nodes:
+        new_node = node.strip('\r\n\t ')
+        if new_node:
+            new_removed_xpath_nodes.append(new_node)
+    if not new_removed_xpath_nodes:
+        feed.pop('removed_xpath_nodes')
+    else:
+        feed['removed_xpath_nodes'] = new_removed_xpath_nodes
+    return feed
+
+
 def submit_rss_feed(feed):
-    url = feed.pop('url')
+    feed = validate_rss_feed(feed)
+    url = feed['url']
     settings = get_project_settings()
     headers = settings['DEFAULT_REQUEST_HEADERS'].copy()
     headers['User-Agent'] = settings['USER_AGENT']
@@ -134,6 +158,7 @@ def submit_rss_feed(feed):
         feed['title'] = feed['name']
     feed['type'] = 'xml'
     feed['start_urls'] = [url]
+    feed.pop('url')
     if not dry_run_feed_spider(url, feed):
         raise Exception('feed spider dry run failed')
 
