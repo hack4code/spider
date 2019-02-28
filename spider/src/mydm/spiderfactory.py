@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-import logging
 from mydm.spider import register_meta_classes
 from mydm.exceptions import SpiderFactoryException
 
