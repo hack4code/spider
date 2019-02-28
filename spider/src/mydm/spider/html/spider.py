@@ -12,6 +12,7 @@ from scrapy.spiders import Spider
 from mydm.ai import extract_tags
 from mydm.items import ArticleItem
 from mydm.spider.spider import ErrbackSpider
+from mydm.spiderfactory import SpiderFactory
 
 
 logger = logging.getLogger(__name__)
@@ -114,7 +115,7 @@ class BLOGSpider(Spider):
             )
 
 
-class BLOGSpiderMeta(type):
+class BLOGSpiderMeta(SpiderFactory, type, spider_type='blog'):
 
     def __new__(cls, name, bases, attrs):
         if all(attr in attrs for attr in BLOGSPIDER_ATTRS):

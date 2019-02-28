@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 
-from .xml import LXMLSpiderMeta
-from .html import BLOGSpiderMeta
-from .spider import ErrbackSpider
+import importlib
+from pathlib import Path
 
 
-SpiderMetaClses = {
-    'xml': LXMLSpiderMeta,
-    'blog': BLOGSpiderMeta
-}
-
-
-__all__ = [
-    'ErrbackSpider',
-    'SpiderMetaClses'
-]
+def register_meta_classes():
+    path = Path(__file__).parent
+    for item in path.iterdir():
+        if not item.is_dir():
+            continue
+        spider_path = item / 'spider.py'
+        if not spider_path.exists():
+            continue
+        spider_module = f'.{item.absolute().name}.spider'
+    importlib.import_module(spider_module, __package__)

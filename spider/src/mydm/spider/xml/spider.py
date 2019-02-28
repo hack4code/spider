@@ -15,6 +15,7 @@ from mydm.ai import extract_tags
 from mydm.items import ArticleItem
 from .extractor import ItemExtractor
 from mydm.spider.spider import ErrbackSpider
+from mydm.spiderfactory import SpiderFactory
 
 
 logger = logging.getLogger(__name__)
@@ -91,7 +92,7 @@ class LXMLSpider(Spider):
                         yield ArticleItem(item)
 
 
-class LXMLSpiderMeta(type):
+class LXMLSpiderMeta(SpiderFactory, type, spider_type='xml'):
 
     def __new__(cls, name, bases, attrs):
         if all(attr in attrs for attr in XMLSPIDER_ATTRS):
