@@ -153,11 +153,12 @@ class ImagesDlownloadPipeline(MediaPipeline):
             if self.need_optimize(imgsize):
                 data = image.optimize()
             imgtype = image.type
-        except OSError:
+        except OSError as e:
             logger.error(
-                    'spider[%s] PIL open image[%s] failed',
+                    'spider[%s] PILLOW open image[%s] failed[%s]',
                     self.spider_name,
-                    src
+                    src,
+                    e
             )
             try:
                 imgtype = response.headers['Content-Type'].split('/')[-1]

@@ -168,4 +168,6 @@ def crawl_articles(spids):
         runner.crawl(spider)
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
+    logger.info('crawl job starting...')
     reactor.run()
+    logger.info('crawl job finished')
