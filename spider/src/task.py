@@ -103,12 +103,11 @@ def validate_rss_feed(feed):
         feed.pop('removed_xpath_nodes')
     else:
         feed['removed_xpath_nodes'] = new_removed_xpath_nodes
-    return feed
 
 
 def submit_rss_feed(feed):
-    feed = validate_rss_feed(feed)
-    url = feed['url']
+    validate_rss_feed(feed)
+    url = feed.pop('url')
     settings = get_project_settings()
     headers = settings['DEFAULT_REQUEST_HEADERS'].copy()
     headers['User-Agent'] = settings['USER_AGENT']
@@ -158,12 +157,53 @@ def submit_rss_feed(feed):
         feed['title'] = feed['name']
     feed['type'] = 'xml'
     feed['start_urls'] = [url]
-    feed.pop('url')
     if not dry_run_feed_spider(url, feed):
         raise Exception('feed spider dry run failed')
 
 
+def validate_blog_feed(feed):
+    url = feed['url']
+    if not is_url(url):
+        raise Exception(f'invalid url value[{url}]')
+    category = feed['category'].strip('\r\n\t ')
+    if not category:
+        raise Exception('category value is empty')
+    else:
+        feed['category'] = category
+    entry_xpath = feed['entry_xpath'].strip('\r\n\t ')
+    if not entry_xpath:
+        raise Exception('entry_xpath value is empty')
+    else:
+        feed['entry_xpath'] = entry_xpath
+    item_title_xpath = feed['item_title_xpath'].strip('\r\n\t ')
+    if not item_title_xpath:
+        raise Exception('item_title_xpath value is empty')
+    else:
+        feed['item_title_xpath'] = item_title_xpath
+    item_link_xpath = feed['item_link_xpath'].strip('\r\n\t ')
+    if not item_link_xpath:
+        raise Exception('item_link_xpath value is empty')
+    else:
+        feed['item_link_xpath'] = item_link_xpath
+    item_content_xpath = feed['item_content_xpath'].strip('\r\n\t ')
+    if not item_content_xpath:
+        raise Exception('item_content_xpath value is empty')
+    else:
+        feed['item_content_xpath'] = item_content_xpath
+    removed_xpath_nodes = feed['removed_xpath_nodes']
+    new_removed_xpath_nodes = []
+    for node in removed_xpath_nodes:
+        new_node = node.strip('\r\n\t ')
+        if new_node:
+            new_removed_xpath_nodes.append(new_node)
+    if not new_removed_xpath_nodes:
+        feed.pop('removed_xpath_nodes')
+    else:
+        feed['removed_xpath_nodes'] = new_removed_xpath_nodes
+
+
 def submit_blog_feed(feed):
+    validate_blog_feed(feed)
     url = feed.pop('url')
     feed['name'] = get_feed_name(url)
     feed['title'] = feed['name']
