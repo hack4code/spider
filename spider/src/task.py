@@ -32,10 +32,12 @@ TEST_SETTINGS = {
         'scrapy.extensions.spiderstate.SpiderState': None,
         'scrapy.extensions.telnet.TelnetConsole': None,
     },
+    'ITEM_PIPELINES': {},
+    'DOWNLOADER_MIDDLEWARES': {},
     'BOT_NAME': 'TestSpider',
     'WEBSERVICE_ENABLED': False,
     'TELNETCONSOLE_ENABLED': False,
-    'LOG_LEVEL': 'INFO',
+    'LOG_LEVEL': 'WARNING',
     'LOG_FORMAT': '%(asctime)s-%(levelname)s: %(message)s',
     'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'
 }
