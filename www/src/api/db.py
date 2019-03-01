@@ -11,9 +11,7 @@ from marshmallow import (
         Schema, fields, validates, ValidationError
 )
 from flask_restful import Resource
-
 from flask import current_app, request, session
-
 
 from model import (
         get_article, vote_article,
@@ -22,6 +20,7 @@ from model import (
         get_entries_next, get_entries_pre, get_entries_by_spider,
         get_spiders,
 )
+from .utils import format_messages
 
 
 Spider = namedtuple('Spider', ['id', 'source'])
@@ -59,7 +58,7 @@ class Day(Resource):
         try:
             day_request = schema.load(request.args).data
         except ValidationError as err:
-            return {'message': err.messages}, 400
+            return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid request'}, 400
 
@@ -116,7 +115,7 @@ class Entries(Resource):
         try:
             entry_request = schema.load(request.args).data
         except ValidationError as err:
-            return {'message': err.messages}, 400
+            return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid request argument'}, 400
 
@@ -155,7 +154,7 @@ class Vote(Resource):
         try:
             vote_request = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': err.messages}, 400
+            return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid request'}, 400
 

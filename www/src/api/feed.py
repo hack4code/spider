@@ -12,6 +12,8 @@ from flask_restful import Resource
 import spider_pb2
 import spider_pb2_grpc
 
+from .utils import format_messages
+
 
 def create_grpc_stub():
     channel = grpc.insecure_channel(current_app.config['GRPC_HOST'])
@@ -89,7 +91,7 @@ class RssFeed(Resource):
         try:
             feed = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': str(err.messages)}, 400
+            return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid atom feed'}, 400
         current_app.logger.info(f'atom feed[{feed}]')
@@ -128,7 +130,7 @@ class BlogFeed(Resource):
         try:
             feed = schema.load(request.get_json()).data
         except ValidationError as err:
-            return {'message': str(err.messages)}, 400
+            return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid blog feed'}, 400
         current_app.logger.info(f'blog feed[{feed}]')
