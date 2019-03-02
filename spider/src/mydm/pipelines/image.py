@@ -6,8 +6,8 @@ import logging
 from io import BytesIO
 from urllib.parse import urlparse, urljoin
 
-from PIL import Image as ImageLib
 from lxml.html import HtmlElement
+from PIL import Image as ImageLib, ImageFile
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -16,6 +16,9 @@ from mydm.util import is_url
 
 
 logger = logging.getLogger(__name__)
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Image:
