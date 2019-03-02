@@ -133,6 +133,10 @@ def is_exists_spider(url):
 
 
 def save_spider_settings(settings):
+    try:
+        del settings['_id']
+    except KeyError:
+        pass
     result = ScrapyDB.spider.insert_one(settings)
     return result.inserted_id
 

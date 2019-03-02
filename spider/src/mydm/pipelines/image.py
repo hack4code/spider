@@ -28,6 +28,9 @@ class Image:
     def __init__(self, data):
         self._image = ImageLib.open(BytesIO(data))
 
+    def close(self):
+        self._image.close()
+
     @property
     def size(self):
         return self._image.size

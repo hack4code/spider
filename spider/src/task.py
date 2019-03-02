@@ -76,6 +76,7 @@ def _run_feed_spider(url, feed):
         raise Exception(f'feed spider crawled 0 articles')
     if is_exists_spider(url):
         raise Exception(f'feed[{url}] existed')
+    del feed['_id']
     save_spider_settings(feed)
 
 
