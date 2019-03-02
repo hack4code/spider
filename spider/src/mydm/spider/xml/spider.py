@@ -29,6 +29,7 @@ class LXMLSpider(Spider):
         item_content_xpath
         item_content_link_parameter
     """
+
     def extract_tags(self, item):
         if 'tag' in item:
             return

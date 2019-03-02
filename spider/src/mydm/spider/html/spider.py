@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 class BLOGSpider(Spider):
 
-    ATTRS = ('title', 'link', 'content')
-
     def extract_tags(self, item, content=None):
         if 'tag' in item:
             return
@@ -59,24 +57,25 @@ class BLOGSpider(Spider):
         return item
 
     def extract_content(self, response):
+        ITEM_KEYS = ('title', 'link', 'content')
         item = response.meta['item']
         item['encoding'] = response.encoding
         item['link'] = response.url.strip('\t\n\r ')
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
         self.extract_tags(item)
-        if all(item.get(attr) is not None for attr in self.ATTRS):
+        if all(item.get(attr) is not None for attr in ITEM_KEYS):
             return ArticleItem(item)
         else:
-            miss_attrs = [
+            miss_keys = [
                     attr
-                    for attr in self.ATTRS
+                    for attr in ITEM_KEYS
                     if item.get(attr) is None
             ]
             logger.error(
-                    'spider[%s] extract content miss attrs%s',
+                    'spider[%s] extract content miss keys%s',
                     self.name,
-                    miss_attrs
+                    miss_keys
             )
 
     def parse(self, response):
@@ -112,20 +111,19 @@ class BLOGSpider(Spider):
             )
 
 
-BLOGSPIDER_ATTRS = [
-        'start_urls',
-        'category',
-        'entry_xpath',
-        'item_title_xpath',
-        'item_link_xpath',
-        'item_content_xpath'
-]
-
-
 class BLOGSpiderMeta(SpiderFactory, type, spider_type='blog'):
 
+    SPIDER_ATTRS = (
+            'start_urls',
+            'category',
+            'entry_xpath',
+            'item_title_xpath',
+            'item_link_xpath',
+            'item_content_xpath'
+    )
+
     def __new__(cls, name, bases, attrs):
-        if all(attr in attrs for attr in BLOGSPIDER_ATTRS):
+        if all(attr in attrs for attr in cls.SPIDER_ATTRS):
 
             def update_bases(bases):
                 new_bases = [BLOGSpider]
@@ -158,7 +156,7 @@ class BLOGSpiderMeta(SpiderFactory, type, spider_type='blog'):
         else:
             miss_attrs = [
                     attr
-                    for attr in BLOGSPIDER_ATTRS
+                    for attr in cls.SPIDER_ATTRS
                     if attr not in attrs
             ]
             raise AttributeError(f'miss attributes{miss_attrs}')
