@@ -153,9 +153,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
         imgsize = len(data)
         try:
             image = Image(data)
-            if self.need_optimize(imgsize):
-                data = image.optimize()
-            imgtype = image.type
         except OSError as e:
             logger.error(
                     'spider[%s] PILLOW open image[%s] failed[%s]',
@@ -167,6 +164,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 imgtype = response.headers['Content-Type'].split('/')[-1]
             except KeyError:
                 imgtype = src.split('.')[-1]
+        else:
+            if self.need_optimize(imgsize):
+                data = image.optimize()
+            imgtype = image.type
         img.set('source', src)
         data = base64.b64encode(data).decode('ascii')
         img.set('src', f'data:image/{imgtype.upper()};base64,{data}')
