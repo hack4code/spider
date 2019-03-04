@@ -15,11 +15,8 @@ from scrapy.pipelines.media import MediaPipeline
 
 from mydm.util import is_url
 
-
-logger = logging.getLogger(__name__)
-
-
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+logger = logging.getLogger(__name__)
 
 
 class Image:
@@ -110,15 +107,29 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
         urls = []
         for e in doc.xpath('//img'):
+
+            def format_url(url, item):
+                url = url.strip('\r\n\t ')
+                if url.startswith('//'):
+                    scheme = urlparse(item['link']).scheme
+                    url = f'{scheme}:{url}'
+                elif url.startswith('/'):
+                    url = urljoin(item['link'], url)
+                return url
+
+            if 'srcset' in e.attrib:
+                srcset = e.get('srcset')
+                url = srcset.split(',')[0].split(' ')[0]
+                url = format_url(url, item)
+                if is_url(url):
+                    urls.append((url, e))
+                    e.attrib.pop('srcset')
+                    continue
             for attr in attrs:
                 if attr not in e.attrib:
                     continue
-                url = e.get(attr).strip('\t\n\r ')
-                if url.startswith('//'):
-                    r = urlparse(item['link'])
-                    url = r.scheme + url
-                elif url.startswith('/'):
-                    url = urljoin(item['link'], url)
+                url = e.get(attr)
+                url = format_url(url, item)
                 if not is_url(url):
                     continue
                 else:
@@ -129,13 +140,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         "spider[%s] can't find image link attribute",
                         self.spider_name
                 )
+                self._invalid_img_element.append(e)
 
         requests = []
         for url, e in urls:
             if url.startswith('data'):
                 continue
             try:
-                r = Request(url, meta={'image_xpath_node': e})
+                request = Request(url, meta={'image_xpath_node': e})
             except ValueError:
                 logger.error(
                         'spider[%s] got invalid url[%s]',
@@ -143,7 +155,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         url
                 )
             else:
-                requests.append(r)
+                requests.append(request)
         return requests
 
     def media_failed(self, failure, request, info):
@@ -169,11 +181,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
         data = response.body
         image_size = len(data)
         try:
-            image_type = response.headers[
-                    'Content-Type'
-                    ].split('/')[-1].upper()
-        except KeyError:
-            image_type = src.split('.')[-1].upper()
+            image_type = response.headers['Content-Type'].split('/')[-1]
+        except Exception:
+            image_type = src.split('.')[-1]
+        image_type = image_type.upper()
         try:
             image = Image(data, type=image_type)
         except (OSError, IOError) as e:

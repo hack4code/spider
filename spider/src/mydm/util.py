@@ -35,4 +35,7 @@ def is_url(v):
     except Exception:
         return False
     else:
-        return all([r.scheme, r.netloc, r.path])
+        if r.scheme.lower() == 'data' and r.path:
+            return True
+        else:
+            return all([r.scheme, r.netloc, r.path])

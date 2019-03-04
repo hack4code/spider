@@ -25,6 +25,7 @@ class ContentPipeline:
             'style',
             'float',
             'src',
+            'srcset',
             'font-size',
             'font-family',
             'align'
