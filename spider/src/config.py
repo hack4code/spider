@@ -55,5 +55,8 @@ MONGODB_PWD = 'scrapy'
 ETAG_URL = 'redis://redis:6379/1'
 TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
 
-# if-modify-since
+# if-modify-since middleware
 MODIFY_DELTA = 1
+
+# image pipeline
+IMAGE_OPTIMIZE_CATEGORY_FILTER = ['漫画']

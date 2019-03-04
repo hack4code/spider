@@ -69,6 +69,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def __init__(self, settings):
         super().__init__(settings=settings)
+        self._category_filter = settings['IMAGE_OPTIMIZE_CATEGORY_FILTER']
+        self._invalid_img_element = []  # invalid img element list per item
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -85,7 +87,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def spider_name(self):
         return self.spiderinfo.spider.name
 
+    @property
+    def spider_category(self):
+        return self.spiderinfo.spider.category
+
     def need_optimize(self, size):
+        if self.spider_category in self._category_filter:
+            return False
         if size < self.MAX_SIZE:
             return False
         return True
