@@ -237,5 +237,8 @@ def crawl_articles(spids):
     d = runner.join()
     d.addBoth(lambda _: reactor.stop())
     logger.info('crawl job starting...')
-    reactor.run()
+    try:
+        reactor.run()
+    except Exception:
+        logger.exception('crawl job got exception:')
     logger.info('crawl job finished')
