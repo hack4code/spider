@@ -8,17 +8,17 @@ from scrapy import signals
 
 class IfModifySinceMiddleware:
 
-    def __init__(self, delta=None):
+    def __init__(self, delta):
         self.delta = delta
 
     @classmethod
     def from_crawler(cls, crawler):
-        inst = cls(delta=crawler.settings['MODIFY_DELTA'])
+        middleware = cls(delta=crawler.settings['MODIFY_DELTA'])
         crawler.signals.connect(
-                inst.spider_opened,
+                middleware.spider_opened,
                 signal=signals.spider_opened
         )
-        return inst
+        return middleware
 
     def spider_opened(self, spider):
         self.delta = getattr(
