@@ -197,9 +197,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
             image = Image(data, type=image_type)
         except (OSError, IOError) as e:
             logger.error(
-                    'spider[%s] PILLOW open image[%s] failed[%s]',
+                    'spider[%s] PILLOW open image[%s, %s] failed[%s]',
                     self.spider_name,
                     src,
+                    image_type,
                     e
             )
         else:
