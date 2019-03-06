@@ -71,12 +71,18 @@ def article(aid):
             return f.read().strip()
 
     site = a.domain
+    head = a.head
+    sitecss = get_site_css(site)
+    if not head:
+        sitescript = get_site_script(site)
+    else:
+        sitescript = None
     return render_template(
             'article.html',
             article=a,
-            sitecss=get_site_css(site),
-            sitescript=get_site_script(site),
-            headlist=a.head,
+            sitecss=sitecss,
+            sitescript=sitescript,
+            headlist=head,
     )
 
 
