@@ -76,6 +76,7 @@ def article(aid):
             article=a,
             sitecss=get_site_css(site),
             sitescript=get_site_script(site),
+            headlist=a.head,
     )
 
 

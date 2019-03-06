@@ -357,6 +357,7 @@ def get_article(aid):
             'title': 1,
             'domain': 1,
             'link': 1,
+            'head': 1,
             'content': 1,
             'lang': 1,
             'source': 1,

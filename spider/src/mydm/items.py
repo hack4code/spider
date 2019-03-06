@@ -16,6 +16,7 @@ class ArticleItem(scrapy.Item):
     pub_date = scrapy.Field()
     data_type = scrapy.Field()
     tag = scrapy.Field()
+    head = scrapy.Field()
     content = scrapy.Field()
     encoding = scrapy.Field()
 

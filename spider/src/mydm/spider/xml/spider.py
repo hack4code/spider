@@ -11,11 +11,11 @@ from lxml import etree
 from scrapy import Request
 from scrapy.spiders import Spider
 
-from mydm.ai import extract_tags
 from mydm.items import ArticleItem
 from .extractor import ItemExtractor
 from mydm.spider.spider import ErrbackSpider
 from mydm.spiderfactory import SpiderFactory
+from mydm.ai import extract_tags, extract_head
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class LXMLSpider(Spider):
         item_content_link_parameter
     """
 
-    def extract_tags(self, item):
+    def extract_item_tags(self, item, *, response=None):
         if 'tag' in item:
             return
         if 'content' not in item:
@@ -45,6 +45,16 @@ class LXMLSpider(Spider):
         )
         item['tag'] = tags
 
+    def extract_item_head(self, item, *, response=None):
+        head = extract_head(response)
+        if head:
+            item['head'] = head
+
+    def extract_head(self, response):
+        item = response.meta['item']
+        self.extract_item_head(item, response=response)
+        return ArticleItem(item)
+
     def extract_content(self, response):
         item = response.meta['item']
         content = response.xpath(self.item_content_xpath).extract_first()
@@ -58,7 +68,8 @@ class LXMLSpider(Spider):
         item['content'] = content
         item['encoding'] = response.encoding
         item['link'] = response.url
-        self.extract_tags(item)
+        self.extract_item_head(item, response=response)
+        self.extract_item_tags(item)
         return ArticleItem(item)
 
     def parse(self, response):
@@ -83,14 +94,14 @@ class LXMLSpider(Spider):
                 item['encoding'] = response.encoding
                 if any(item.get(attr) is None for attr in ('title', 'link')):
                     continue
-                self.extract_tags(item)
+                self.extract_item_tags(item)
+                try:
+                    params = self.item_content_link_parameter
+                except AttributeError:
+                    link = item['link']
+                else:
+                    link = f'{item["link"]}?{params}'
                 if hasattr(self, 'item_content_xpath'):
-                    try:
-                        params = self.item_content_link_parameter
-                    except AttributeError:
-                        link = item['link']
-                    else:
-                        link = f'{item["link"]}?{params}'
                     yield Request(
                             link,
                             meta={'item': item},
@@ -99,7 +110,13 @@ class LXMLSpider(Spider):
                             dont_filter=True
                     )
                 elif item.get('content'):
-                    yield ArticleItem(item)
+                    yield Request(
+                            link,
+                            meta={'item': item},
+                            callback=self.extract_head,
+                            errback=self.errback,
+                            dont_filter=True
+                    )
 
 
 class LXMLSpiderMeta(SpiderFactory, type, spider_type='xml'):

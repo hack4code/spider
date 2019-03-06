@@ -9,10 +9,10 @@ from urllib.parse import urlparse
 from scrapy import Request
 from scrapy.spiders import Spider
 
-from mydm.ai import extract_tags
 from mydm.items import ArticleItem
 from mydm.spider.spider import ErrbackSpider
 from mydm.spiderfactory import SpiderFactory
+from mydm.ai import extract_tags, extract_head
 
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,13 @@ logger = logging.getLogger(__name__)
 
 class BLOGSpider(Spider):
 
-    def extract_tags(self, item, content=None):
+    def extract_item_head(self, item, *, response=None):
+        head = extract_head(response)
+        if not head:
+            return
+        item['head'] = head
+
+    def extract_item_tags(self, item, *, content=None):
         if 'tag' in item:
             return
         if 'content' not in item:
@@ -46,7 +52,7 @@ class BLOGSpider(Spider):
                 for attr, xpath in self.item_extractors
         }
         item['encoding'] = encoding
-        self.extract_tags(
+        self.extract_item_tags(
                 item,
                 content=entry.xpath('.').extract_first()
         )
@@ -61,9 +67,10 @@ class BLOGSpider(Spider):
         item = response.meta['item']
         item['encoding'] = response.encoding
         item['link'] = response.url.strip('\t\n\r ')
+        self.extract_item_head(item, response=response)
         content = response.xpath(self.item_content_xpath).extract_first()
         item['content'] = content
-        self.extract_tags(item)
+        self.extract_item_tags(item)
         if all(item.get(attr) is not None for attr in ITEM_KEYS):
             return ArticleItem(item)
         else:
