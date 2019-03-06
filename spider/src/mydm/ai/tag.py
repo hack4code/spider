@@ -85,8 +85,7 @@ class TagExtractor:
         if not isinstance(doc, HtmlElement):
             return
         for cls in self.EXTRACTORS:
-            extract = cls()
-            ext_tags = extract(doc)
+            ext_tags = cls()(doc)
             if ext_tags:
                 tags = []
                 for idx, tag in enumerate(ext_tags):
@@ -99,5 +98,4 @@ class TagExtractor:
 
 
 def extract_tags(doc, encoding):
-    extract = TagExtractor()
-    return extract(doc, encoding=encoding)
+    return TagExtractor()(doc, encoding=encoding)
