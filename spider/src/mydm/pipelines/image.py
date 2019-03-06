@@ -208,7 +208,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 width, _ = image.size
                 if width > 800:
                     width = width // 2
-                image_xpath_node.set('width', width)
+                image_xpath_node.set('width', f'{width}px')
             elif self.need_optimize(image_size):
                 data = image.optimize()
             image_type = image.type.upper()
