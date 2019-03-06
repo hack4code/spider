@@ -29,9 +29,9 @@ class cache_property:
         return value
 
 
-def is_url(v):
+def is_url(value):
     try:
-        r = urlparse(v)
+        r = urlparse(value)
     except Exception:
         return False
     else:
