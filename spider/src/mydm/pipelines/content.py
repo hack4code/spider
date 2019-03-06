@@ -59,6 +59,18 @@ class ContentPipeline:
             logger.error('make_links_absolute error [%s]', link)
         return doc
 
+    def remove_title_from_content(self, doc, title):
+        for e in doc.iter():
+            text = e.text
+            if not text:
+                continue
+            text = text.strip('\r\n\t ')
+            if not text:
+                continue
+            if title.lower() in text.lower() and len(text) - len(title) < 24:
+                e.drop_tree()
+            break
+
     def remove_element_with_class(self, doc, removed_classes):
         for e in doc.xpath('//div[@class]'):
             if any(cls in e.get('class').lower() for cls in removed_classes):
@@ -76,7 +88,7 @@ class ContentPipeline:
                     node.drop_tree()
         return doc
 
-    def clean_html(self, doc, allow_classes=None, safe_attrs=None):
+    def clean_html(self, doc, *, allow_classes=None, safe_attrs=None):
         allow_classes = allow_classes or ()
         safe_attrs = (
             set(defs.safe_attrs) | self.SAFE_ATTRS | set(safe_attrs or [])
@@ -144,6 +156,8 @@ class ContentPipeline:
                 logger.error('html parse error %s', e)
                 raise DropItem(f'document parse error[{e}]')
 
+        self.remove_title_from_content(doc, item['title'])
+
         # remove element with class name for clean display
         removed_classes = getattr(
                 spider,
@@ -175,7 +189,7 @@ class ContentPipeline:
         doc = self.clean_html(
                 doc,
                 allow_classes=allow_classes,
-                safe_attrs=safe_attrs
+                safe_attrs=safe_attrs,
         )
         doc = self.make_abs_link(doc, item['link'])
         item['content'] = doc
