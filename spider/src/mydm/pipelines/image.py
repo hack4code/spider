@@ -206,8 +206,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
         else:
             if self.spider_category in self._category_filter:
                 width, _ = image.size
-                if width > 800:
-                    width = width // 2
+                factor = 1
+                while True:
+                    new_width = width // factor
+                    if new_width <= 800:
+                        width = new_width
+                        break
+                    factor = factor + 1
                 image_xpath_node.set('width', f'{width}px')
             elif self.need_optimize(image_size):
                 data = image.optimize()
