@@ -29,7 +29,7 @@ class Image:
         except OSError:
             if type not in ('PNG', 'JPG', 'JPEG'):
                 raise
-            fp = tempfile.NamedTemporaryFile(suffix=f'.{type}')
+            fp = tempfile.NamedTemporaryFile(suffix=f'.{type.lower()}')
             fp.write(data)
             fp.seek(0)
             self._image = ImageLib.open(fp)
