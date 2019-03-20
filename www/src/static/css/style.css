@@ -73,12 +73,12 @@ a {
  }
 
  #article img {
-  max-width: 34em;
+  max-width: 40em;
   height: auto;
  }
 
  #article video {
-  max-width: 34em;
+  max-width: 40em;
   height: auto;
  }
 }
