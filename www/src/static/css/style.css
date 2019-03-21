@@ -202,7 +202,9 @@ article #article {
 }
 
 figcaption {
+ margin: 0em 1em;
  font-size: 0.6em;
+ line-height: 1.5em;
 }
 
 blockquote {
