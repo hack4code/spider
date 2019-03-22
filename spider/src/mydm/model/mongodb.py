@@ -63,26 +63,12 @@ def save_feed(url):
     return result.inserted_id
 
 
-def _get_day_begin(item):
-    d = item['crawl_date']
-    t = datetime(
-            d.year,
-            d.month,
-            d.day,
-            0,
-            0,
-            0,
-            0
-    )
-    return t
-
-
 def is_exists_article(item):
-    t = _get_day_begin(item)
+    day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
     cursor = ScrapyDB.article.find(
         {
             'spider': item['spider'],
-            'crawl_date': {'$lt': t},
+            'crawl_date': {'$lt': day},
             'title': item['title'],
             'domain': item['domain'],
             'source': item['source']
@@ -93,7 +79,7 @@ def is_exists_article(item):
     cursor = ScrapyDB.article.find(
         {
             'spider': item['spider'],
-            'crawl_date': {'$gte': t},
+            'crawl_date': {'$gte': day},
             'title': item['title']
         },
         {
@@ -107,11 +93,11 @@ def is_exists_article(item):
 
 
 def save_article(item):
-    t = _get_day_begin(item)
+    day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
     result = ScrapyDB.article.update(
         {
             'spider': item['spider'],
-            'crawl_date': {'$gte': t},
+            'crawl_date': {'$gte': day},
             'title': item['title']
         },
         item,
