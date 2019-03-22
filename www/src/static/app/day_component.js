@@ -116,7 +116,7 @@ class FloatSide extends React.Component  {
       width: "300px",
       padding: "0 32px",
       fontFamily: "sans-serif",
-      fontSize: "0.7em",
+      fontSize: "0.5em",
       fontWeight: "bold",
       color: "dimgray",
       display: is_small_screen ? "none" : "block"
@@ -161,7 +161,7 @@ class ArticleLink extends React.Component  {
   render() {
     const style = {
       fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
-      fontSize: "1em",
+      fontSize: "0.8em",
       fontWeight: "normal",
       lineHeight: "110%",
       margin: "0px",
@@ -356,7 +356,7 @@ class Category extends React.Component {
       fontWeight: "bold",
       textDecoration: "none",
       color: this.props.focus ? "#222222" : "#666666",
-      fontSize: is_small_screen ? "0.8em" : "1.0em"
+      fontSize: is_small_screen ? "0.6em" : "0.9em"
     };
 
     const href = "#" + this.props.category;

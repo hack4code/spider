@@ -100,12 +100,6 @@ a {
   font-weight: normal;
  }
 
-/*
- #article figure {
-  max-width: 300px !important;
- }
- */
-
  #article img {
   max-width: 300px !important;
   height: auto !important;
@@ -171,13 +165,13 @@ article .title    A {
 article[lang="en"] #article {
  font-family: 'Nunito', 'sans-serif' !important;
  line-height: 1.6em;
- font-size: 1.2em;
+ font-size: 1.0em;
 }
 
 article[lang="zh"] #article {
  font-family: 'Pingfang SC', 'Microsoft YaHei', 'sans-serif' !important;
- line-height: 2.0em;
- font-size: 1em;
+ line-height: 2.2em;
+ font-size: 0.9em;
 }
 
 article #article {
