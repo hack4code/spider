@@ -76,7 +76,8 @@ class Footer extends React.Component {
   render() {
     const style = {
       color: "#888",
-      fontSize: "x-small",
+      fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, sans-serif, arial",
+      fontSize: "xx-small",
     };
     let url = "/p/" + this.props.spid;
 
