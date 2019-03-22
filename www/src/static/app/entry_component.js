@@ -38,8 +38,8 @@ class Entry extends React.Component {
   render() {
     const style = {
       fontWeight: "600",
-      fontSize: "0.9em",
-      fontFamily: "Lantinghei SC, Microsoft YaHei",
+      fontSize: "0.8em",
+      fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
       lineHeight: "2em",
       textDecoration: "none"
     };
