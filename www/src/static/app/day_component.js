@@ -160,8 +160,8 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
   render() {
     const style = {
-      fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, arial, sans-serif",
-      fontSize: "0.8em",
+      fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, sans-serif, arial",
+      fontSize: "0.9em",
       fontWeight: "normal",
       lineHeight: "110%",
       margin: "0px",
@@ -259,7 +259,7 @@ class ArticleTag extends React.Component  {
   render() {
     const style = {
       fontWeight: "normal",
-      fontSize: "x-small",
+      fontSize: "xx-small",
       color: "#999",
       backgroundColor: "#eee",
       borderRadius: "30px",
