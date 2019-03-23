@@ -10,4 +10,5 @@ RUN apt-get install -y libffi-dev libxml2-dev libxslt1-dev libtiff5-dev libjpeg6
 
 WORKDIR /spider/
 RUN pip install --upgrade pip
+RUN pip install pillow --global-option="build_ext" --global-option="--enable-zlib" --global-option="--enable-jpeg" --global-option="--enable-tiff" --global-option="--enable-freetype" --global-option="--enable-webp" --global-option="--enable-jpeg2000"
 RUN pip install -r requirements.txt

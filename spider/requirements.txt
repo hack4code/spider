@@ -2,7 +2,6 @@ pyOpenSSL
 service-identity
 Scrapy
 pymongo
-Pillow
 redis
 requests
 python-dateutil
