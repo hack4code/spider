@@ -77,6 +77,10 @@ a {
   height: auto;
  }
 
+ figcaption {
+  max-width: 62em;
+ }
+
  #article video {
   max-width: 40em;
   height: auto;
@@ -198,7 +202,7 @@ article #article {
 figcaption {
  margin: 0em 1em;
  font-size: 0.6em;
- line-height: 1em;
+ line-height: 1.6em;
 }
 
 blockquote {
