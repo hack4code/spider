@@ -198,7 +198,7 @@ article #article {
 figcaption {
  margin: 0em 1em;
  font-size: 0.6em;
- line-height: 1.5em;
+ line-height: 1em;
 }
 
 blockquote {
@@ -211,11 +211,11 @@ pre {
  white-space: pre-wrap;
  margin: 0 auto;
  background-color: #fafafa;
- padding-top: 0.1em;
- padding-bottom: 0.1em;
- font-size: 1em;
+ padding-top: 0.4em;
+ padding-bottom: 0.4em;
+ font-size: 1.2em;
  font-weight: lighter;
- line-height: 1.6em;
+ line-height: 1.2em;
  overflow-x: auto;
  width: 100%;
  font-family: 'Source Code Pro';
