@@ -83,32 +83,6 @@ class SubmitSector extends React.Component  {
   }
 };
 
-class AddressSector extends React.Component  {
-  render() {
-    const style = {
-      color: "#888",
-      textDecoration: "none"
-    };
-
-    return (
-      <div>
-      <p>联系方式</p>
-      <ul>
-        <li>
-        <p>email: <a style={style} href="mailto:code4hack@gmail.com">code4hack@gmail.com</a></p>
-        </li>
-      </ul>
-      <p>项目地址</p>
-      <ul>
-        <li>
-        <p>github: <a style={style} href="https://github.com/hack4code/BlogSpider" target="_blank">BlogSpider</a></p>
-        </li>
-      </ul>
-      </div>
-    )
-  }
-};
-
 class FloatSide extends React.Component  {
   render() {
     const style = {
@@ -129,8 +103,6 @@ class FloatSide extends React.Component  {
         <DeclareSector />
         <Hr />
         <SubmitSector />
-        <Hr />
-        <AddressSector />
       </div>
     )
   }
