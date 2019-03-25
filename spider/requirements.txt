@@ -1,3 +1,4 @@
+Pillow
 pyOpenSSL
 service-identity
 Scrapy
