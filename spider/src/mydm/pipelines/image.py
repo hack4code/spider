@@ -2,9 +2,8 @@
 
 
 import base64
-import logging
-import tempfile
 from io import BytesIO
+import logging
 from urllib.parse import urlparse, urljoin
 
 from lxml.html import HtmlElement
@@ -15,6 +14,7 @@ from scrapy.pipelines.media import MediaPipeline
 
 from mydm.util import is_url
 
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 logger = logging.getLogger(__name__)
 
@@ -24,15 +24,7 @@ class Image:
     MAX_WIDTH = 1024
 
     def __init__(self, data, type=None):
-        try:
-            self._image = ImageLib.open(BytesIO(data))
-        except OSError:
-            if type not in ('PNG', 'JPG', 'JPEG'):
-                raise
-            fp = tempfile.NamedTemporaryFile(suffix=f'.{type.lower()}')
-            fp.write(data)
-            fp.seek(0)
-            self._image = ImageLib.open(fp)
+        self._image = ImageLib.open(BytesIO(data))
 
     @property
     def size(self):
