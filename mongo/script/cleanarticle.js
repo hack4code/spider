@@ -1,5 +1,3 @@
-
-
 const user = "scrapy";
 const passwd = "scrapy";
 

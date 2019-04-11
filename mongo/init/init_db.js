@@ -1,7 +1,6 @@
-
 /* password */
-var scrapy_pwd="scrapy"
-var flask_pwd="flask"
+const scrapy_pwd="scrapy"
+const flask_pwd="flask"
 
 /* connect to admin */
 var conn = new Mongo();
@@ -12,16 +11,28 @@ db.auth("admin", "admin")
 
 /* create user scrapy */
 db = conn.getDB("scrapy");
-db.createUser({user: "scrapy",
-	       pwd: scrapy_pwd,
-	       roles: [ { role: "readWrite", db: "scrapy" } ]})
+db.createUser(
+	{
+		user: "scrapy",
+		pwd: scrapy_pwd,
+		roles: [ { role: "readWrite", db: "scrapy" } ]
+	}
+)
 
 /* create user flask */
-db.createUser({user: "flask",
-	       pwd: flask_pwd,
-	       roles: [ { role: "read", db: "scrapy" } ]})
+db.createUser(
+	{
+		user: "flask",
+		pwd: flask_pwd,
+		roles: [ { role: "read", db: "scrapy" } ]
+	}
+)
 
 db = conn.getDB("score");
-db.createUser({user: "flask",
-	       pwd: flask_pwd,
-	       roles: [ { role: "readWrite", db: "score" } ]})
+db.createUser(
+	{
+		user: "flask",
+		pwd: flask_pwd,
+		roles: [ { role: "readWrite", db: "score" } ]
+	}
+)
