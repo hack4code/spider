@@ -15,8 +15,8 @@ from scrapy.pipelines.media import MediaPipeline
 from mydm.util import is_url
 
 
-ImageFile.LOAD_TRUNCATED_IMAGES = True
 logger = logging.getLogger(__name__)
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Image:
@@ -211,9 +211,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
             image_type = image.type.upper()
         image_xpath_node.set('source', src)
         data = base64.b64encode(data).decode('ascii')
+        if image_type == 'SVG':
+            type = 'SVG+xml'
+        else:
+            type = image_type
         image_xpath_node.set(
                 'src',
-                f'data:image/{image_type};base64,{data}'
+                f'data:image/{type};base64,{data}'
         )
 
     def item_completed(self, results, item, info):
