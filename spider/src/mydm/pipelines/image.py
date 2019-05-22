@@ -25,6 +25,11 @@ class Image:
 
     def __init__(self, data, type=None):
         self._image = ImageLib.open(BytesIO(data))
+        if self._image.format.upper() == 'PNG':
+            buffer = BytesIO()
+            self._image.save(buffer, format='WebP')
+            self._image.close()
+            self._image = ImageLib.open(buffer)
 
     @property
     def size(self):
