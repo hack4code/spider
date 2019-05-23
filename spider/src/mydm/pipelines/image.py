@@ -188,7 +188,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         try:
             image_type = response.headers['Content-Type'].split('/')[-1]
         except Exception:
-            image_type = src.split('.')[-1]
+            image_type = src.split('?')[0].split('.')[-1]
         image_type = image_type.upper()
         try:
             image = Image(data, type=image_type)
