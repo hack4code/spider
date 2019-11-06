@@ -45,9 +45,6 @@ class Day(Resource):
         class DayRequestSchema(Schema):
             day = fields.Date(required=True)
 
-            def __init__(self, strict=True, **kwargs):
-                super().__init__(strict=strict, **kwargs)
-
             @validates('day')
             def validate_day(self, day):
                 day_begin = get_begin_day()
@@ -56,10 +53,10 @@ class Day(Resource):
 
         schema = DayRequestSchema()
         try:
-            day_request = schema.load(request.args).data
+            day_request = schema.load(request.args)
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
-        except Exception:
+        except Exception as e:
             return {'message': 'invalid request'}, 400
 
         day_entry = day_request['day']
