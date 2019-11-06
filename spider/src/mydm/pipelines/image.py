@@ -64,16 +64,15 @@ class ImagesDlownloadPipeline(MediaPipeline):
     MEDIA_NAME = 'image'
     MAX_SIZE = 1024*256
 
-    def __init__(self, settings):
-        super().__init__(settings=settings)
+    def __init__(self, settings, crawler):
+        super().__init__(settings=settings, crawler=crawler)
         self._category_filter = settings['IMAGE_OPTIMIZE_CATEGORY_FILTER']
         self._invalid_img_element = []  # invalid img element list per item
 
     @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings
-        pipe = cls(settings)
-        pipe.crawler = crawler
+        pipe = cls(settings, crawler)
         return pipe
 
     @property
@@ -230,3 +229,11 @@ class ImagesDlownloadPipeline(MediaPipeline):
             e.drop_tree()
         self._invalid_img_element = []
         return item
+
+    def file_path(self, request, response, info, *, item):
+        """Returns the path where downloaded media should be stored"""
+        raise NotImplementedError()
+
+    def media_to_download(self, request, info, *, item):
+        """Check request before starting download"""
+        pass

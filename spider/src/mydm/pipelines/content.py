@@ -4,9 +4,9 @@
 import re
 import logging
 
-from lxml.html.clean import Cleaner
 from lxml.etree import XPathEvalError, ParserError
 from lxml.html import fromstring, HTMLParser, defs, HtmlElement
+from lxml_html_clean import Cleaner
 
 from scrapy.exceptions import DropItem
 

@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+
+python3 -m grpc_tools.protoc -I protos/ --python_out=www/src/ --grpc_python_out=www/src/ spider.proto
+python3 -m grpc_tools.protoc -I protos/ --python_out=spider/src/ --grpc_python_out=spider/src/ spider.proto
+
+docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build.sh
+
+
+# vim: ts=2 sw=2 sts=2 ft=bash et:
+

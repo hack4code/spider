@@ -11,13 +11,12 @@ from multiprocessing import Process
 import requests
 from lxml import etree
 
-from twisted.internet import reactor
-
-from scrapy.crawler import CrawlerRunner
+from scrapy.crawler import CrawlerProcess
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 from mydm.spiderfactory import SpiderFactory
+from mydm.spiderloader import MongoSpiderLoader
 from mydm.model import (
         save_spider_settings, save_feed, is_exists_spider, get_stats
 )
@@ -217,11 +216,12 @@ def submit_blog_feed(feed):
 
 
 def crawl_articles(spids):
+    # init
     settings = get_project_settings()
     configure_logging(settings, install_root_handler=False)
     logging.getLogger('scrapy').setLevel(logging.WARNING)
-    runner = CrawlerRunner(settings)
-    loader = runner.spider_loader
+    # load spiders
+    loader = MongoSpiderLoader.from_settings(settings)
     if 'all' in spids:
         spids = loader.list()
     spiders = [
@@ -232,13 +232,13 @@ def crawl_articles(spids):
     if not spiders:
         return
     random.shuffle(spiders)
+    # crawl process
+    proc = CrawlerProcess(settings)
     for spider in spiders:
-        runner.crawl(spider)
-    d = runner.join()
-    d.addBoth(lambda _: reactor.stop())
+        proc.crawl(spider)
     logger.info('crawl job starting...')
     try:
-        reactor.run()
+        proc.start()
     except Exception:
         logger.exception('crawl job got exception:')
     logger.info('crawl job finished')

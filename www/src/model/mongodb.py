@@ -1,41 +1,37 @@
 # -*- coding: utf-8 -*-
 
 
-from collections import defaultdict
 from datetime import datetime, timedelta
 
+from flask import current_app
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
 from .mongodata import Entry, EntryDay, Article, Spider, AID
 
 
-class MongoBase:
-
-    def __init__(self, uri):
-        self.client = MongoClient(uri, connect=False)
-
-    def get_db(self, name, user, passwd):
-        db = self.client[name]
-        db.authenticate(user, passwd)
-        return db
-
-
 class MongoDB:
-
-    def __init__(self, uri, name, user, passwd):
-        self._base = MongoBase(uri)
-        self.name = name
-        self.user = user
-        self.passwd = passwd
+    def __init__(self, uri, dbname):
+        self._uri = uri
+        self._dbname = dbname
+        self._client = None
         self.db = None
+
+    def _connect(self):
+        while True:
+            try:
+                client = MongoClient(self._uri,
+                                     serverSelectionTimeoutMS=2000)
+                client.server_info()
+            except:
+                current_app.logger.info('waiting mongodb online...')
+                continue
+            self._client = client
+            self.db = self._client[self._dbname]
+            return
 
     def __getattr__(self, collection_name):
         if self.db is None:
-            self.db = self._base.get_db(
-                    self.name,
-                    self.user,
-                    self.passwd
-            )
+            self._connect()
         try:
             return self.db[collection_name]
         except KeyError:
@@ -45,25 +41,10 @@ class MongoDB:
 
 
 def init_db(app):
-    global ScrapyDB, ScoreDB
-
-    uri = app.config['MONGODB_URI']
-    user = app.config['MONGODB_USER']
-    passwd = app.config['MONGODB_PWD']
-
+    global ScrapyDB
     ScrapyDB = MongoDB(
-            uri,
-            app.config['MONGODB_STOREDB_NAME'],
-            user,
-            passwd
-    )
-
-    ScoreDB = MongoDB(
-            uri,
-            app.config['MONGODB_SCOREDB_NAME'],
-            user,
-            passwd
-    )
+            app.config['SCRAPYDB_URI'],
+            app.config['MONGODB_STOREDB_NAME'])
 
 
 def get_begin_day():
@@ -74,9 +55,10 @@ def get_begin_day():
         'crawl_date',
         ASCENDING,
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['crawl_date'].date()
+    return result[0]['crawl_date'].date()
 
 
 def get_end_day():
@@ -87,54 +69,10 @@ def get_end_day():
         'crawl_date',
         DESCENDING
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['crawl_date'].date()
-
-
-def get_spider_score(spids):
-    cursor = ScoreDB.spider.find(
-        {
-            'id': {'$in': spids}
-        },
-        {
-            'id': 1,
-            'score': 1
-        }
-    )
-    return {item['id']: item['score'] for item in cursor}
-
-
-def get_article_score(aids):
-    cursor = ScoreDB.article.find(
-        {
-            'id': {'$in': aids}
-        },
-        {
-            'id': 1,
-            'score': 1
-        }
-    )
-    return {item['id']: item['score'] for item in cursor}
-
-
-def get_score(entries):
-    spscores = get_spider_score(list({_.spider for _ in entries}))
-    ascores = get_article_score(list({_.id for _ in entries}))
-    max_spscore = max(
-            spscores.items(),
-            key=lambda i: i[1]
-    )[1] if spscores else 1.0
-    max_ascore = max(
-            ascores.items(),
-            key=lambda i: i[1]
-    )[1] if ascores else 1.0
-
-    def get_score(e):
-        return (10.0*spscores.get(e.spider, 0)/max_spscore +
-                90.0*ascores.get(e.id, 0)/max_ascore)
-
-    return {item.id: get_score(item) for item in entries}
+    return result[0]['crawl_date'].date()
 
 
 def get_entries_by_day(day):
@@ -162,11 +100,7 @@ def get_entries_by_day(day):
             'link': 1,
         }
     )
-    entries_ = [EntryDay(item) for item in cursor]
-    scores = get_score(entries_)
-    entries = defaultdict(list)
-    for e in sorted(entries_, key=lambda i: scores[i.id], reverse=True):
-        entries[e.category].append(e)
+    entries = [EntryDay(item) for item in cursor]
     if not entries:
         return
     return entries
@@ -190,9 +124,10 @@ def get_before_day(day):
             'crawl_date': 1
         }
     ).sort('crawl_date', DESCENDING).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['crawl_date'].date()
+    return result[0]['crawl_date'].date()
 
 
 def get_after_day(day):
@@ -217,16 +152,15 @@ def get_after_day(day):
         'crawl_date',
         ASCENDING,
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['crawl_date'].date()
+    return result[0]['crawl_date'].date()
 
 
 """
 " spider category
 """
-
-
 def get_spiders():
     cursor = ScrapyDB.spider.find({}, {'title': 1})
     return {str(item['_id']): item['title'] for item in cursor}
@@ -241,9 +175,10 @@ def get_spider(spid):
                 'title': 1,
             }
     )
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    spider = cursor[0]
+    spider = result[0]
     return Spider(spider['_id'], spider['title'])
 
 
@@ -259,9 +194,10 @@ def get_first_aid(spid):
         '_id',
         ASCENDING
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['_id']
+    return result[0]['_id']
 
 
 def get_last_aid(spid):
@@ -276,9 +212,10 @@ def get_last_aid(spid):
         '_id',
         DESCENDING
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['_id']
+    return result[0]['_id']
 
 
 def get_crawl_date(aid):
@@ -290,9 +227,10 @@ def get_crawl_date(aid):
             'crawl_date': 1
         }
     )
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return cursor[0]['crawl_date']
+    return result[0]['crawl_date']
 
 
 def get_entries_next(spid, aid):
@@ -309,9 +247,10 @@ def get_entries_next(spid, aid):
         '_id',
         DESCENDING
     ).limit(100)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return [Entry(item) for item in cursor]
+    return [Entry(item) for item in result]
 
 
 def get_entries_pre(spid, aid):
@@ -325,9 +264,10 @@ def get_entries_pre(spid, aid):
             'title': 1
         }
     ).sort('_id', ASCENDING).limit(100)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return list(reversed([Entry(item) for item in cursor]))
+    return list(reversed([Entry(item) for item in result]))
 
 
 def get_entries_by_spider(spid):
@@ -343,9 +283,10 @@ def get_entries_by_spider(spid):
         '_id',
         DESCENDING
     ).limit(100)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return [Entry(item) for item in cursor]
+    return [Entry(item) for item in result]
 
 
 def get_article(aid):
@@ -364,59 +305,7 @@ def get_article(aid):
             'spider': 1
         }
     ).limit(1)
-    if 0 == cursor.count():
+    result = list(cursor)
+    if 0 == len(result):
         return
-    return Article(cursor[0])
-
-
-def vote_article(a):
-    ScoreDB.article.update(
-        {
-            'id': a.id
-        },
-        {
-            '$inc': {'score': 1}
-        },
-        upsert=True
-    )
-    ScoreDB.spider.update(
-        {
-            'id': a.spider
-        },
-        {
-            '$inc': {'score': 1}
-        },
-        upsert=True
-    )
-
-
-def get_categories():
-    return ScrapyDB.article.distinct('category')
-
-
-# function for test
-
-def get_aids_by_category(c):
-    cursor = ScrapyDB.article.find(
-        {
-            'category': c
-        },
-        {
-            '_id': 1
-        }
-    ).sort('_id', ASCENDING)
-    if 0 == cursor.count():
-        return
-    return [AID(item['_id']) for item in cursor]
-
-
-def get_all_aids():
-    cursor = ScrapyDB.article.find(
-        {},
-        {
-            '_id': 1
-        }
-    )
-    if 0 == cursor.count():
-        return
-    return [item['_id'] for item in cursor]
+    return Article(result[0])

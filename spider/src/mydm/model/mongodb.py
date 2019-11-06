@@ -27,9 +27,10 @@ class MongoDB:
 
     def _connect(self):
         settings = get_project_settings()
-        client = MongoClient(settings['MONGODB_URI'], connect=False)
+        client = MongoClient(settings['MONGODB_URI'],
+                             username="admin",
+                             password="admin")
         db = client[settings['MONGODB_DB_NAME']]
-        db.authenticate(settings['MONGODB_USER'], settings['MONGODB_PWD'])
         self._db = db
         self._create_indexes()
 
@@ -46,8 +47,8 @@ ScrapyDB = MongoDB()
 
 
 def is_exists_feed(url):
-    cursor = ScrapyDB.feed.find({'url': url}).limit(1)
-    if cursor.count() == 0:
+    result = ScrapyDB.feed.count_documents({'url': url})
+    if result == 0:
         return False
     else:
         return True
@@ -65,7 +66,7 @@ def save_feed(url):
 
 def is_exists_article(item):
     day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
-    cursor = ScrapyDB.article.find(
+    result = ScrapyDB.article.count_documents(
         {
             'spider': item['spider'],
             'crawl_date': {'$lt': day},
@@ -73,8 +74,8 @@ def is_exists_article(item):
             'domain': item['domain'],
             'source': item['source']
         }
-    ).limit(1)
-    if cursor.count() > 0:
+    )
+    if result > 0:
         return True
     cursor = ScrapyDB.article.find(
         {
@@ -86,33 +87,26 @@ def is_exists_article(item):
             'content': 1
         }
     ).limit(1)
-    if (cursor.count() > 0 and
-       len(cursor[0]['content']) > len(item['content'])):
+    result = list(cursor)
+    if (len(result) > 0 and
+       len(result[0]['content']) > len(item['content'])):
         return True
     return False
 
 
 def save_article(item):
-    day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
-    result = ScrapyDB.article.update(
-        {
-            'spider': item['spider'],
-            'crawl_date': {'$gte': day},
-            'title': item['title']
-        },
-        item,
-        upsert=True
-    )
+    # day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
+    result = ScrapyDB.article.insert_one(item)
     return result
 
 
 def is_exists_spider(url):
-    cursor = ScrapyDB.spider.find(
+    result = ScrapyDB.spider.count_documents(
             {
                 'start_urls': {'$in': [url]}
             }
     )
-    if cursor.count() == 0:
+    if result == 0:
         return False
     else:
         return True

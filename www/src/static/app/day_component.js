@@ -1,43 +1,11 @@
 import React from "react";
 
 
-const is_small_screen = screen.width < 600 ? true : false;
-
 function decodeEntities(encodedString) {
     let textArea = document.createElement('textarea');
     textArea.innerHTML = encodedString;
     return textArea.value;
 }
-
-class NavSector extends React.Component  {
-  render() {
-    return (
-      <div>
-        <p>导航</p>
-        <ul>
-          <li><p>/d/Y-M-D: 按日期显示文章</p></li>
-          <li><p>/l/p: 所有订阅源</p></li>
-          <li><p>/feed/rss: 添加rss订阅源</p></li>
-          <li><p>/feed/blog: 添加blog订阅源</p></li>
-        </ul>
-      </div>
-    )
-  }
-};
-
-class DeclareSector extends React.Component  {
-  render() {
-    return (
-      <div>
-        <p>声明</p>
-        <ul>
-          <li><p>所有文章标题处均附有原文链接</p></li>
-          <li><p>所有内容来自互联网，任何商业用途请联系原作者</p></li>
-        </ul>
-      </div>
-    )
-  }
-};
 
 class SpiderButton extends React.Component  {
   render() {
@@ -69,55 +37,16 @@ class SpiderButton extends React.Component  {
   }
 };
 
-class SubmitSector extends React.Component  {
-  render() {
-    return (
-      <div>
-        <p>Spider</p>
-        <ul>
-          <SpiderButton desc="添加rss源，支持rss与atom" url="/feed/rss" title="生成RSS Spider" />
-          <SpiderButton desc="添加blog,用于没有rss输出的blog" url="/feed/blog" title="生成Blog Spider" />
-        </ul>
-      </div>
-    )
-  }
-};
-
-class FloatSide extends React.Component  {
-  render() {
-    const style = {
-      float: "right",
-      width: "300px",
-      padding: "0 32px",
-      fontFamily: "sans-serif",
-      fontSize: "0.5em",
-      fontWeight: "bold",
-      color: "dimgray",
-      display: is_small_screen ? "none" : "block"
-    };
-
-    return (
-      <div style={style}>
-        <NavSector />
-        <Hr />
-        <DeclareSector />
-        <Hr />
-        <SubmitSector />
-      </div>
-    )
-  }
-};
-
 class Rank extends React.Component  {
   render() {
     const style = {
      color: "#c6c6c6",
      textAlign: "right",
-     fontFamily: "arial",
+     fontFamily: "Roboto Mono",
      fontSize: "medium",
      fontWeight: "bold",
-     width: is_small_screen ? "30px" : "40px",
-     paddingRight: is_small_screen ? "15px" : "25px",
+     width: "40px",
+     paddingRight: "25px",
      flexShrink: 0
     };
 
@@ -132,7 +61,7 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
   render() {
     const style = {
-      fontFamily: "Helvetica Neue, Helvetica, Pingfang SC, Microsoft YaHei, sans-serif, arial",
+      fontFamily: "Roboto, MiSans",
       fontSize: "0.9em",
       fontWeight: "normal",
       lineHeight: "110%",
@@ -309,64 +238,6 @@ class Entries extends React.Component {
   }
 };
 
-class Category extends React.Component {
-  onClick(e, category) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.props.onCategoryClick(category);
-  }
-
-  render() {
-    const listyle = {
-      display: "inline-block",
-      marginRight: is_small_screen ? "1.2em" : "1.6em"
-    };
-
-    const astyle = {
-      fontFamily: "Pingfang SC, Microsoft YaHei",
-      fontWeight: "bold",
-      textDecoration: "none",
-      color: this.props.focus ? "#222222" : "#666666",
-      fontSize: is_small_screen ? "0.6em" : "0.9em"
-    };
-
-    const href = "#" + this.props.category;
-
-    return (
-      <li style={listyle}>
-        <a href={href} style={astyle} onClick={(e)=>this.onClick(e, this.props.category)}>{this.props.category}</a>
-      </li>
-    )
-  }
-};
-
-class CategoryDiv extends React.Component {
-  render() {
-    const style = {
-      listStyle: "none",
-      marginBottom: "0em",
-      marginLeft: "0em",
-      paddingLeft: is_small_screen ? "1.6em" : "4em"
-    };
-
-    let categories = this.props.categories;
-    let onCategoryClick = this.props.onCategoryClick;
-    let categoryFocused = this.props.categoryFocused;
-
-    return (
-      <div>
-        <ul style={style}>
-          {categories.map(function(category, index) {
-            let focus = (categoryFocused == category);
-            return <Category key={index} focus={focus} category={category} onCategoryClick={onCategoryClick} />;
-          })}
-        </ul>
-      </div>
-    )
-  }
-};
-
 class Hr extends React.Component {
   render() {
     const style = {
@@ -385,62 +256,15 @@ class Hr extends React.Component {
 };
 
 class ContentDiv extends React.Component {
-  static defaultProps = {
-    data: {"新闻": [],
-           "技术": [],
-           "科技": [],
-           "数据库": [],
-           "安全": [],
-           "python": [],
-           "漫画": [],}
-  };
-
   constructor(props) {
     super(props);
-    let categories = this.getCategories(props.data);
-    this.state = {category: categories[0]};
   };
 
-  getCategories(data) {
-    let categories = [];
-
-    for (let key in data) {
-      if (data.hasOwnProperty(key)) {
-        categories.push(key);
-      }
-    };
-    return categories.sort(function(a, b) {
-      const sortList = {
-        "技术": 0,
-        "python": 1,
-        "数据库": 2,
-        "安全": 3,
-        "科技": 4,
-        "新闻": 5,
-        "漫画": 6,
-      };
-      return (sortList[a] > sortList[b]) ? 1 : -1;
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({category: this.getCategories(nextProps.data)[0]});
-  }
-
-  onCategoryClick(category) {
-    this.setState({category: category});
-  }
-
   render() {
-    let data = this.props.data;
-    let categories = this.getCategories(data);
-    let entries = data[this.state.category];
-
+    let entries = this.props.data;
     return (
       <div>
-        <CategoryDiv categoryFocused={this.state.category} categories={categories} onCategoryClick={this.onCategoryClick.bind(this)} />
         <Hr />
-        <FloatSide />
         <Entries entries={entries} />
         <Hr />
       </div>
@@ -457,17 +281,17 @@ class DayLink extends React.Component {
   }
 
   render() {
-    let cn = "";
+    let text = "";
     let style = {};
 
     if (this.props.handType == "handright") {
-      cn = "fa fa-hand-o-right";
+      text = "⤞";
       style = {
         float: "right"
       }
     }
     else {
-      cn = "fa fa-hand-o-left";
+      text = "⤝";
       style = {
         float: "left"
       }
@@ -476,7 +300,7 @@ class DayLink extends React.Component {
     return (
       <span style={style}>
         <a href="#" onClick={(e)=>this.onClick(e, this.props.day)}>
-          <i className={cn} aria-hidden="true"></i>
+          {text}
         </a>
       </span>
     )
@@ -500,3 +324,7 @@ class DayLinkDiv extends React.Component {
 };
 
 export {ContentDiv, DayLinkDiv};
+
+
+/* vim: set ts=4 sw=4 sts=4 ft=javascript et: */
+

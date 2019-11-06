@@ -14,7 +14,7 @@ from flask_restful import Resource
 from flask import current_app, request, session
 
 from model import (
-        get_article, vote_article,
+        get_article,
         get_begin_day, get_before_day, get_after_day,
         get_entries_by_day,
         get_entries_next, get_entries_pre, get_entries_by_spider,
@@ -57,6 +57,7 @@ class Day(Resource):
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
         except Exception as e:
+            current_app.logger.exception('request args exception:')
             return {'message': 'invalid request'}, 400
 
         day_entry = day_request['day']
@@ -72,12 +73,6 @@ class Day(Resource):
                 'day_after': day_after,
                 'data': entries,
         }
-
-
-class Categories(Resource):
-
-    def get(self):
-        return {'data': list(current_app.config['ARTICLE_CATEGORIES'])}
 
 
 class Spiders(Resource):
@@ -100,9 +95,6 @@ class Entries(Resource):
             aid = ObjectIdField()
             q = fields.String()
 
-            def __init__(self, strict=True, **kwargs):
-                super().__init__(strict=strict, **kwargs)
-
             @validates('q')
             def validate_q(self, q):
                 if q not in ('p', 'n'):
@@ -110,7 +102,7 @@ class Entries(Resource):
 
         schema = EntryRequestScheme()
         try:
-            entry_request = schema.load(request.args).data
+            entry_request = schema.load(request.args)
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
         except Exception:
@@ -132,34 +124,3 @@ class Entries(Resource):
         spid = str(spid)
         spiders = get_spiders()
         return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
-
-
-class Vote(Resource):
-
-    def post(self):
-
-        class VoteRequestSchema(Schema):
-            aid = ObjectIdField(required=True)
-
-            def __init__(self, strict=True, **kwargs):
-                super().__init__(strict=strict, **kwargs)
-
-        if 'uid' not in session:
-            return {'message': 'no uid'}, 401
-
-        schema = VoteRequestSchema()
-        try:
-            vote_request = schema.load(request.get_json()).data
-        except ValidationError as err:
-            return {'message': format_messages(err.messages)}, 400
-        except Exception:
-            return {'message': 'invalid request'}, 400
-
-        aid = vote_request['aid']
-        a = get_article(aid)
-
-        if not a:
-            return {'message': 'article not existed'}, 400
-
-        vote_article(a)
-        return {'aid': str(aid)}, 200

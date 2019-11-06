@@ -18,9 +18,6 @@
 
 <hr class="ahr"></hr>
 
-<div id="vote" aid="{{ article.id }}" spid="{{ article.spider }}" spname="{{ article.source }}">
-</div>
-
 <div>
 {% for i in range(12) %}
 <br />
@@ -29,6 +26,5 @@
 
 </article>
 
-<script src="{{ url_for('static', filename='script/vote.js') }}"></script>
 
 {% endblock %}

@@ -7,11 +7,8 @@ from .mongodb import (
         get_entries_by_day,
         get_entries_pre, get_entries_next, get_entries_by_spider,
         get_spider, get_spiders,
-        get_categories,
         get_last_aid, get_first_aid,
-        get_article,
-        vote_article,
-        get_all_aids, get_aids_by_category,
+        get_article
 )
 
 
@@ -29,11 +26,5 @@ __all__ = [
         'get_entries_pre',
         'get_entries_next',
         'get_entries_by_spider',
-        'get_article',
-        'get_max_aid_all',
-        'get_categories',
-        'vote_article',
-        # test
-        'get_all_aids',
-        'get_aids_by_category',
+        'get_article'
 ]

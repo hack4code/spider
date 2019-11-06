@@ -8,7 +8,7 @@ class App extends React.Component {
     super(props);
     this.setDay = this.setDay.bind(this);
     this.onDayLinkClick = this.onDayLinkClick.bind(this);
-    this.state = {day_before: null, day_after: null};
+    this.state = {day_before: null, day_after: null, data: []};
   }
 
   setDay(day) {
@@ -72,3 +72,7 @@ class App extends React.Component {
 };
 
 render(<App />, document.getElementById("content"));
+
+
+/* vim: set ts=4 sw=4 sts=4 ft=javascript et: */
+

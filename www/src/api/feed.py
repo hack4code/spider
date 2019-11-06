@@ -23,11 +23,8 @@ def create_grpc_stub():
 
 class StripSchema(Schema):
 
-    def __init__(self, strict=True, **kwargs):
-        super().__init__(strict=strict, **kwargs)
-
     @pre_load
-    def strip(self, data):
+    def strip(self, data, **kwargs):
         new_data = {}
         for key, val in data.items():
             if isinstance(val, str):
@@ -53,7 +50,7 @@ class CrawlArticles(Resource):
 
         schema = SpiderListSchema()
         try:
-            spiders = schema.load(request.get_json()).data
+            spiders = schema.load(request.get_json())
         except Exception:
             return {'message': 'invalid spiders'}, 400
         if not spiders:
@@ -89,12 +86,12 @@ class RssFeed(Resource):
 
         schema = AtomFeedSchema()
         try:
-            feed = schema.load(request.get_json()).data
+            feed = schema.load(request.get_json())
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
         except Exception:
             return {'message': 'invalid atom feed'}, 400
-        current_app.logger.info(f'atom feed[{feed}]')
+        # current_app.logger.info(f'atom feed[{feed}]')
         if 'removed_xpath_nodes' in feed:
             nodes = feed.pop('removed_xpath_nodes')
         else:
@@ -128,7 +125,7 @@ class BlogFeed(Resource):
 
         schema = BlogFeedSchema()
         try:
-            feed = schema.load(request.get_json()).data
+            feed = schema.load(request.get_json())
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
         except Exception:

@@ -1,45 +1,7 @@
 /*
  * font
  */
-@font-face      { font-family: 'Source Code Pro';
-                  font-style: lighter;
-                  font-weight: lighter;
-                  src: url('/static/fonts/SourceCodePro-Light.ttf') format('truetype');
-                  font-display: block; }
 
-@font-face      { font-family: 'Source Code Pro';
-                  font-style: normal;
-                  font-weight: normal;
-                  src: url('/static/fonts/SourceCodePro-Regular.ttf') format('truetype');
-                  font-display: block; }
-
-@font-face      { font-family: 'Source Code Pro';
-                  font-style: bold;
-                  font-weight: bold;
-                  src: url('/static/fonts/SourceCodePro-Bold.ttf') format('truetype');
-                  font-display: block; }
-
-@font-face      { font-family: 'Nunito';
-                  font-style: lighter;
-                  font-weight: lighter;
-                  src: url('/static/fonts/Nunito-Light.ttf') format('truetype');
-                  font-display: block; }
-
-@font-face      { font-family: 'Nunito';
-                  font-style: normal;
-                  font-weight: normal;
-                  src: url('/static/fonts/Nunito-Regular.ttf') format('truetype');
-                  font-display: block; }
-
-@font-face      { font-family: 'Nunito';
-                  font-style: bold;
-                  font-weight: bold;
-                  src: url('/static/fonts/Nunito-Bold.ttf') format('truetype');
-                  font-display: block; }
-
-/*
- *
- */
 .page {
  font-size: 100%;
  background: #FFFFFF;
@@ -133,18 +95,6 @@ article .footer {
  text-align: center;
 }
 
-article .vote {
- text-align: center;
-}
-
-article .vote a {
- color: #999999;
-}
-
-article .vote a.voted {
- color: #004276;
-}
-
 article .spider a {
  color: #666;
  font-size: 1em;
@@ -158,7 +108,7 @@ article .spider A {
 article .title {
  font-weight: bold;
  text-align: center;
- font-family: 'Nunito', 'Lantinghei SC', 'Microsoft YaHei', 'sans-serif';
+ font-family: 'Roboto Mono', 'MiSans', 'sans-serif';
 }
 
 article .title    A {
@@ -167,13 +117,13 @@ article .title    A {
 }
 
 article[lang="en"] #article {
- font-family: 'Nunito', 'sans-serif' !important;
+ font-family: 'Roboto', 'sans-serif';
  line-height: 1.6em;
  font-size: 1.0em;
 }
 
 article[lang="zh"] #article {
- font-family: 'Pingfang SC', 'Microsoft YaHei', 'sans-serif' !important;
+ font-family: 'MiSans';
  line-height: 2.2em;
  font-size: 0.9em;
 }

@@ -11,7 +11,6 @@ from flask import Flask, render_template
 from converter import init_converter
 from model import init_db, get_article, get_spider
 from api import init_api
-from user import need_uid
 
 
 app = Flask(__name__)
@@ -46,7 +45,6 @@ def home():
 
 
 @app.route('/d/<date:day>', methods=['GET'])
-@need_uid
 def entries_by_day(day):
     return render_template('day.html', day_entry=day)
 
