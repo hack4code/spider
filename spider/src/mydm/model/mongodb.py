@@ -39,7 +39,7 @@ class MongoDB:
             except:
                 logger.info('waiting mongo online...')
                 continue
-            name = settings['MONGODB_DB_NAME'].split('/')[-1]
+            name = settings['MONGODB_URI'].split('/')[-1]
             db = client[name]
             self._db = db
             self._create_indexes()
