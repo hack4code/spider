@@ -6,7 +6,7 @@ import logging
 from zope.interface import implementer
 from scrapy.interfaces import ISpiderLoader
 
-from mydm.util import cache_property
+from mydm.utils import cache_property
 from mydm.model import get_spider_settings
 from mydm.spiderfactory import SpiderFactory
 from mydm.exceptions import SpiderFactoryException

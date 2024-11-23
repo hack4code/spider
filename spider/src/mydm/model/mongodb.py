@@ -148,14 +148,3 @@ def get_category_tags():
             item['category']: item['tags']
             for item in cursor
     }
-
-
-def log_spider_scrape_count(spider, count):
-    result = ScrapyDB.scrapecount.insert_one(
-        {
-            'spider': spider._id,
-            'time': datetime.now(),
-            'count': count,
-        }
-    )
-    return result.inserted_id

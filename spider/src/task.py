@@ -18,19 +18,13 @@ from scrapy.utils.project import get_project_settings
 from mydm.spiderfactory import SpiderFactory
 from mydm.spiderloader import MongoSpiderLoader
 from mydm.model import (
-        save_spider_settings, save_feed, is_exists_spider, get_stats
+        save_spider_settings, save_feed, is_exists_spider
 )
-from mydm.util import is_url
+from mydm.utils import is_url
 
 
 logger = logging.getLogger(__name__)
 TEST_SETTINGS = {
-    'EXTENSIONS': {
-        'mydm.extensions.ExtensionStats': 900,
-        'scrapy.extensions.logstats.LogStats': None,
-        'scrapy.extensions.spiderstate.SpiderState': None,
-        'scrapy.extensions.telnet.TelnetConsole': None,
-    },
     'ITEM_PIPELINES': {},
     'DOWNLOADER_MIDDLEWARES': {},
     'BOT_NAME': 'TestSpider',
@@ -62,17 +56,12 @@ def get_feed_name(url):
 def _run_feed_spider(url, feed):
     spid = str(uuid.uuid4())
     feed['_id'] = spid
-    configure_logging(TEST_SETTINGS, install_root_handler=False)
-    logging.getLogger('scrapy').setLevel(logging.WARNING)
     save_feed(url)
     cls = SpiderFactory.create_spider(feed)
     runner = CrawlerRunner(TEST_SETTINGS)
     d = runner.crawl(cls)
     d.addBoth(lambda _: reactor.stop())
     reactor.run(installSignalHandlers=False)
-    n = get_stats([spid])[spid]
-    if n == 0:
-        raise Exception(f'feed spider crawled 0 articles')
     if is_exists_spider(url):
         raise Exception(f'feed[{url}] existed')
     del feed['_id']

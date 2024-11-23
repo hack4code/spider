@@ -14,7 +14,7 @@ from mydm.items import ArticleItem
 from .extractor import ItemExtractor
 from mydm.spider.spider import ErrbackSpider
 from mydm.spiderfactory import SpiderFactory
-from mydm.ai import extract_tags, extract_head
+from mydm.utils import extract_tags, extract_head
 
 
 logger = logging.getLogger(__name__)

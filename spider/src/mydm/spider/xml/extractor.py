@@ -7,7 +7,7 @@ from lxml.etree import QName
 from dateutil.parser import parse as get_date
 from zope.interface import Interface, implementer
 
-from mydm.util import is_url
+from mydm.utils import is_url
 
 
 class ITagExtractor(Interface):

@@ -19,7 +19,6 @@ LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
 EXTENSIONS = {
-        'mydm.extensions.ExtensionStats': 900
 }
 
 ITEM_PIPELINES = {
@@ -34,7 +33,6 @@ DOWNLOADER_MIDDLEWARES = {
 """
 spider settings
 """
-
 LOGGER_NAME = 'mydm'
 
 # grpc
@@ -42,13 +40,6 @@ GRPC_URI = '[::]:50051'
 
 # mongodb
 MONGODB_URI = 'mongodb://scrapy:scrapy@mongodb:27017/scrapy'
-
-# redis
-ETAG_URL = 'redis://redis:6379/1'
-TEMP_SPIDER_STATS_URL = 'redis://redis:6379/2'
-
-# if-modify-since middleware
-MODIFY_DELTA = 1
 
 # image pipeline
 IMAGE_OPTIMIZE_CATEGORY_FILTER = ['漫画']

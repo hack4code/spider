@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from mydm.util import cache_property
 from mydm.model import get_category_tags
 
 
 class CategoryAI():
 
-    @cache_property
     def category_tags(self):
         category_tags = get_category_tags()
         return {
