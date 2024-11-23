@@ -61,7 +61,7 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
   render() {
     const style = {
-      fontFamily: "Roboto, MiSans",
+      fontFamily: "MiSans",
       fontSize: "0.9em",
       fontWeight: "normal",
       lineHeight: "110%",
@@ -228,6 +228,7 @@ class Entry extends React.Component {
 class Entries extends React.Component {
   render() {
     let entries = this.props.entries;
+
     return (
       <div>
         {entries.map(function(entry, index) {
@@ -255,17 +256,37 @@ class Hr extends React.Component {
   }
 };
 
+class Blank extends React.Component {
+  render() {
+    let width = screen.width * 0.2;
+    const style = {
+        width: width
+    };
+
+    return (
+      <div style={style}></div>
+    )
+  }
+};
+
 class ContentDiv extends React.Component {
   constructor(props) {
     super(props);
   };
 
   render() {
+    const style = {
+      display: "flex",
+    };
     let entries = this.props.data;
+
     return (
       <div>
         <Hr />
-        <Entries entries={entries} />
+        <div style={style}>
+            <Blank />
+            <Entries entries={entries} />
+        </div>
         <Hr />
       </div>
     )
@@ -310,8 +331,8 @@ class DayLink extends React.Component {
 class DayLinkDiv extends React.Component {
   render() {
     const style = {
-      paddingLeft: "30%",
-      paddingRight: "30%"
+      paddingLeft: "40%",
+      paddingRight: "40%"
     };
 
     return (
