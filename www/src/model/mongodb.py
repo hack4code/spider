@@ -10,10 +10,9 @@ from .mongodata import Entry, EntryDay, Article, Spider, AID
 
 
 class MongoDB:
-    def __init__(self, uri, dbname):
+    def __init__(self, uri):
         self._uri = uri
-        self._dbname = dbname
-        self._client = None
+        self._dbname = uri.split('/')[-1]
         self.db = None
 
     def _connect(self):
@@ -25,8 +24,7 @@ class MongoDB:
             except:
                 current_app.logger.info('waiting mongodb online...')
                 continue
-            self._client = client
-            self.db = self._client[self._dbname]
+            self.db = client[self._dbname]
             return
 
     def __getattr__(self, collection_name):
@@ -42,9 +40,7 @@ class MongoDB:
 
 def init_db(app):
     global ScrapyDB
-    ScrapyDB = MongoDB(
-            app.config['SCRAPYDB_URI'],
-            app.config['MONGODB_STOREDB_NAME'])
+    ScrapyDB = MongoDB(app.config['SCRAPYDB_URI'])
 
 
 def get_begin_day():
