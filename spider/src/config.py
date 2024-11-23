@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 # scrapy settings
 BOT_NAME = 'BlogSpider'
 SPIDER_LOADER_CLASS = 'mydm.spiderloader.MongoSpiderLoader'
@@ -18,16 +19,10 @@ LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 
-EXTENSIONS = {
-}
-
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
     'mydm.pipelines.ImagesDlownloadPipeline': 300,
     'mydm.pipelines.StorePipeline': 999
-}
-
-DOWNLOADER_MIDDLEWARES = {
 }
 
 """
