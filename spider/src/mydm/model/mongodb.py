@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
+import logging
 from datetime import datetime
 
 from pymongo import MongoClient, ASCENDING
 from scrapy.utils.project import get_project_settings
+
+
+logger = logging.getLogger(__name__)
 
 
 class MongoDB:
@@ -27,12 +31,19 @@ class MongoDB:
 
     def _connect(self):
         settings = get_project_settings()
-        client = MongoClient(settings['MONGODB_URI'],
-                             username="admin",
-                             password="admin")
-        db = client[settings['MONGODB_DB_NAME']]
-        self._db = db
-        self._create_indexes()
+        while True:
+            try:
+                client = MongoClient(settings['MONGODB_URI'],
+                                     serverSelectionTimeoutMS=2000)
+                client.server_info()
+            except:
+                logger.info('waiting mongo online...')
+                continue
+            name = settings['MONGODB_DB_NAME'].split('/')[-1]
+            db = client[name]
+            self._db = db
+            self._create_indexes()
+            return
 
     def __getattr__(self, key):
         if self._db is None:

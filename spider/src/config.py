@@ -29,7 +29,6 @@ ITEM_PIPELINES = {
 }
 
 DOWNLOADER_MIDDLEWARES = {
-    # 'mydm.middlewares.ETagMiddleware': 300
 }
 
 """
@@ -42,14 +41,7 @@ LOGGER_NAME = 'mydm'
 GRPC_URI = '[::]:50051'
 
 # mongodb
-MONGODB_URI = 'mongodb://mongodb:27017/'
-MONGODB_DB_NAME = 'scrapy'
-# MONGODB_ARTICLE_COLLECTION_NAME = 'article'
-# MONGODB_FEED_COLLECTION_NAME = 'feed'
-# MONGODB_SPIDER_COLLECTION_NAME = 'spider'
-# MONGODB_SCRAPECOUNT_CONNECTION_NAME = 'scrapecount'
-MONGODB_USER = 'scrapy'
-MONGODB_PWD = 'scrapy'
+MONGODB_URI = 'mongodb://scrapy:scrapy@mongodb:27017/scrapy'
 
 # redis
 ETAG_URL = 'redis://redis:6379/1'
