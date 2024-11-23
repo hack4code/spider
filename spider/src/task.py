@@ -216,11 +216,7 @@ def submit_blog_feed(feed):
 
 
 def crawl_articles(spids):
-    # init
     settings = get_project_settings()
-    configure_logging(settings, install_root_handler=False)
-    logging.getLogger('scrapy').setLevel(logging.WARNING)
-    # load spiders
     loader = MongoSpiderLoader.from_settings(settings)
     if 'all' in spids:
         spids = loader.list()
