@@ -258,7 +258,7 @@ class Hr extends React.Component {
 
 class Blank extends React.Component {
   render() {
-    let width = screen.width * 0.2;
+    let width = screen.width * 0.4;
     const style = {
         width: width
     };
