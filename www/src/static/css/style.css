@@ -119,13 +119,13 @@ article .title    A {
 article[lang="en"] #article {
  font-family: 'Roboto', 'sans-serif';
  line-height: 1.6em;
- font-size: 1.0em;
+ font-size: 1em;
 }
 
 article[lang="zh"] #article {
  font-family: 'MiSans';
- line-height: 2.2em;
- font-size: 0.9em;
+ line-height: 2em;
+ font-size: 1em;
 }
 
 article #article {
