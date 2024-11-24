@@ -10,7 +10,6 @@
 
 ### backup mongo
   * docker-compose exec mongodb mongodump -u scrapy -p scrapy -d scrapy -c spider --gzip --archive=/dump/spider.gz
-  * docker-compose exec mongodb mongodump -u scrapy -p scrapy -d scrapy -c category --gzip --archive=/dump/category.gz
 
 ## React JS Build
   * docker container run --rm -v \`pwd\`/www/src/static/:/static/ -w /static/app/ node ./build.sh
