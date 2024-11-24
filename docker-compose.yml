@@ -9,6 +9,7 @@ services:
                         MONGO_INITDB_ROOT_PASSWORD: admin
                 volumes:
                         - ${HOME}/mongo/data/:/data/db/
+                        - ${HOME}/mongo/dump/:/dump/
                 networks:
                         - mongodb
                 command: ["--auth", "--storageEngine", "wiredTiger"]
