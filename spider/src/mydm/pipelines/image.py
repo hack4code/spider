@@ -2,8 +2,8 @@
 
 
 import base64
-from io import BytesIO
 import logging
+from io import BytesIO
 from urllib.parse import urlparse, urljoin
 
 from lxml.html import HtmlElement
@@ -39,7 +39,7 @@ class Image:
     def type(self):
         return self._image.format
 
-    def optimize(self, quality=75):
+    def resize(self, quality=75):
         image = self._image
         width, height = image.size
         if width > self.MAX_WIDTH:
@@ -60,7 +60,6 @@ class Image:
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
-
     MEDIA_NAME = 'image'
     MAX_SIZE = 1024*256
 
@@ -86,9 +85,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def spider_category(self):
         return self.spiderinfo.spider.category
 
-    def need_optimize(self, size):
-        if self.spider_category in self._category_filter:
-            return False
+    def need_resize(self, size):
         if size < self.MAX_SIZE:
             return False
         return True
@@ -110,7 +107,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
         urls = []
         for e in doc.xpath('//img'):
-
             def format_url(url, item):
                 url = url.strip('\r\n\t ')
                 if url.startswith('//'):
@@ -144,8 +140,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         self.spider_name
                 )
                 self._invalid_img_element.append(e)
-
-        requests = []
         for url, e in urls:
             if url.startswith('data'):
                 continue
@@ -158,14 +152,14 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         url
                 )
             else:
-                requests.append(request)
-        return requests
+                yield request
 
     def media_failed(self, failure, request, info):
         logger.error(
-                'spider[%s] download image[%s] failed',
+                'spider[%s] download image[%s] failed:\n%s',
                 self.spider_name,
-                request.url
+                request.url,
+                failure
         )
 
     def media_downloaded(self, response, request, info):
@@ -209,8 +203,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         break
                     factor = factor + 1
                 image_xpath_node.set('width', f'{width}px')
-            elif self.need_optimize(image_size):
-                data = image.optimize()
+            elif self.need_resize(image_size):
+                data = image.resize()
             image_type = image.type.upper()
         image_xpath_node.set('source', src)
         data = base64.b64encode(data).decode('ascii')
@@ -230,9 +224,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
         return item
 
     def file_path(self, request, response, info, *, item):
-        """Returns the path where downloaded media should be stored"""
         raise NotImplementedError()
 
     def media_to_download(self, request, info, *, item):
-        """Check request before starting download"""
-        pass
+        yield request
