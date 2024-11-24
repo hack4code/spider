@@ -7,7 +7,7 @@ from io import BytesIO
 from urllib.parse import urlparse, urljoin
 
 from lxml.html import HtmlElement
-from PIL import Image as ImageLib, ImageFile
+from PIL import Image as ImageLib, ImageOps
 
 from scrapy.http import Request
 from scrapy.pipelines.media import MediaPipeline
@@ -16,7 +16,6 @@ from mydm.utils import is_url
 
 
 logger = logging.getLogger(__name__)
-ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class Image:
@@ -25,11 +24,6 @@ class Image:
 
     def __init__(self, data, type=None):
         self._image = ImageLib.open(BytesIO(data))
-        if self._image.format.upper() == 'PNG':
-            buffer = BytesIO()
-            self._image.save(buffer, format='WebP')
-            self._image.close()
-            self._image = ImageLib.open(buffer)
 
     @property
     def size(self):
@@ -39,22 +33,19 @@ class Image:
     def type(self):
         return self._image.format
 
-    def resize(self, quality=75):
+    def resize(self, quality=100):
         image = self._image
         width, height = image.size
         if width > self.MAX_WIDTH:
             ratio = float(height) / float(width)
             width = self.MAX_WIDTH
             height = int(width * ratio)
-            image = image.resize(
-                    (width, height),
-                    ImageLib.ANTIALIAS
-            )
+            image = ImageOps.fit(image, (width, height))
         buffer = BytesIO()
         image.save(
                 buffer,
                 format=self.type,
-                quality=quality,
+                quality=quality
         )
         return buffer.getvalue()
 
@@ -140,6 +131,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         self.spider_name
                 )
                 self._invalid_img_element.append(e)
+        requests = []
         for url, e in urls:
             if url.startswith('data'):
                 continue
@@ -152,7 +144,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                         url
                 )
             else:
-                yield request
+                requests.append(request)
+        return requests
 
     def media_failed(self, failure, request, info):
         logger.error(
@@ -227,4 +220,4 @@ class ImagesDlownloadPipeline(MediaPipeline):
         raise NotImplementedError()
 
     def media_to_download(self, request, info, *, item):
-        yield request
+        pass
