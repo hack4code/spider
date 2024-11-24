@@ -10,7 +10,7 @@ from lxml.html import HtmlElement
 from PIL import Image as ImageLib, ImageOps
 
 from scrapy.http import Request
-from scrapy.pipelines.media import MediaPipeline
+from scrapy.pipelines.media import MediaPipeline, FileInfo
 
 from mydm.utils import is_url
 
@@ -155,7 +155,12 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 failure
         )
 
-    def media_downloaded(self, response, request, info):
+    def media_downloaded(self, response, request, info, *, item):
+        f_info = FileInfo(
+                url = response.url,
+                path = "",
+                checksum = None,
+                status = "")
         if not response.body:
             logger.error(
                     'spider[%s] got size 0 image[%s]',
@@ -165,7 +170,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
             self._invalid_img_element.append(
                     response.meta['image_xpath_node']
             )
-            return
+            return f_info
         image_xpath_node = response.meta['image_xpath_node']
         src = response.url
         data = response.body
@@ -209,6 +214,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 'src',
                 f'data:image/{type};base64,{data}'
         )
+        return f_info
 
     def item_completed(self, results, item, info):
         for e in self._invalid_img_element:
