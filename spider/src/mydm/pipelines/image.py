@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 class Image:
 
-    MAX_WIDTH = 1024
+    MAX_WIDTH = 800
 
-    def __init__(self, data, type=None):
+    def __init__(self, data):
         self._image = ImageLib.open(BytesIO(data))
 
     @property
@@ -33,7 +33,7 @@ class Image:
     def type(self):
         return self._image.format
 
-    def resize(self, quality=100):
+    def resize(self):
         image = self._image
         width, height = image.size
         if width > self.MAX_WIDTH:
@@ -44,15 +44,13 @@ class Image:
         buffer = BytesIO()
         image.save(
                 buffer,
-                format=self.type,
-                quality=quality
+                format=self.type
         )
         return buffer.getvalue()
 
 
 class ImagesDlownloadPipeline(MediaPipeline):
     MEDIA_NAME = 'image'
-    MAX_SIZE = 1024*256
 
     def __init__(self, crawler):
         super().__init__(crawler=crawler)
@@ -76,11 +74,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
     def spider_category(self):
         return self.spiderinfo.spider.category
 
-    def need_resize(self, size):
-        if size < self.MAX_SIZE:
-            return False
-        return True
-
     def get_media_requests(self, item, info):
         self._invalid_img_element = []
         doc = item['content']
@@ -95,7 +88,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
             attrs = attrs.union(img_attr)
         elif img_attr:
             attrs.add(img_attr)
-
         urls = []
         for e in doc.xpath('//img'):
             def format_url(url, item):
@@ -106,7 +98,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 elif url.startswith('/'):
                     url = urljoin(item['link'], url)
                 return url
-
             if 'srcset' in e.attrib:
                 srcset = e.get('srcset')
                 url = srcset.split(',')[0].split(' ')[0]
@@ -149,7 +140,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
 
     def media_failed(self, failure, request, info):
         logger.error(
-                'spider[%s] download image[%s] failed:\n%s',
+                'spider[%s] download image[%s] failed:\n\n%s\n',
                 self.spider_name,
                 request.url,
                 failure
@@ -160,7 +151,8 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 url = response.url,
                 path = "",
                 checksum = None,
-                status = "")
+                status = str(response.status)
+        )
         if not response.body:
             logger.error(
                     'spider[%s] got size 0 image[%s]',
@@ -174,14 +166,13 @@ class ImagesDlownloadPipeline(MediaPipeline):
         image_xpath_node = response.meta['image_xpath_node']
         src = response.url
         data = response.body
-        image_size = len(data)
         try:
             image_type = response.headers['Content-Type'].split('/')[-1]
         except Exception:
             image_type = src.split('?')[0].split('.')[-1]
         image_type = image_type.upper()
         try:
-            image = Image(data, type=image_type)
+            image = Image(data)
         except (OSError, IOError) as e:
             logger.error(
                     'spider[%s] PILLOW open image[%s, %s] failed[%s]',
@@ -191,17 +182,7 @@ class ImagesDlownloadPipeline(MediaPipeline):
                     e
             )
         else:
-            if self.spider_category in self._category_filter:
-                width, _ = image.size
-                factor = 1
-                while True:
-                    new_width = width // factor
-                    if new_width <= 800:
-                        width = new_width
-                        break
-                    factor = factor + 1
-                image_xpath_node.set('width', f'{width}px')
-            elif self.need_resize(image_size):
+            if self.spider_category not in self._category_filter:
                 data = image.resize()
             image_type = image.type.upper()
         image_xpath_node.set('source', src)
@@ -213,6 +194,10 @@ class ImagesDlownloadPipeline(MediaPipeline):
         image_xpath_node.set(
                 'src',
                 f'data:image/{type};base64,{data}'
+        )
+        image_xpath_node.set(
+                'max-width',
+                800
         )
         return f_info
 
