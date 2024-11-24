@@ -16,7 +16,8 @@ import spider_pb2_grpc
 from task import submit_rss_feed, submit_blog_feed, crawl_articles
 
 
-processes = deque()
+global processes = deque()
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
@@ -71,8 +72,6 @@ def serve(settings):
     )
     server.add_insecure_port(settings['GRPC_URI'])
     server.start()
-    logger = logging.getLogger(__name__)
-    logger.info('grpc server running...')
     try:
         while True:
             time.sleep(60)
