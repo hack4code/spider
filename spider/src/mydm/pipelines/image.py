@@ -195,10 +195,6 @@ class ImagesDlownloadPipeline(MediaPipeline):
                 'src',
                 f'data:image/{type};base64,{data}'
         )
-        image_xpath_node.set(
-                'max-width',
-                800
-        )
         return f_info
 
     def item_completed(self, results, item, info):

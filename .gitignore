@@ -1,7 +1,6 @@
 *.swp
 
 env/
-__pycache__
 
 mongo/data/
 mongo/dump/
@@ -11,8 +10,5 @@ www/src/static/app/js/
 www/src/static/app/node_modules/
 www/src/static/app/*.json
 
-www/src/spider_pb2.py
-www/src/spider_pb2_grpc.py
-spider/src/spider_pb2.py
-spider/src/spider_pb2_grpc.py
-spider/src/.python-version
+www/protos/
+spider/protos/

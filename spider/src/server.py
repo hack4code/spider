@@ -16,8 +16,8 @@ import spider_pb2_grpc
 from task import submit_rss_feed, submit_blog_feed, crawl_articles
 
 
-global processes = deque()
 logging.getLogger(__name__).addHandler(logging.NullHandler())
+processes = deque()
 
 
 class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):

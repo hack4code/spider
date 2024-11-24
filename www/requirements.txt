@@ -6,3 +6,4 @@ marshmallow
 flask_restful
 protobuf
 grpcio
+grpcio-tools

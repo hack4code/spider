@@ -1,10 +1,26 @@
 #! /usr/bin/env bash
 
 
-python3 -m grpc_tools.protoc -I protos/ --python_out=www/src/ --grpc_python_out=www/src/ spider.proto
-python3 -m grpc_tools.protoc -I protos/ --python_out=spider/src/ --grpc_python_out=spider/src/ spider.proto
+if [[ ! -d www/src/static/script ]]; then
+  mkdir www/src/static/script
+  docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build.sh
+  rm -rf www/src/static/app/node_modules
+fi
 
-docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build.sh
+if [[ ! -d spider/protos ]]; then
+  mkdir spider/protos/
+  ln protos/spider.proto spider/protos/spider.proto
+fi
+
+if [[ ! -d spider/protos ]]; then
+  mkdir www/protos/
+  ln protos/spider.proto www/protos/spider.proto
+fi
+
+if [[ ! -d nginx/static ]]; then
+fi
+
+docker compose up --build --detach
 
 
 # vim: ts=2 sw=2 sts=2 ft=bash et:

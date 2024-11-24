@@ -5,6 +5,8 @@ Scrapy
 pymongo
 requests
 python-dateutil
+lxml_html_clean
+pillow
 protobuf
 grpcio
-lxml_html_clean
+grpcio-tools
