@@ -17,9 +17,6 @@ if [[ ! -d spider/protos ]]; then
   ln protos/spider.proto www/protos/spider.proto
 fi
 
-if [[ ! -d nginx/static ]]; then
-fi
-
 docker compose up --build --detach
 
 
