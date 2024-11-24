@@ -3,7 +3,6 @@ pyOpenSSL
 service-identity
 Scrapy
 pymongo
-redis
 requests
 python-dateutil
 protobuf
