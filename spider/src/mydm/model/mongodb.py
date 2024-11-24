@@ -26,8 +26,6 @@ class MongoDB:
                 [('spider', ASCENDING), ('crawl_date', ASCENDING)],
                 name='idx_spider_crawl_date'
         )
-        scrapecount = db['scrapecount']
-        scrapecount.create_index('spider', name='idx_spider')
 
     def _connect(self):
         settings = get_project_settings()
@@ -106,7 +104,6 @@ def is_exists_article(item):
 
 
 def save_article(item):
-    # day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
     result = ScrapyDB.article.insert_one(item)
     return result
 
@@ -140,11 +137,3 @@ def get_spider_settings():
         setting['_id'] = str(item['_id'])
         settings.append(setting)
     return settings
-
-
-def get_category_tags():
-    cursor = ScrapyDB.category.find()
-    return {
-            item['category']: item['tags']
-            for item in cursor
-    }
