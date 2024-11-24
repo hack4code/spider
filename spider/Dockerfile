@@ -6,7 +6,7 @@ COPY requirements.txt /spider/
 RUN apt-get update -y --fix-missing
 RUN apt-get install -y build-essential
 RUN apt-get install -y python3-dev python3-setuptools
-RUN apg-get install -y libwebp libpng libjpeg
+RUN apt-get install -y libwebp-dev libpng-dev
 
 WORKDIR /spider/
 RUN pip install --upgrade pip
