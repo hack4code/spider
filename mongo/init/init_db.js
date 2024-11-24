@@ -27,12 +27,3 @@ db.createUser(
 		roles: [ { role: "read", db: "scrapy" } ]
 	}
 )
-
-db = conn.getDB("score");
-db.createUser(
-	{
-		user: "flask",
-		pwd: flask_pwd,
-		roles: [ { role: "readWrite", db: "score" } ]
-	}
-)

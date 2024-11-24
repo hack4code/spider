@@ -2,7 +2,7 @@
 
 
 # mongodb
-SCRAPYDB_URI = 'mongodb://scrapy:scrapy@mongodb:27017/scrapy'
+SCRAPYDB_URI = 'mongodb://flask:flask@mongodb:27017/scrapy'
 
 # grpc
 GRPC_HOST = 'spider:50051'
