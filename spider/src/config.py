@@ -5,15 +5,10 @@
 BOT_NAME = 'BlogSpider'
 SPIDER_LOADER_CLASS = 'mydm.spiderloader.MongoSpiderLoader'
 
-CONCURRENT_ITEMS = 64
-CONCURRENT_REQUESTS = 12
-CONCURRENT_REQUESTS_PER_DOMAIN = 4
-DNS_TIMEOUT = 180
-DOWNLOAD_DELAY = 1
+# header
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0'
 
-WEBSERVICE_ENABLED = False
-TELNETCONSOLE_ENABLED = False
-
+# log
 LOG_ENABLED = True
 LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
@@ -24,6 +19,10 @@ ITEM_PIPELINES = {
     'mydm.pipelines.ImagesDlownloadPipeline': 300,
     'mydm.pipelines.StorePipeline': 999
 }
+
+#
+WEBSERVICE_ENABLED = False
+TELNETCONSOLE_ENABLED = False
 
 """
 spider settings
