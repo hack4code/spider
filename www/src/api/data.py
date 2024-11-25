@@ -128,17 +128,15 @@ class Entries(Resource):
 
 
 class Categories(Resource):
-    categories = set([
-        '新闻',
-        '数据库',
-        '安全',
-        'Python',
-        '技术',
-        '科普',
-    ])
     def get(self):
+        categories = set([
+            '新闻',
+            '数据库',
+            '安全',
+            'Python',
+            '技术',
+            '科普',
+        ])
         result = get_categories()
         categories = categories | set(result)
-        return {'data': categories}
-
-
+        return {'data': list(categories)}
