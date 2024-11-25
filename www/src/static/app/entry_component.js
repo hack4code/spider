@@ -20,7 +20,7 @@ class Hr extends React.Component {
 class Title extends React.Component {
   render() {
     const style = {
-      fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
+      fontFamily: "MiSans",
       fontSize: "normal",
       fontWeight: "bold",
       textAlign: "center"
@@ -39,7 +39,7 @@ class Entry extends React.Component {
     const style = {
       fontWeight: "600",
       fontSize: "0.8em",
-      fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
+      fontFamily: "MiSans",
       lineHeight: "2em",
       textDecoration: "none"
     };
@@ -76,5 +76,77 @@ class Entries extends React.Component {
   }
 }
 
+class SpiderButton extends React.Component {
+  render () {
+    const style = {
+      fontWeight: "300",
+      fontSize: "1em",
+      fontFamily: "MiSans",
+      border: "1px",
+      borderColor: "black",
+      borderRadius: "3px",
+      padding: "2px",
+      marginLeft: "8px"
+    };
+    return (
+      <a style={style} href={this.props.href} target="_blank">
+        Edit
+      </a>
+    )
+  }
+}
 
-export {Title, Hr, Entries};
+class SpiderLink extends React.Component {
+  render() {
+    const style = {
+      fontWeight: "600",
+      fontSize: "0.8em",
+      fontFamily: "MiSans",
+      lineHeight: "2em",
+      textDecoration: "none"
+    };
+
+    return (
+      <a style={style} href={this.props.href} target="_blank">
+        {this.props.title}
+      </a>
+    )
+  }
+}
+
+class SpiderEntry extends React.Component {
+  render() {
+    const spider = this.props.spider;
+
+    return (
+      <li>
+        <SpiderLink href={"/p/" + spider["id"]} title={spider["title"]} />
+        <SpiderButton href={"/feed/" + spider["type"] + "/" + spider["id"]} />
+      </li>
+    )
+  }
+}
+
+class SpiderEntries extends React.Component {
+  static defaultProps = {
+    spiders: []
+  };
+
+  render() {
+    const style = {
+      listStyle: "square",
+      color: "red",
+      marginLeft: "4em"
+    };
+    const spiders = this.props.spiders;
+
+    return (
+      <ul style={style}>
+        {spiders.map(function(item, index) {return <SpiderEntry spider={item} />;})}
+      </ul>
+    )
+  }
+}
+
+
+export {Title, Hr, SpiderEntries, Entries};

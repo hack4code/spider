@@ -75,10 +75,8 @@ class FeedSchema(StripSchema):
 
 
 class RssFeed(Resource):
-
     def post(self):
-
-        class AtomFeedSchema(FeedSchema):
+        class AtomFeedSchema(StripSchema):
             url = fields.Url(required=True)
             category = fields.String(required=True)
             item_content_xpath = fields.String()
@@ -90,8 +88,8 @@ class RssFeed(Resource):
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
         except Exception:
+            current_app.logger.exception('atom feed exception:')
             return {'message': 'invalid atom feed'}, 400
-        # current_app.logger.info(f'atom feed[{feed}]')
         if 'removed_xpath_nodes' in feed:
             nodes = feed.pop('removed_xpath_nodes')
         else:
@@ -111,10 +109,8 @@ class RssFeed(Resource):
 
 
 class BlogFeed(Resource):
-
     def post(self):
-
-        class BlogFeedSchema(FeedSchema):
+        class BlogFeedSchema(StripSchema):
             url = fields.Url(required=True)
             category = fields.String(required=True)
             entry_xpath = fields.String(required=True)

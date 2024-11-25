@@ -1,10 +1,10 @@
 {% extends "main.html" %}
-{% block title %}{{ spider.source }}{% endblock %}
+{% block title %}{{ spider['title'] }}{% endblock %}
 {% block main %}
 
 <div class="spentries">
 
-<div id="content" spid="{{ spider.id }}" name="{{ spider.source }}"></div>
+<div id="content" spid="{{ spider['id'] }}" name="{{ spider['title'] }}"></div>
 <div>
 {%- for i in range(36) -%}
   <br />

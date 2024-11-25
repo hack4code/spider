@@ -108,16 +108,15 @@ def save_article(item):
     return result
 
 
-def is_exists_spider(url):
-    result = ScrapyDB.spider.count_documents(
+def get_spider_by_url(url):
+    spider = ScrapyDB.spider.find_one(
             {
                 'start_urls': {'$in': [url]}
             }
     )
-    if result == 0:
-        return False
-    else:
-        return True
+    if spider is None:
+        return
+    return spider['_id']
 
 
 def save_spider_settings(settings):
@@ -125,8 +124,19 @@ def save_spider_settings(settings):
         del settings['_id']
     except KeyError:
         pass
-    result = ScrapyDB.spider.insert_one(settings)
-    return result.inserted_id
+    url = settings['start_urls'][0]
+    spid = get_spider_by_url(url)
+    if spid is None:
+        ScrapyDB.spider.insert_one(settings)
+    else:
+        ScrapyDB.spider.update_one(
+                {
+                    '_id': spid
+                },
+                {
+                    "$set": settings
+                }
+        )
 
 
 def get_spider_settings():

@@ -93,10 +93,13 @@ def spiders():
     return render_template('spiders.html')
 
 
-@app.route('/feed/rss', methods=['GET'])
+@app.route('/feed/xml', methods=['GET'])
 def atom_feed():
     return render_template('rss.html')
 
+@app.route('/feed/xml/<id:spid>', methods=['GET'])
+def atom_feed_edit(spid):
+    return render_template('rss.html')
 
 @app.route('/feed/blog', methods=['GET'])
 def blog_feed():

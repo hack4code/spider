@@ -1,12 +1,12 @@
 import React from "react";
 import { render } from "react-dom";
-import {Title, Hr, Entries} from "./entry_component";
+import {Title, Hr, SpiderEntries} from "./entry_component";
 import "whatwg-fetch";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {entries: []};
+    this.state = {spiders: []};
   }
 
   componentDidMount() {
@@ -14,7 +14,7 @@ class App extends React.Component {
     fetch("/api/spiders").then(function(response) {
       response.json().then(function(data) {
         if (response.status == 200) {
-          that.setState({entries: data["entries"]});
+          that.setState({"spiders": data});
         }
         else {
           console.log(data['message']);
@@ -29,9 +29,10 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title name="所有订阅网站" />
+        <Title name="所有订阅" />
         <Hr />
-        <Entries prefix="/p/" entries={this.state.entries} />
+        <SpiderEntries spiders={this.state.spiders} />
+        <Hr />
       </div>
     )
   }

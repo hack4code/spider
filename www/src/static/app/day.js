@@ -17,8 +17,7 @@ class App extends React.Component {
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
     let that = this;
 
-    fetch(url)
-    .then(function(response) {
+    fetch(url).then(function(response) {
       response.json().then(function(data) {
         if (response.status == 200) {
           let nstate = {day_before: data["day_before"],

@@ -4,7 +4,7 @@ import "whatwg-fetch";
 class Title extends React.Component {
   render() {
     const style = {
-      fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
+      fontFamily: "MiSans, sans-serif",
       fontSize: "1.6em",
       fontWeight: "normal",
       textAlign: "center"
@@ -136,7 +136,7 @@ class IButton extends React.Component {
 class Label extends React.Component {
   render() {
     const style = {
-      fontFamily: "Lantinghei SC, Microsoft YaHei, sans-serif",
+      fontFamily: "MiSans, sans-serif",
       fontSize: "1.0em",
       fontWeight: "normal",
       marginBottom: "0.5em",
@@ -257,7 +257,7 @@ class Select extends React.Component {
 
     return (
       <div>
-        <input list="items" style={style} onChange={this.handleChange} />
+        <input list="items" value={this.props.value} style={style} onChange={this.handleChange} />
         <datalist id="items">
         {
           list.map(function(val, index) {return <option value={val} />;})
@@ -273,7 +273,7 @@ class SelectBox extends React.Component {
     return (
       <div>
         <Label desc={this.props.desc} />
-        <Select updateField={this.props.updateField} url={this.props.url} field={this.props.field} />
+        <Select updateField={this.props.updateField} value={this.props.value} url={this.props.url} field={this.props.field} />
       </div>
     )
   }

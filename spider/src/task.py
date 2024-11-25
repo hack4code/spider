@@ -17,9 +17,7 @@ from scrapy.utils.project import get_project_settings
 
 from mydm.spiderfactory import SpiderFactory
 from mydm.spiderloader import MongoSpiderLoader
-from mydm.model import (
-        save_spider_settings, save_feed, is_exists_spider
-)
+from mydm.model import save_spider_settings
 from mydm.utils import is_url
 
 
@@ -53,23 +51,17 @@ def get_feed_name(url):
         )
 
 
-def _run_feed_spider(url, feed):
+def run_feed_spider(url, feed):
     spid = str(uuid.uuid4())
     feed['_id'] = spid
-    save_feed(url)
     cls = SpiderFactory.create_spider(feed)
-    runner = CrawlerRunner(TEST_SETTINGS)
-    d = runner.crawl(cls)
-    d.addBoth(lambda _: reactor.stop())
-    reactor.run(installSignalHandlers=False)
-    if is_exists_spider(url):
-        raise Exception(f'feed[{url}] existed')
+    proc = CrawlerProcess(TEST_SETTINGS)
+    proc.start()
     del feed['_id']
-    save_spider_settings(feed)
 
 
 def dry_run_feed_spider(url, feed):
-    p = Process(target=_run_feed_spider, args=(url, feed))
+    p = Process(target=run_feed_spider, args=(url, feed))
     p.start()
     p.join()
     return p.exitcode == 0
@@ -148,8 +140,7 @@ def submit_rss_feed(feed):
         feed['title'] = feed['name']
     feed['type'] = 'xml'
     feed['start_urls'] = [url]
-    if not dry_run_feed_spider(url, feed):
-        raise Exception('feed spider dry run failed')
+    save_spider_settings(feed)
 
 
 def validate_blog_feed(feed):
@@ -200,8 +191,13 @@ def submit_blog_feed(feed):
     feed['title'] = feed['name']
     feed['type'] = 'blog'
     feed['start_urls'] = [url]
-    if not dry_run_feed_spider(url, feed):
-        raise Exception('feed spider dry run failed')
+    try:
+        success = dry_run_feed_spider(url, feed)
+    except:
+        raise Exception('spider dry run failed')
+    if not success:
+        raise Exception('spider dry run failed')
+    save_spider_settings(feed)
 
 
 def crawl_articles(spids):
