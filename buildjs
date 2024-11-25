@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+
+docker container run --volume www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build
+sudo rm -rf www/src/static/app/node_modules
+
+
+# vim: ts=2 sw=2 sts=2 ft=bash et:
+
