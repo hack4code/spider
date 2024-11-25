@@ -229,17 +229,16 @@ class Select extends React.Component {
       if (!err) {
         let list = data["data"];
         that.setState({list: list});
-        that.props.updateField(that.props.field, list[0]);
       }
     })
     .catch(function(err) {
-      console.log("get category list failed");
+      console.log("get items list failed");
     })
   }
 
   handleChange(e) {
-    let v = e.target.value;
-    this.props.updateField(this.props.field, v);
+    let val = e.target.value;
+    this.props.updateField(this.props.field, val);
   }
 
   render() {
@@ -257,11 +256,14 @@ class Select extends React.Component {
     let list = this.state.list;
 
     return (
-      <select style={style} value={this.props.value} onChange={this.handleChange}>
-      {
-        list.map(function(v, index) {return <option key={index} value={v}>{v}</option>;})
-      }
-      </select>
+      <div>
+        <input list="items" style={style} onChange={this.handleChange} />
+        <datalist id="items">
+        {
+          list.map(function(val, index) {return <option value={val} />;})
+        }
+        </datalist>
+      </div>
     )
   }
 }
@@ -271,7 +273,7 @@ class SelectBox extends React.Component {
     return (
       <div>
         <Label desc={this.props.desc} />
-        <Select updateField={this.props.updateField} url={this.props.url} field={this.props.field} value={this.props.value} />
+        <Select updateField={this.props.updateField} url={this.props.url} field={this.props.field} />
       </div>
     )
   }

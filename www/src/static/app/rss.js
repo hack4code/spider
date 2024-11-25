@@ -89,7 +89,7 @@ class SubmitForm extends React.Component {
         <ErrMsg ref={(com) => this.err = com} />
         <form onSubmit={this.submit} style={style}>
           <EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
-          <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
+          <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" />
           <EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
           <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
           <Button ref="Button"/>
