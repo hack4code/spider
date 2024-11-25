@@ -14,7 +14,8 @@ class App extends React.Component {
     fetch("/api/spiders").then(function(response) {
       response.json().then(function(data) {
         if (response.status == 200) {
-          that.setState({entries: data["entries"]});
+          var entries = data.map(function(value) { return [value["id"], value["title"]]; });
+          that.setState({"entries": entries});
         }
         else {
           console.log(data['message']);
@@ -29,7 +30,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title name="所有订阅网站" />
+        <Title name="所有订阅" />
         <Hr />
         <Entries prefix="/p/" entries={this.state.entries} />
       </div>

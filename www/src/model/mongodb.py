@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from flask import current_app
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
-from .item import Entry, EntryDay, Article, Spider, AID
+from .datatype import Entry, EntryDay, Article, Spider, AID
 
 
 class MongoDB:
@@ -155,24 +155,20 @@ def get_after_day(day):
 
 
 def get_spiders():
-    cursor = ScrapyDB.spider.find({}, {'title': 1})
-    return {str(item['_id']): item['title'] for item in cursor}
+    cursor = ScrapyDB.spider.find({})
+    return [Spider.from_item(item) for item in cursor]
 
 
 def get_spider(spid):
     cursor = ScrapyDB.spider.find(
             {
                 '_id': spid
-            },
-            {
-                'title': 1,
             }
     )
     result = list(cursor)
     if 0 == len(result):
         return
-    spider = result[0]
-    return Spider(spider['_id'], spider['title'])
+    return Spider.from_item(result[0])
 
 
 def get_first_aid(spid):

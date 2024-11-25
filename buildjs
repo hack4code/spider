@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 
-docker container run --volume www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build
+docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build
 sudo rm -rf www/src/static/app/node_modules
 
 

@@ -18,7 +18,7 @@ from model import (
         get_begin_day, get_before_day, get_after_day,
         get_entries_by_day,
         get_entries_next, get_entries_pre, get_entries_by_spider,
-        get_spiders,
+        get_spider, get_spiders,
         get_categories
 )
 from .utils import format_messages
@@ -28,7 +28,6 @@ Spider = namedtuple('Spider', ['id', 'source'])
 
 
 class ObjectIdField(fields.Field):
-
     def _serialize(self, value, attr, obj, **kwargs):
         return str(value)
 
@@ -40,9 +39,7 @@ class ObjectIdField(fields.Field):
 
 
 class Day(Resource):
-
     def get(self):
-
         class DayRequestSchema(Schema):
             day = fields.Date(required=True)
 
@@ -77,20 +74,13 @@ class Day(Resource):
 
 
 class Spiders(Resource):
-
     def get(self):
         spiders = get_spiders()
-        entries = [
-            Spider(spid, name)
-            for spid, name in spiders.items()
-        ]
-        return {'entries': entries}
+        return spiders
 
 
 class Entries(Resource):
-
     def get(self):
-
         class EntryRequestScheme(Schema):
             spid = ObjectIdField(required=True)
             aid = ObjectIdField()
@@ -123,8 +113,8 @@ class Entries(Resource):
             return {'message': 'no articles found'}, 400
 
         spid = str(spid)
-        spiders = get_spiders()
-        return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
+        spider = get_spider(spid)
+        return {'spider': spider, 'entries': entries}
 
 
 class Categories(Resource):

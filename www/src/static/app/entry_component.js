@@ -20,7 +20,7 @@ class Hr extends React.Component {
 class Title extends React.Component {
   render() {
     const style = {
-      fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
+      fontFamily: "MiSans",
       fontSize: "normal",
       fontWeight: "bold",
       textAlign: "center"
@@ -39,7 +39,7 @@ class Entry extends React.Component {
     const style = {
       fontWeight: "600",
       fontSize: "0.8em",
-      fontFamily: "Nunito, Lantinghei SC, Microsoft YaHei",
+      fontFamily: "MiSans",
       lineHeight: "2em",
       textDecoration: "none"
     };

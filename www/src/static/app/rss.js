@@ -103,7 +103,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title title="添加订阅源(rss|atom)" />
+        <Title title="订阅源(rss|atom)" />
         <Hr />
         <SubmitForm />
       </div>
