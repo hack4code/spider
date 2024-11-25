@@ -19,6 +19,7 @@ from model import (
         get_entries_by_day,
         get_entries_next, get_entries_pre, get_entries_by_spider,
         get_spiders,
+        get_categories
 )
 from .utils import format_messages
 
@@ -124,3 +125,20 @@ class Entries(Resource):
         spid = str(spid)
         spiders = get_spiders()
         return {'spider': Spider(spid, spiders[spid]), 'entries': entries}
+
+
+class Categories(Resource):
+    categories = set([
+        '新闻',
+        '数据库',
+        '安全',
+        'Python',
+        '技术',
+        '科普',
+    ])
+    def get(self):
+        result = get_categories()
+        categories = categories | set(result)
+        return {'data': categories}
+
+

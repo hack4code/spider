@@ -8,7 +8,8 @@ from .mongodb import (
         get_entries_pre, get_entries_next, get_entries_by_spider,
         get_spider, get_spiders,
         get_last_aid, get_first_aid,
-        get_article
+        get_article,
+        get_categories
 )
 
 
@@ -26,5 +27,6 @@ __all__ = [
         'get_entries_pre',
         'get_entries_next',
         'get_entries_by_spider',
-        'get_article'
+        'get_article',
+        'get_categories'
 ]
