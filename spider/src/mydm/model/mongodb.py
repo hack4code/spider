@@ -56,14 +56,10 @@ ScrapyDB = MongoDB()
 
 
 def is_exists_article(item):
-    day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
     result = ScrapyDB.article.count_documents(
         {
             'spider': item['spider'],
-            'crawl_date': {'$lt': day},
             'title': item['title'],
-            'domain': item['domain'],
-            'source': item['source']
         }
     )
     if result > 0:
