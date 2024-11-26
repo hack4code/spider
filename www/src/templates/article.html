@@ -1,19 +1,19 @@
 {% extends "main.html" %}
 
-{% block title %}{{ article.title|title }}{% endblock %}
+{% block title %}{{ article['title']|title }}{% endblock %}
 
 {% block main %}
 
-<article class="page" lang="{{ article.lang }}">
+<article class="page" lang="{{ article['lang'] }}">
 
 <header>
-<h1 class="title"><a href="{{ article.link }}">{{ article.title|safe }}</a></h1>
+<h1 class="title"><a href="{{ article['link'] }}">{{ article['title']|safe }}</a></h1>
 </header>
 
 <hr class="ahr"></hr>
 
 <div id="article">
-{{ article.content|safe }}
+{{ article['content']|safe }}
 </div>
 
 <hr class="ahr"></hr>

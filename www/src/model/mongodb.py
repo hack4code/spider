@@ -278,25 +278,14 @@ def get_entries_by_spider(spid):
 
 
 def get_article(aid):
-    cursor = ScrapyDB.article.find(
+    a = ScrapyDB.article.find_one(
         {
             '_id': aid
-        },
-        {
-            'title': 1,
-            'domain': 1,
-            'link': 1,
-            'head': 1,
-            'content': 1,
-            'lang': 1,
-            'source': 1,
-            'spider': 1
         }
-    ).limit(1)
-    result = list(cursor)
-    if 0 == len(result):
+    )
+    if a is None:
         return
-    return Article(result[0])
+    return Article.from_item(a)
 
 
 def get_categories():

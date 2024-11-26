@@ -47,38 +47,34 @@ class EntryDay(EntryDayBase):
         )
 
 
-ArticleBase = namedtuple(
-        'Article',
-        ['id',
-         'title',
-         'domain',
-         'link',
-         'head',
-         'content',
-         'lang',
-         'source',
-         'spider']
-)
+class Article(TypedDict, total=False):
+    id: str
+    title: str
+    domain: str
+    link: str
+    head: str
+    content: str
+    lang: str
+    source: str
+    spider: str
 
-
-class Article(ArticleBase):
-    def __new__(cls, d):
-        aid = str(d['_id'])
-        content = d.get('content')
+    @classmethod
+    def from_item(cls, item):
+        aid = str(item.get('_id'))
+        title = unescape(item.get('title'))
+        content = item.get('content')
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
-        title = unescape(d.get('title'))
-        return super().__new__(
-                cls,
-                aid,
-                title,
-                d.get('domain'),
-                d.get('link'),
-                d.get('head'),
-                content,
-                d.get('lang'),
-                d.get('source'),
-                d.get('spider')
+        return cls(
+                id = aid,
+                title = title,
+                content = content,
+                domain = item.get('domain'),
+                link = item.get('link'),
+                head = item.get('head'),
+                lang = item.get('lang'),
+                source = item.get('source'),
+                spider = item.get('spider')
         )
 
 

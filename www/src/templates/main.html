@@ -12,15 +12,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/site/{}'.format(sitecss)) }}">
   {% endif %}
 
-  {% if sitescript %}
-  {{ sitescript|safe }}
-  {% endif %}
-
-  {% if headlist %}
-    {%- for item in headlist -%}
-    {{ item|safe }}
-    {% endfor %}
-  {% endif %}
 </head>
 
 <body>
