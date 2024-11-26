@@ -4,7 +4,7 @@
 from flask import Blueprint
 from flask_restful import Api
 
-from .feed import CrawlArticles, RssFeed, BlogFeed
+from .feed import CrawlArticles, RssFeed
 from .data import Day, Entries, Spider, Spiders, Categories
 
 
@@ -21,5 +21,4 @@ def init_api(app):
     api.add_resource(Categories, '/api/categories')
     api.add_resource(CrawlArticles, '/submit/crawl')
     api.add_resource(RssFeed, '/submit/rss')
-    api.add_resource(BlogFeed, '/submit/blog')
     app.register_blueprint(api_bp)

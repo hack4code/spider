@@ -119,12 +119,10 @@ class LXMLSpider(Spider):
 
 
 class LXMLSpiderMeta(SpiderFactory, type, spider_type='xml'):
-
     SPIDER_ATTRS = ('start_urls', 'category', 'name')
 
     def __new__(cls, name, bases, attrs):
         if all(attr in attrs for attr in cls.SPIDER_ATTRS):
-
             def update_bases(bases):
                 new_bases = [LXMLSpider]
                 new_bases.extend(bases)

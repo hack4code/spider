@@ -214,7 +214,7 @@ class Select extends React.Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.state = {list: ["null",]};
+    this.state = {list: []};
   }
 
   componentDidMount() {
@@ -257,8 +257,8 @@ class Select extends React.Component {
 
     return (
       <div>
-        <input list="items" value={this.props.value} style={style} onChange={this.handleChange} />
-        <datalist id="items">
+        <input list="options" name="options" value={this.props.value} style={style} onChange={this.handleChange} />
+        <datalist id="options">
         {
           list.map(function(val, index) {return <option value={val} />;})
         }
@@ -274,6 +274,44 @@ class SelectBox extends React.Component {
       <div>
         <Label desc={this.props.desc} />
         <Select updateField={this.props.updateField} value={this.props.value} url={this.props.url} field={this.props.field} />
+      </div>
+    )
+  }
+}
+
+class TextArea extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    let v = e.target.value;
+    this.props.updateField(this.props.field, v);
+  }
+
+  render() {
+    const style = {
+      backgroundColor: "transparent",
+      border: "0.1rem solid #d1d1d1",
+      borderRadius: "4px",
+      boxSizing: "border-box",
+      width: "47em",
+      margin: "0em 0em 1.2em 0em"
+    };
+
+    return (
+      <textarea style={style} rows="16" value={this.props.value} onChange={this.handleChange} field={this.props.field} ></textarea>
+    )
+  }
+}
+
+class TextBox extends React.Component {
+  render() {
+    return (
+      <div>
+        <Label desc={this.props.desc} />
+        <TextArea updateField={this.props.updateField} value={this.props.value} field={this.props.field} />
       </div>
     )
   }
@@ -304,4 +342,4 @@ class Button extends React.Component {
   }
 }
 
-export {SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr};
+export {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr};

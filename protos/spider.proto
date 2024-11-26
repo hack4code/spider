@@ -5,37 +5,27 @@ package spiderrpc;
 
 
 service SpiderRpc {
-	rpc SubmitRssFeed(RssFeed) returns (SubmitResult) {}
-	rpc SubmitBlogFeed(BlogFeed) returns (SubmitResult) {}
-	rpc CrawlArticles(SpiderList) returns (CrawlTaskResult) {}
+    rpc SubmitRssFeed(RssFeed) returns (SubmitResult) {}
+    rpc CrawlArticles(SpiderList) returns (CrawlTaskResult) {}
 }
 
 message RssFeed {
-	string url = 1;
-	string category = 2;
-	string item_content_xpath = 3;
-	repeated string removed_xpath_nodes =4;
+    string url = 1;
+    string category = 2;
+    string item_content_xpath = 3;
+    repeated string removed_xpath_nodes = 4;
+    string css = 5;
 }
 
 message SubmitResult {
-	bool error = 1;
-	string message = 2;
-}
-
-message BlogFeed {
-	string url = 1;
-	string category = 2;
-	string entry_xpath = 3;
-	string item_title_xpath = 4;
-	string item_link_xpath = 5;
-	string item_content_xpath = 6;
-	repeated string removed_xpath_nodes = 7;
+    bool error = 1;
+    string message = 2;
 }
 
 message SpiderList {
-	repeated string spider = 1;
+    repeated string spider = 1;
 }
 
 message CrawlTaskResult {
-	bool isrunning = 1;
+    bool isrunning = 1;
 }

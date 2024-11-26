@@ -41,7 +41,7 @@ class EntryDay(EntryDayBase):
                 d.get('category'),
                 d.get('source'),
                 d.get('tag'),
-                d.get('spider'),
+                str(d.get('spider')),
                 d.get('domain'),
                 d.get('link')
         )
@@ -87,6 +87,7 @@ class Spider(TypedDict, total=False):
     name: str
     type: str
     start_urls: list[str]
+    css: str
 
     @classmethod
     def from_item(cls, item):
@@ -98,5 +99,6 @@ class Spider(TypedDict, total=False):
                 title = item.get('title'),
                 name = item.get('name'),
                 type = item.get('type'),
+                css = item.get('css'),
                 start_urls = item.get('start_urls')
         )

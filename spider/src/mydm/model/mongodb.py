@@ -109,6 +109,5 @@ def get_spider_settings():
     cursor = ScrapyDB.spider.find()
     for item in cursor:
         setting = dict(item)
-        setting['_id'] = str(item['_id'])
         settings.append(setting)
     return settings

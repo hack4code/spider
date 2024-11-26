@@ -1,6 +1,6 @@
 import React from "react";
 import {render, findDOMNode } from "react-dom";
-import {SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
+import {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
 import "whatwg-fetch";
 
 class SubmitForm extends React.Component {
@@ -9,7 +9,8 @@ class SubmitForm extends React.Component {
         category: "",
         url: "",
         item_content_xpath: "",
-        removed_xpath_nodes: ["",]
+        removed_xpath_nodes: ["",],
+        css: ""
       };
   }
 
@@ -38,9 +39,26 @@ class SubmitForm extends React.Component {
           that.setState({
             category: data["category"],
             url: data["start_urls"][0],
-            item_content_xpath: data["item_content_xpath"],
             removed_xpath_nodes: data["removed_xpath_nodes"]
           });
+
+          if ("item_content_xpath" in data) {
+            that.setState({
+              item_content_xpath: data["item_content_xpath"]
+            });
+          };
+
+          if ("removed_xpath_nodes" in data) {
+            that.setState({
+              removed_xpath_nodes: data["removed_xpath_nodes"]
+            });
+          };
+
+          if ("css" in data) {
+            that.setState({
+              css: data["css"]
+            });
+          };
         }
         else {
           console.log(data['message']);
@@ -120,6 +138,7 @@ class SubmitForm extends React.Component {
           <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
           <EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
           <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
+          <TextBox desc="CSS:(选填):" updateField={this.updateField} type="text" field="css" value={this.state.css} />
           <Button ref="Button"/>
         </form>
       </div>
@@ -131,7 +150,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title title="订阅源(rss|atom)" />
+        <Title title="源(rss|atom)" />
         <Hr />
         <SubmitForm />
       </div>

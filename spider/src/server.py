@@ -16,7 +16,6 @@ import spider_pb2_grpc
 from task import submit_rss_feed, crawl_articles
 
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())
 processes = deque()
 
 
@@ -26,7 +25,8 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
                 'url': request.url,
                 'category': request.category,
                 'item_content_xpath': request.item_content_xpath,
-                'removed_xpath_nodes': request.removed_xpath_nodes[:]
+                'removed_xpath_nodes': request.removed_xpath_nodes[:],
+                'css': request.css
         }
         try:
             submit_rss_feed(feed)

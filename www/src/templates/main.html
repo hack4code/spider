@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='image/favicon.ico') }}">
 
-  {% if sitecss %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/site/{}'.format(sitecss)) }}">
+  {% if css %}
+  <style>
+    {{ css|safe }}
+  </style>
   {% endif %}
-
 </head>
 
 <body>
