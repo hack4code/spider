@@ -100,7 +100,3 @@ def atom_feed():
 @app.route('/feed/xml/<id:spid>', methods=['GET'])
 def atom_feed_edit(spid):
     return render_template('rss.html')
-
-@app.route('/feed/blog', methods=['GET'])
-def blog_feed():
-    return render_template('blog.html')
