@@ -13,7 +13,7 @@ from scrapy.utils.project import get_project_settings
 
 import spider_pb2
 import spider_pb2_grpc
-from task import submit_rss_feed, submit_blog_feed, crawl_articles
+from task import submit_rss_feed, crawl_articles
 
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
@@ -21,7 +21,6 @@ processes = deque()
 
 
 class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
-
     def SubmitRssFeed(self, request, context):
         feed = {
                 'url': request.url,
@@ -38,31 +37,13 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
             )
         return spider_pb2.SubmitResult(error=False)
 
-    def SubmitBlogFeed(self, request, context):
-        feed = {
-                'url': request.url,
-                'category': request.category,
-                'entry_xpath': request.entry_xpath,
-                'item_title_xpath': request.item_title_xpath,
-                'item_link_xpath': request.item_link_xpath,
-                'item_content_xpath': request.item_content_xpath,
-                'removed_xpath_nodes': request.removed_xpath_nodes[:]
-        }
-        try:
-            submit_blog_feed(feed)
-        except Exception as e:
-            return spider_pb2.SubmitResult(
-                    error=True,
-                    message=str(e)
-            )
-        return spider_pb2.SubmitResult(error=False)
-
     def CrawlArticles(self, request, context):
         spids = request.spider[:]
         p = Process(target=crawl_articles, args=(spids,))
         p.daemon = True
         processes.append(p)
         return spider_pb2.CrawlTaskResult(isrunning=True)
+
 
 def serve(settings):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))

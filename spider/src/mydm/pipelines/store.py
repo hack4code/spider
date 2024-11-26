@@ -4,7 +4,7 @@
 from lxml.html import tostring, HtmlElement
 from scrapy.exceptions import DropItem
 
-from mydm.model import is_exists_article, save_article
+from mydm.model import save_article
 
 
 def get_article_lang(item):
@@ -40,6 +40,5 @@ class StorePipeline:
         article['lang'] = get_article_lang(item)
         article['spider'] = spider._id
         article['source'] = spider.title
-        if not is_exists_article(article):
-            save_article(article)
+        save_article(article)
         return item

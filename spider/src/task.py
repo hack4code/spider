@@ -22,16 +22,6 @@ from mydm.utils import is_url
 
 
 logger = logging.getLogger(__name__)
-TEST_SETTINGS = {
-    'ITEM_PIPELINES': {},
-    'DOWNLOADER_MIDDLEWARES': {},
-    'BOT_NAME': 'TestSpider',
-    'WEBSERVICE_ENABLED': False,
-    'TELNETCONSOLE_ENABLED': False,
-    'LOG_LEVEL': 'WARNING',
-    'LOG_FORMAT': '%(asctime)s-%(levelname)s: %(message)s',
-    'LOG_DATEFORMAT': '%Y-%m-%d %H:%M:%S'
-}
 
 
 def get_feed_name(url):
@@ -49,22 +39,6 @@ def get_feed_name(url):
                 for item in fields[:-1]
                 if item.lower() != 'www'
         )
-
-
-def run_feed_spider(url, feed):
-    spid = str(uuid.uuid4())
-    feed['_id'] = spid
-    cls = SpiderFactory.create_spider(feed)
-    proc = CrawlerProcess(TEST_SETTINGS)
-    proc.start()
-    del feed['_id']
-
-
-def dry_run_feed_spider(url, feed):
-    p = Process(target=run_feed_spider, args=(url, feed))
-    p.start()
-    p.join()
-    return p.exitcode == 0
 
 
 def validate_rss_feed(feed):
@@ -140,63 +114,6 @@ def submit_rss_feed(feed):
         feed['title'] = feed['name']
     feed['type'] = 'xml'
     feed['start_urls'] = [url]
-    save_spider_settings(feed)
-
-
-def validate_blog_feed(feed):
-    url = feed['url']
-    if not is_url(url):
-        raise Exception(f'invalid url value[{url}]')
-    category = feed['category'].strip('\r\n\t ')
-    if not category:
-        raise Exception('category value is empty')
-    else:
-        feed['category'] = category
-    entry_xpath = feed['entry_xpath'].strip('\r\n\t ')
-    if not entry_xpath:
-        raise Exception('entry_xpath value is empty')
-    else:
-        feed['entry_xpath'] = entry_xpath
-    item_title_xpath = feed['item_title_xpath'].strip('\r\n\t ')
-    if not item_title_xpath:
-        raise Exception('item_title_xpath value is empty')
-    else:
-        feed['item_title_xpath'] = item_title_xpath
-    item_link_xpath = feed['item_link_xpath'].strip('\r\n\t ')
-    if not item_link_xpath:
-        raise Exception('item_link_xpath value is empty')
-    else:
-        feed['item_link_xpath'] = item_link_xpath
-    item_content_xpath = feed['item_content_xpath'].strip('\r\n\t ')
-    if not item_content_xpath:
-        raise Exception('item_content_xpath value is empty')
-    else:
-        feed['item_content_xpath'] = item_content_xpath
-    removed_xpath_nodes = feed['removed_xpath_nodes']
-    new_removed_xpath_nodes = []
-    for node in removed_xpath_nodes:
-        new_node = node.strip('\r\n\t ')
-        if new_node:
-            new_removed_xpath_nodes.append(new_node)
-    if not new_removed_xpath_nodes:
-        feed.pop('removed_xpath_nodes')
-    else:
-        feed['removed_xpath_nodes'] = new_removed_xpath_nodes
-
-
-def submit_blog_feed(feed):
-    validate_blog_feed(feed)
-    url = feed.pop('url')
-    feed['name'] = get_feed_name(url)
-    feed['title'] = feed['name']
-    feed['type'] = 'blog'
-    feed['start_urls'] = [url]
-    try:
-        success = dry_run_feed_spider(url, feed)
-    except:
-        raise Exception('spider dry run failed')
-    if not success:
-        raise Exception('spider dry run failed')
     save_spider_settings(feed)
 
 

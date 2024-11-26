@@ -55,24 +55,6 @@ class MongoDB:
 ScrapyDB = MongoDB()
 
 
-def is_exists_feed(url):
-    result = ScrapyDB.feed.count_documents({'url': url})
-    if result == 0:
-        return False
-    else:
-        return True
-
-
-def save_feed(url):
-    result = ScrapyDB.feed.insert_one(
-        {
-            'url': url,
-            'create_date': datetime.now()
-        }
-    )
-    return result.inserted_id
-
-
 def is_exists_article(item):
     day = datetime.combine(item['crawl_date'].date(), datetime.min.time())
     result = ScrapyDB.article.count_documents(
@@ -86,26 +68,13 @@ def is_exists_article(item):
     )
     if result > 0:
         return True
-    cursor = ScrapyDB.article.find(
-        {
-            'spider': item['spider'],
-            'crawl_date': {'$gte': day},
-            'title': item['title']
-        },
-        {
-            'content': 1
-        }
-    ).limit(1)
-    result = list(cursor)
-    if (len(result) > 0 and
-       len(result[0]['content']) > len(item['content'])):
-        return True
     return False
 
 
 def save_article(item):
-    result = ScrapyDB.article.insert_one(item)
-    return result
+    if is_exists_article(item):
+        return
+    ScrapyDB.article.insert_one(item)
 
 
 def get_spider_by_url(url):
