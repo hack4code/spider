@@ -7,7 +7,6 @@ const jspath = path.resolve(__dirname);
 module.exports = {
   entry: {
     day: jspath + "/day.js",
-    blog: jspath + "/blog.js",
     entries: jspath + "/entries.js",
     rss: jspath + "/rss.js",
     spiders: jspath + "/spiders.js"

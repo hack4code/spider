@@ -1,5 +1,6 @@
 import React from "react";
 
+
 class Hr extends React.Component {
   render() {
     const style = {
@@ -79,13 +80,14 @@ class Entries extends React.Component {
 class SpiderButton extends React.Component {
   render () {
     const style = {
-      fontWeight: "300",
-      fontSize: "1em",
+      fontWeight: "600",
+      fontSize: "0.8em",
       fontFamily: "MiSans",
-      border: "1px",
-      borderColor: "black",
-      borderRadius: "3px",
-      padding: "2px",
+      textDecoration: "none",
+      backgroundColor: "#EEEEEE",
+      border: "1px solid #CCCCCC",
+      borderRadius: "4px",
+      padding: "2px 4px",
       marginLeft: "8px"
     };
     return (
