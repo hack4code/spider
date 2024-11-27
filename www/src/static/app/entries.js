@@ -1,6 +1,6 @@
 import React from "react";
 import {render, findDOMNode} from "react-dom";
-import {Title, Hr, Entries} from "./entry_component";
+import {Title, Hr, ArticleEntries} from "./entry_component";
 import "whatwg-fetch";
 
 class AidLink extends React.Component {
@@ -124,7 +124,7 @@ class App extends React.Component {
       <div>
         <Title name={this.state.name} />
         <Hr />
-        <Entries prefix="/a/" entries={this.state.entries} />
+        <ArticleEntries prefix="/a/" entries={this.state.entries} />
         <Hr />
         <AidLinkDiv onLeftClick={this.onLeftClick} onRightClick={this.onRightClick} />
       </div>

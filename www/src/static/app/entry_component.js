@@ -29,13 +29,13 @@ class Title extends React.Component {
 
     return (
       <div>
-        <p style={style}>{this.props.name}</p>
+      <p style={style}>{this.props.name}</p>
       </div>
     )
   }
 }
 
-class Entry extends React.Component {
+class ArticleEntry extends React.Component {
   render() {
     const style = {
       fontWeight: "600",
@@ -44,19 +44,17 @@ class Entry extends React.Component {
       lineHeight: "2em",
       textDecoration: "none"
     };
-    let url = this.props.url;
 
     return (
       <li>
-        <a style={style} href={url} target="_blank">{this.props.title}</a>
+      <a style={style} href={this.props.href} target="_blank"> {this.props.title} </a>
       </li>
     )
   }
 }
 
-class Entries extends React.Component {
+class ArticleEntries extends React.Component {
   static defaultProps = {
-    prefix: "",
     entries: []
   };
 
@@ -66,12 +64,15 @@ class Entries extends React.Component {
       color: "red",
       marginLeft: "4em"
     };
-    let prefix = this.props.prefix;
     let entries = this.props.entries;
 
     return (
       <ul style={style}>
-        {entries.map(function(entry, index) {return <Entry key={index} url={prefix + entry[0]} title={entry[1]} />;})}
+      {
+        entries.map(function(entry, index) {
+          return <ArticleEntry key={index} href={"/a/" + entry["id"]} title={entry["title"]} />;
+        })
+      }
       </ul>
     )
   }
@@ -92,7 +93,7 @@ class SpiderButton extends React.Component {
     };
     return (
       <a style={style} href={this.props.href} target="_blank">
-        Edit
+      Edit
       </a>
     )
   }
@@ -110,7 +111,7 @@ class SpiderLink extends React.Component {
 
     return (
       <a style={style} href={this.props.href} target="_blank">
-        {this.props.title}
+      {this.props.title}
       </a>
     )
   }
@@ -122,8 +123,8 @@ class SpiderEntry extends React.Component {
 
     return (
       <li>
-        <SpiderLink href={"/p/" + spider["id"]} title={spider["title"]} />
-        <SpiderButton href={"/feed/" + spider["type"] + "/" + spider["id"]} />
+      <SpiderLink href={"/p/" + spider["id"]} title={spider["title"]} />
+      <SpiderButton href={"/feed/" + spider["type"] + "/" + spider["id"]} />
       </li>
     )
   }
@@ -144,11 +145,11 @@ class SpiderEntries extends React.Component {
 
     return (
       <ul style={style}>
-        {spiders.map(function(item, index) {return <SpiderEntry spider={item} />;})}
+      {spiders.map(function(item, index) {return <SpiderEntry spider={item} />;})}
       </ul>
     )
   }
 }
 
 
-export {Title, Hr, SpiderEntries, Entries};
+export {Title, Hr, SpiderEntries, ArticleEntries};
