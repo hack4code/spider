@@ -6,44 +6,42 @@ from collections import namedtuple
 from html import unescape
 
 
-AID = namedtuple('AID', ['id'])
-EntryBase = namedtuple('Entry', ['id', 'title'])
+class Entry(TypedDict, total=False):
+    id: str
+    title: str
 
-
-class Entry(EntryBase):
-    def __new__(cls, d):
-        return super().__new__(
-                cls,
-                str(d['_id']),
-                d.get('title')
+    @classmethod
+    def from_item(cls, item):
+        aid = str(item.get('_id'))
+        return cls(
+                id = aid,
+                title = item.get('title')
         )
 
 
-EntryDayBase = namedtuple(
-        'EntryDay',
-        ['id',
-         'title',
-         'category',
-         'source',
-         'tag',
-         'spider',
-         'domain',
-         'link']
-)
+class EntryDay(TypedDict, total=False):
+    id: str
+    title: str
+    category: str
+    source: str
+    tag: list[str] | None
+    spider: str
+    domain: str
+    link: str
 
-
-class EntryDay(EntryDayBase):
-    def __new__(cls, d):
-        return super().__new__(
-                cls,
-                str(d['_id']),
-                d.get('title'),
-                d.get('category'),
-                d.get('source'),
-                d.get('tag'),
-                str(d.get('spider')),
-                d.get('domain'),
-                d.get('link')
+    @classmethod
+    def from_item(cls, item):
+        aid = str(item.get('_id'))
+        spider = str(item.get('spider'))
+        return cls(
+                id = aid,
+                spider = spider,
+                title = item.get('title'),
+                category = item.get('category'),
+                source = item.get('source'),
+                tag = item.get('tag'),
+                domain = item.get('domain'),
+                link = item.get('link')
         )
 
 

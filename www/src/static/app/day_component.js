@@ -210,14 +210,14 @@ class Entry extends React.Component {
 
     let index = this.props.index;
     let entry = this.props.entry;
-    let spider = {spid: entry[5], spname: entry[3]};
-    let tags = (entry[4] == null) ? [] : entry[4];
+    let spider = {spid: entry["spider"], spname: entry["category"]};
+    let tags = (entry["tag"] == null) ? [] : entry["tag"];
 
     return (
         <div style={style}>
           <Rank rank={index} />
           <div>
-            <EntryTitle aid={entry[0]} title={entry[1]} url={entry[7]} domain={entry[6]} />
+            <EntryTitle aid={entry["id"]} title={entry["title"]} url={entry["link"]} domain={entry["domain"]} />
             <EntryTags spider={spider} tags={tags} />
           </div>
         </div>

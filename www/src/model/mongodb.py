@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from flask import current_app
 from pymongo import MongoClient, ASCENDING, DESCENDING
 
-from .datatype import Entry, EntryDay, Article, Spider, AID
+from .datatype import Entry, EntryDay, Article, Spider
 
 
 class MongoDB:
@@ -96,7 +96,7 @@ def get_entries_by_day(day):
             'link': 1,
         }
     )
-    entries = [EntryDay(item) for item in cursor]
+    entries = [EntryDay.from_item(item) for item in cursor]
     if not entries:
         return
     return entries
@@ -238,7 +238,7 @@ def get_entries_next(spid, aid):
     result = list(cursor)
     if 0 == len(result):
         return
-    return [Entry(item) for item in result]
+    return [Entry.from_item(item) for item in result]
 
 
 def get_entries_pre(spid, aid):
@@ -254,8 +254,9 @@ def get_entries_pre(spid, aid):
     ).sort('_id', ASCENDING).limit(100)
     result = list(cursor)
     if 0 == len(result):
-        return
-    return list(reversed([Entry(item) for item in result]))
+        return reversed(
+                [Entry.from_item(item) for item in result]
+                )
 
 
 def get_entries_by_spider(spid):
@@ -274,7 +275,7 @@ def get_entries_by_spider(spid):
     result = list(cursor)
     if 0 == len(result):
         return
-    return [Entry(item) for item in result]
+    return [Entry.from_item(item) for item in result]
 
 
 def get_article(aid):
