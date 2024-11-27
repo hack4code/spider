@@ -83,14 +83,14 @@ class OrginalLink extends React.Component  {
   render() {
     const style = {
       margin: "0px",
-      padding: "0 6px",
+      padding: "0 12px",
       fontSize: "x-small",
     };
 
     return (
       <span className="articlelink">
         <a style={style} href={this.props.url} target="_blank">
-        <i className="fa fa-paper-plane-o" aria-hidden="true"></i>
+        🔗
         </a>
       </span>
     )
