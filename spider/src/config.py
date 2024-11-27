@@ -2,7 +2,7 @@
 
 
 # scrapy settings
-BOT_NAME = 'BlogSpider'
+BOT_NAME = 'AtomSpiders'
 SPIDER_LOADER_CLASS = 'mydm.spiderloader.MongoSpiderLoader'
 
 # header
@@ -27,7 +27,7 @@ TELNETCONSOLE_ENABLED = False
 """
 spider settings
 """
-LOGGER_NAME = 'mydm'
+LOGGER_NAME = 'AtomSpider'
 
 # grpc
 GRPC_URI = '[::]:50051'
