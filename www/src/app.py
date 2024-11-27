@@ -52,11 +52,11 @@ def entries_by_day(day):
 @app.route('/a/<id:aid>', methods=['GET'])
 def article(aid):
     a = get_article(aid)
+    if a is None:
+        raise NotFound(f'article[{aid}] not existed')
     spid = a['spider']
     spider = get_spider(spid)
     css = spider.get('css', None)
-    if a is None:
-        raise NotFound(f'article[{aid}] not existed')
     return render_template(
             'article.html',
             article=a,

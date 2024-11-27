@@ -261,7 +261,7 @@ def get_entries_pre(spid, aid):
 def get_entries_by_spider(spid):
     cursor = ScrapyDB.article.find(
         {
-            'spider': str(spid)
+            'spider': spid
         },
         {
             '_id': 1,
