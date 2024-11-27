@@ -254,9 +254,10 @@ def get_entries_pre(spid, aid):
     ).sort('_id', ASCENDING).limit(100)
     result = list(cursor)
     if 0 == len(result):
-        return reversed(
-                [Entry.from_item(item) for item in result]
-                )
+        return
+    return reversed(
+        [Entry.from_item(item) for item in result]
+    )
 
 
 def get_entries_by_spider(spid):
