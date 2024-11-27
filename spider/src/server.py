@@ -4,19 +4,27 @@
 import sys
 import time
 import logging
-from collections import deque
 from concurrent import futures
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 
 import grpc
+from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
 import spider_pb2
 import spider_pb2_grpc
-from task import submit_rss_feed, crawl_articles
+from task import crawl, submit_rss_feed
 
 
-processes = deque()
+g_jobs = Queue()
+
+
+def crawling(*args):
+    while True:
+        spids = g_jobs.get()
+        p = Process(target=crawl, args=(spids,))
+        p.start()
+        p.join()
 
 
 class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
@@ -39,40 +47,32 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
 
     def CrawlArticles(self, request, context):
         spids = request.spider[:]
-        p = Process(target=crawl_articles, args=(spids,))
-        p.daemon = True
-        processes.append(p)
+        g_jobs.put(spids)
         return spider_pb2.CrawlTaskResult(isrunning=True)
 
 
-def serve(settings):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+def serve(grpc_uri):
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
     spider_pb2_grpc.add_SpiderRpcServicer_to_server(
             SpiderRpcServicer(),
             server
     )
-    server.add_insecure_port(settings['GRPC_URI'])
+    server.add_insecure_port(grpc_uri)
     server.start()
-    try:
-        while True:
-            time.sleep(60)
-            if len(processes) == 0:
-                continue
-            p = processes[0]
-            if p.is_alive():
-                continue
-            code = p.exitcode
-            if code is None:
-                p.start()
-            else:
-                p.join()
-                processes.popleft()
-                if len(processes) > 0:
-                    processes[0].start()
-    except KeyboardInterrupt:
-        server.stop()
+    server.wait_for_termination()
 
 
 if __name__ == '__main__':
     settings = get_project_settings()
-    serve(settings)
+    configure_logging(
+        settings,
+        install_root_handler=True
+    )
+    logger = logging.getLogger(__name__)
+    p = Process(target=crawling, args=())
+    logger.info('start crawl task')
+    p.start()
+    grpc_uri = settings['GRPC_URI']
+    logger.info('grpc server start listening')
+    serve(grpc_uri)
+    p.terminate()

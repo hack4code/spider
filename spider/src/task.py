@@ -117,7 +117,7 @@ def submit_rss_feed(feed):
     save_spider_settings(feed)
 
 
-def crawl_articles(spids):
+def crawl(spids):
     settings = get_project_settings()
     loader = MongoSpiderLoader.from_settings(settings)
     if 'all' in spids:

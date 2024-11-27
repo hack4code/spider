@@ -13,6 +13,7 @@ LOG_ENABLED = True
 LOG_LEVEL = 'INFO'
 LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
+LOG_STDOUT = True
 
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
