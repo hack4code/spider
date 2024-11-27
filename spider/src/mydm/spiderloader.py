@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 @implementer(ISpiderLoader)
 class MongoSpiderLoader:
-
     @cache_property
     def spiders(self):
         spiders = {}

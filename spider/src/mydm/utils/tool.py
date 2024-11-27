@@ -6,7 +6,6 @@ from collections import namedtuple
 
 
 class cache_property:
-
     def __init__(self, func):
         self.func = func
 
