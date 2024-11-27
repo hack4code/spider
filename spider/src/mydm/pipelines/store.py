@@ -14,7 +14,6 @@ def get_article_lang(item):
 
 
 class StorePipeline:
-
     @classmethod
     def from_crawler(cls, crawler):
         pipe = cls()

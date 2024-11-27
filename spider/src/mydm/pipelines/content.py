@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class ContentPipeline:
-
     SAFE_ATTRS_NAME = 'safe_attrs'
     ALLOW_CLASSES_NAME = 'allow_classes'
     REMOVED_CLASSES_NAME = 'removed_classes'

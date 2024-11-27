@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class Image:
-
     MAX_WIDTH = 800
 
     def __init__(self, data):

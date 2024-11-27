@@ -8,7 +8,6 @@ from lxml.html import fromstring, HTMLParser, HtmlElement
 
 
 class ReExtractor:
-
     p = re.compile(
             r'(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*(.*)',
             re.IGNORECASE
@@ -48,7 +47,6 @@ class ReExtractor:
 
 
 class LXMLExtractor:
-
     p = re.compile(
             r'^\s*(tags\s*:|Fileds?\s*under\s*:|Tagged\s*with)\s*$',
             re.IGNORECASE
@@ -70,7 +68,6 @@ class LXMLExtractor:
 
 
 class TagExtractor:
-
     EXTRACTORS = (ReExtractor, LXMLExtractor)
 
     def __call__(self, doc, encoding='UTF-8'):

@@ -11,7 +11,6 @@ from mydm.utils import is_url
 
 
 class ITagExtractor(Interface):
-
     def match(self, e):
         """ check if the element  match the tag """
 
@@ -134,7 +133,6 @@ class ContentTag:
 
 
 class ItemExtractor:
-
     def __init__(self):
         self.extractors = [
                 TitleTag(),
