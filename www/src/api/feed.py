@@ -57,7 +57,7 @@ class RssFeed(Resource):
             def strip(self, data, **kwargs):
                 new_data = {}
                 for key, val in data.items():
-                    if isinstance(val, str) and key != 'css':
+                    if isinstance(val, str):
                         val = val.strip(' \r\t\n')
                     elif isinstance(val, (list, tuple)):
                         val = list(

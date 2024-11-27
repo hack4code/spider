@@ -69,7 +69,6 @@ class Article(TypedDict, total=False):
                 content = content,
                 domain = item.get('domain'),
                 link = item.get('link'),
-                head = item.get('head'),
                 lang = item.get('lang'),
                 source = item.get('source'),
                 spider = item.get('spider')
@@ -92,11 +91,11 @@ class Spider(TypedDict, total=False):
         return cls(
                 id = str(item.get('_id')),
                 category = item.get('category'),
-                item_content_xpath = item.get('item_content_xpath'),
-                removed_xpath_nodes = item.get('removed_xpath_nodes'),
                 title = item.get('title'),
+                start_urls = item.get('start_urls'),
                 name = item.get('name'),
                 type = item.get('type'),
-                css = item.get('css'),
-                start_urls = item.get('start_urls')
+                css = item.get('css', ""),
+                item_content_xpath = item.get('item_content_xpath', ""),
+                removed_xpath_nodes = item.get('removed_xpath_nodes', []),
         )

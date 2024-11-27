@@ -94,13 +94,12 @@ def save_spider_settings(settings):
     if spid is None:
         ScrapyDB.spider.insert_one(settings)
     else:
-        ScrapyDB.spider.update_one(
+        settings['_id'] = spid
+        ScrapyDB.spider.replace_one(
                 {
                     '_id': spid
                 },
-                {
-                    "$set": settings
-                }
+                settings
         )
 
 

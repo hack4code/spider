@@ -45,21 +45,29 @@ def validate_rss_feed(feed):
     url = feed['url']
     if not is_url(url):
         raise Exception(f'invalid url value[{url}]')
-    item_content_xpath = feed['item_content_xpath'].strip('\r\n\t ')
-    if not item_content_xpath:
-        feed.pop('item_content_xpath')
-    else:
-        feed['item_content_xpath'] = item_content_xpath
-    removed_xpath_nodes = feed['removed_xpath_nodes']
-    new_removed_xpath_nodes = []
-    for node in removed_xpath_nodes:
-        new_node = node.strip('\r\n\t ')
-        if new_node:
-            new_removed_xpath_nodes.append(new_node)
-    if not new_removed_xpath_nodes:
-        feed.pop('removed_xpath_nodes')
-    else:
-        feed['removed_xpath_nodes'] = new_removed_xpath_nodes
+    if 'item_content_xpath' in feed:
+        item_content_xpath = feed.get('item_content_xpath').strip('\r\n\t ')
+        if not item_content_xpath:
+            feed.pop('item_content_xpath')
+        else:
+            feed['item_content_xpath'] = item_content_xpath
+    if 'removed_xpath_nodes' in feed:
+        removed_xpath_nodes = feed.get('removed_xpath_nodes')
+        new_removed_xpath_nodes = []
+        for node in removed_xpath_nodes:
+            new_node = node.strip('\r\n\t ')
+            if new_node:
+                new_removed_xpath_nodes.append(new_node)
+        if not new_removed_xpath_nodes:
+            feed.pop('removed_xpath_nodes')
+        else:
+            feed['removed_xpath_nodes'] = new_removed_xpath_nodes
+    if 'css' in feed:
+        css = feed.get('css').strip('\r\n\t ')
+        if not css:
+            feed.pop('css')
+        else:
+            feed['css'] = css
 
 
 def submit_rss_feed(feed):

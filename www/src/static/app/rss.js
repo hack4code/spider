@@ -39,22 +39,21 @@ class SubmitForm extends React.Component {
           that.setState({
             category: data["category"],
             url: data["start_urls"][0],
-            removed_xpath_nodes: data["removed_xpath_nodes"]
           });
 
-          if ("item_content_xpath" in data) {
+          if (("item_content_xpath" in data) && data["item_content_xpath"]) {
             that.setState({
               item_content_xpath: data["item_content_xpath"]
             });
           };
 
-          if ("removed_xpath_nodes" in data) {
+          if (("removed_xpath_nodes" in data) && data["removed_xpath_nodes"]) {
             that.setState({
               removed_xpath_nodes: data["removed_xpath_nodes"]
             });
           };
 
-          if ("css" in data) {
+          if (("css" in data) && data["css"]) {
             that.setState({
               css: data["css"]
             });
@@ -83,9 +82,18 @@ class SubmitForm extends React.Component {
     else {
       this.err.fadeIn("正在提交 .....");
 
-      let nodes = feed["removed_xpath_nodes"].filter((e) => {return e != "";});
-      if (nodes.length == 0) {
+      let item_content_xpath = feed["item_content_xpath"];
+      if (!item_content_xpath) {
+        delete feed["item_content_xpath"];
+      }
+
+      let nodes = feed["removed_xpath_nodes"]
+      if (!nodes) {
          delete feed["removed_xpath_nodes"];
+      }
+      let css = feed["css"];
+      if (!css) {
+        delete feed["css"]
       }
 
       let that = this;
