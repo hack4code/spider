@@ -46,7 +46,7 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
 
 
 def serve(settings):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
     spider_pb2_grpc.add_SpiderRpcServicer_to_server(
             SpiderRpcServicer(),
             server
