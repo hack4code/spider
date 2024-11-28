@@ -81,7 +81,7 @@ def get_spider_by_url(url):
     )
     if spider is None:
         return
-    return spider['_id']
+    return spider
 
 
 def save_spider_settings(settings):
@@ -90,14 +90,21 @@ def save_spider_settings(settings):
     except KeyError:
         pass
     url = settings['start_urls'][0]
-    spid = get_spider_by_url(url)
-    if spid is None:
+    spider = get_spider_by_url(url)
+    if spider is None:
         ScrapyDB.spider.insert_one(settings)
     else:
-        settings['_id'] = spid
+        for key in spider:
+            if key in ('start_urls',
+                       'category',
+                       'item_content_xpath',
+                       'removed_xpath_nodes',
+                       'css'):
+                continue
+            settings[key] = spider[key]
         ScrapyDB.spider.replace_one(
                 {
-                    '_id': spid
+                    '_id': spider['_id']
                 },
                 settings
         )
