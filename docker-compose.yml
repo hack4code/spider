@@ -1,7 +1,7 @@
 services:
         mongodb:
                 image: mongo
-                container_name: mongodb
+                container_name: mongo
                 restart: always
                 expose:
                         - "27017"
