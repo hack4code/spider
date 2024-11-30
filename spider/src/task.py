@@ -136,6 +136,7 @@ def crawl(spids):
         if spid in loader.list()
     ]
     if not spiders:
+        logger.info("no spider found")
         return
     random.shuffle(spiders)
     # crawl process
