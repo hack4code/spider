@@ -7,12 +7,14 @@ import logging
 from concurrent import futures
 from multiprocessing import Process, Queue
 
-import grpc
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
+import grpc
+
 import spider_pb2
 import spider_pb2_grpc
+
 from task import crawl, submit_rss_feed
 
 
