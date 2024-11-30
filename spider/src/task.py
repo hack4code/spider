@@ -139,12 +139,12 @@ def crawl(spids):
         return
     random.shuffle(spiders)
     # crawl process
-    proc = CrawlerProcess(settings)
+    p = CrawlerProcess(settings)
     for spider in spiders:
-        proc.crawl(spider)
+        p.crawl(spider)
     logger.info('crawl job starting...')
     try:
-        proc.start()
+        p.start()
     except Exception:
         logger.exception('crawl job got exception:')
     logger.info('crawl job finished')
