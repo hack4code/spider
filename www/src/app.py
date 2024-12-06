@@ -41,7 +41,7 @@ def error(error):
 @app.route('/', methods=['GET'])
 def home():
     today = datetime.utcnow().date()
-    return entries_by_day(today)
+    return render_template('day.html', day_entry=today)
 
 
 @app.route('/d/<date:day>', methods=['GET'])

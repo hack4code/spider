@@ -25,10 +25,10 @@ class App extends React.Component {
           if (data["data"]) {
             nstate["data"] = data["data"];
           }
+          const t = new Date();
+          const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
           if (nstate["data"] == null) {
-            let now = new Date(document.title);
-            let t = new Date();
-            let today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+            const now = new Date(document.title);
             if (now >= today && nstate["day_before"] != null) {
               that.setDay(nstate["day_before"]);
               return;
@@ -36,8 +36,12 @@ class App extends React.Component {
           }
           else {
             document.title = day;
-            window.history.pushState(day, day, "/d/" + day);
             that.setState(nstate);
+            const now = new Date(day);
+            if ((now.getFullYear() == today.getFullYear()) && (now.getMonth() == today.getMonth()) && (now.getDate() == today.getDate())) {
+                return;
+            }
+            window.history.pushState(day, day, "/d/" + day);
           }
         }
         else {
