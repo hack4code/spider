@@ -61,10 +61,10 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
     render() {
         const style = {
-            fontFamily: "MiSans",
-            fontSize: "0.9em",
-            fontWeight: "normal",
-            lineHeight: "110%",
+            fontFamily: "SF Pro Text, vivo Sans",
+            fontSize: "1em",
+            fontWeight: "500",
+            lineHeight: "120%",
             margin: "0px",
             padding: "0px",
         };
@@ -135,6 +135,7 @@ class EntryTitle extends React.Component  {
 class SpiderTag extends React.Component  {
     render() {
         const style = {
+            fontFamily: "Noto Sans",
             color: "#999",
             fontSize: "x-small",
             fontWeight: "bold",
@@ -157,6 +158,7 @@ class SpiderTag extends React.Component  {
 class ArticleTag extends React.Component  {
     render() {
         const style = {
+            fontFamily: "Noto Sans",
             fontWeight: "normal",
             fontSize: "xx-small",
             color: "#999",
@@ -204,7 +206,7 @@ class Entry extends React.Component {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: "12px"
+            marginBottom: "18px"
         };
 
         let index = this.props.index;
