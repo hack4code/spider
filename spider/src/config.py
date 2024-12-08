@@ -10,10 +10,10 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/1
 
 # log
 LOG_ENABLED = True
-LOG_LEVEL = 'INFO'
-LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
-LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
 LOG_STDOUT = True
+LOG_LEVEL = 'INFO'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
+LOG_FORMAT = '%(asctime)s-%(levelname)s: %(message)s'
 
 ITEM_PIPELINES = {
     'mydm.pipelines.ContentPipeline': 255,
