@@ -78,3 +78,4 @@ if __name__ == '__main__':
     logger.info('grpc server start listening')
     serve(grpc_uri)
     p.terminate()
+    logger.info('grpc server terminated')
