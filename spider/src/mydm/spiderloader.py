@@ -6,7 +6,6 @@ import logging
 from zope.interface import implementer
 from scrapy.interfaces import ISpiderLoader
 
-from mydm.utils import cache_property
 from mydm.model import get_spider_settings
 from mydm.spiderfactory import SpiderFactory
 from mydm.exceptions import SpiderFactoryException
@@ -20,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 @implementer(ISpiderLoader)
 class MongoSpiderLoader:
-    @cache_property
     def spiders(self):
         spiders = {}
         for setting in get_spider_settings():
