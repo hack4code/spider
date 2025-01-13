@@ -5,7 +5,7 @@ import grpc
 from flask import request, current_app
 
 from marshmallow import (
-        Schema, fields, validates, pre_load, ValidationError
+        Schema, fields, pre_load, ValidationError
 )
 from flask_restful import Resource
 

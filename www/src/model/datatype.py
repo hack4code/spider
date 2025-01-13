@@ -2,7 +2,6 @@
 
 
 from typing import TypedDict
-from collections import namedtuple
 from html import unescape
 
 
@@ -14,8 +13,8 @@ class Entry(TypedDict, total=False):
     def from_item(cls, item):
         aid = str(item.get('_id'))
         return cls(
-                id = aid,
-                title = item.get('title')
+            id = aid,
+            title = item.get('title')
         )
 
 
@@ -64,14 +63,14 @@ class Article(TypedDict, total=False):
         if isinstance(content, bytes):
             content = content.decode('UTF-8')
         return cls(
-                id = aid,
-                title = title,
-                content = content,
-                domain = item.get('domain'),
-                link = item.get('link'),
-                lang = item.get('lang'),
-                source = item.get('source'),
-                spider = item.get('spider')
+            id = aid,
+            title = title,
+            content = content,
+            domain = item.get('domain'),
+            link = item.get('link'),
+            lang = item.get('lang'),
+            source = item.get('source'),
+            spider = item.get('spider')
         )
 
 
@@ -89,13 +88,13 @@ class Spider(TypedDict, total=False):
     @classmethod
     def from_item(cls, item):
         return cls(
-                id = str(item.get('_id')),
-                category = item.get('category'),
-                title = item.get('title'),
-                start_urls = item.get('start_urls'),
-                name = item.get('name'),
-                type = item.get('type'),
-                css = item.get('css', ""),
-                item_content_xpath = item.get('item_content_xpath', ""),
-                removed_xpath_nodes = item.get('removed_xpath_nodes', []),
+            id = str(item.get('_id')),
+            category = item.get('category'),
+            title = item.get('title'),
+            start_urls = item.get('start_urls'),
+            name = item.get('name'),
+            type = item.get('type'),
+            css = item.get('css', ""),
+            item_content_xpath = item.get('item_content_xpath', ""),
+            removed_xpath_nodes = item.get('removed_xpath_nodes', []),
         )

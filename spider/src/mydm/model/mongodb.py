@@ -2,7 +2,6 @@
 
 
 import logging
-from datetime import datetime
 
 from pymongo import MongoClient, ASCENDING
 from scrapy.utils.project import get_project_settings
@@ -34,7 +33,7 @@ class MongoDB:
                 client = MongoClient(settings['MONGODB_URI'],
                                      serverSelectionTimeoutMS=2000)
                 client.server_info()
-            except:
+            except Exception:
                 logger.info('waiting mongo online...')
                 continue
             name = settings['MONGODB_URI'].split('/')[-1]

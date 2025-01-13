@@ -3,19 +3,15 @@
 
 import logging
 import re
-import uuid
 import random
 from urllib.parse import urlparse
-from multiprocessing import Process
 
 import requests
 from lxml import etree
 
 from scrapy.crawler import CrawlerProcess
-from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 
-from mydm.spiderfactory import SpiderFactory
 from mydm.spiderloader import MongoSpiderLoader
 from mydm.model import save_spider_settings
 from mydm.utils import is_url

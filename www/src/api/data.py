@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-import re
 from datetime import datetime
-from collections import namedtuple
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
@@ -12,10 +10,9 @@ from marshmallow import (
         Schema, fields, validates, ValidationError
 )
 from flask_restful import Resource
-from flask import current_app, request, session
+from flask import current_app, request
 
 from model import (
-        get_article,
         get_begin_day, get_before_day, get_after_day,
         get_entries_by_day,
         get_entries_next, get_entries_pre, get_entries_by_spider,
@@ -52,7 +49,7 @@ class Day(Resource):
             args = schema.load(request.args)
         except ValidationError as err:
             return {'message': format_messages(err.messages)}, 400
-        except Exception as e:
+        except Exception:
             current_app.logger.exception('request args exception:')
             return {'message': 'invalid request'}, 400
 
@@ -72,23 +69,23 @@ class Day(Resource):
 
 
 class Spider(Resource):
-        def get(self):
-            class SpiderRequestSchema(Schema):
-                spid = ObjectIdField(required=True)
+    def get(self):
+        class SpiderRequestSchema(Schema):
+            spid = ObjectIdField(required=True)
 
-            schema = SpiderRequestSchema();
-            try:
-                args = schema.load(request.args)
-            except ValidationError as err:
-                return {'message': format_messages(err.messages)}, 400
-            except Exception as e:
-                current_app.logger.exception('request args exception:')
-                return {'message': 'invalid request'}, 400
-            spid = args['spid']
-            spider = get_spider(spid)
-            if spider is None:
-                return {'message': f'spider[{spid}] not existed'}, 400
-            return spider
+        schema = SpiderRequestSchema()
+        try:
+            args = schema.load(request.args)
+        except ValidationError as err:
+            return {'message': format_messages(err.messages)}, 400
+        except Exception:
+            current_app.logger.exception('request args exception:')
+            return {'message': 'invalid request'}, 400
+        spid = args['spid']
+        spider = get_spider(spid)
+        if spider is None:
+            return {'message': f'spider[{spid}] not existed'}, 400
+        return spider
 
 
 class Spiders(Resource):

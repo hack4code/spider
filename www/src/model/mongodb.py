@@ -21,7 +21,7 @@ class MongoDB:
                 client = MongoClient(self._uri,
                                      serverSelectionTimeoutMS=2000)
                 client.server_info()
-            except:
+            except Exception:
                 current_app.logger.info('waiting mongodb online...')
                 continue
             self.db = client[self._dbname]
