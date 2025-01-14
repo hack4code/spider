@@ -13,7 +13,7 @@ from scrapy.spiders import Spider
 from mydm.items import ArticleItem
 from .extractor import ItemExtractor
 from mydm.spider.spider import ErrbackSpider
-from mydm.spiderfactory import SpiderFactory
+from mydm.spider.spidermeta import SpiderMeta
 from mydm.utils import extract_tags, extract_head
 
 
@@ -118,8 +118,8 @@ class LXMLSpider(Spider):
                     )
 
 
-class LXMLSpiderMeta(SpiderFactory, type, spider_type='xml'):
-    SPIDER_ATTRS = ('start_urls', 'category', 'name')
+class LXMLSpiderMeta(SpiderMeta, type, spider_type='xml'):
+    SPIDER_ATTRS = ('start_urls', 'category', 'name', 'title')
 
     def __new__(cls, name, bases, attrs):
         if all(attr in attrs for attr in cls.SPIDER_ATTRS):

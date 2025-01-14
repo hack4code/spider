@@ -1,29 +1,39 @@
 # -*- coding: utf-8 -*-
 
 
-from mydm.spider import register_meta_classes
+import importlib
+from pathlib import Path
+
+from mydm.spider import SpiderMeta
 from mydm.exceptions import SpiderFactoryException
 
 
 __all__ = ['SpiderFactory']
 
 
+def import_spiders():
+    path = Path(__file__).parent / 'spider/'
+    for item in path.iterdir():
+        if not item.is_dir():
+            continue
+        spider_path = item / 'spider.py'
+        if not spider_path.exists():
+            continue
+        spider_module = f'.spider.{item.absolute().name}.spider'
+        importlib.import_module(spider_module, __package__)
+
+
 class SpiderFactory:
-
-    META_CLASSES = {}
-
-    def __init_subclass__(cls, spider_type, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.META_CLASSES[spider_type] = cls
-
     @classmethod
-    def create_spider(cls, setting):
-        if 'name' not in setting or 'type' not in setting:
+    def from_setting(cls, setting):
+        if not all(attr in setting for attr in ('name', 'type', 'title')):
             raise SpiderFactoryException(
                     'miss attribute[name|type]'
             )
+        if not SpiderMeta.CLS:
+            import_spiders()
         try:
-            metacls = cls.META_CLASSES[setting['type']]
+            metacls = SpiderMeta.CLS[setting['type']]
         except KeyError:
             raise SpiderFactoryException(
                     f'unknown spider type[{setting["type"]}]'
@@ -36,6 +46,3 @@ class SpiderFactory:
             )
         except AttributeError as e:
             raise SpiderFactoryException(f'build spider failed[{e}]')
-
-
-register_meta_classes()

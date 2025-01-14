@@ -19,12 +19,13 @@ logger = logging.getLogger(__name__)
 
 @implementer(ISpiderLoader)
 class MongoSpiderLoader:
+    @property
     def spiders(self):
         spiders = {}
         for setting in get_spider_settings():
             spider_id = setting['_id']
             try:
-                cls = SpiderFactory.create_spider(setting)
+                cls = SpiderFactory.from_setting(setting)
             except SpiderFactoryException as e:
                 logger.error('spider create error[%s]', e)
             else:
