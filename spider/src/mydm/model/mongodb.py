@@ -17,8 +17,6 @@ class MongoDB:
 
     def _create_indexes(self):
         db = self._db
-        feed = db['feed']
-        feed.create_index('url', name='idx_url')
         article = db['article']
         article.create_index('crawl_date', name='idx_crawl_date')
         article.create_index(
