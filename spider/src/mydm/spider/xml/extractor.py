@@ -4,7 +4,7 @@
 from html import unescape
 
 from lxml.etree import QName
-from dateutil.parser import parse as get_date
+from dateutil.parser import parse as parse_date
 from zope.interface import Interface, implementer
 
 from mydm.utils import is_url
@@ -81,7 +81,7 @@ class PubDateTag:
     def extract(self, e):
         if e.text is None:
             return
-        v = get_date(e.text, ignoretz=True)
+        v = parse_date(e.text, ignoretz=True)
         if self.val is None or self.val < v:
             self.val = v
 
