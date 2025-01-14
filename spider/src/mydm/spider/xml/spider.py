@@ -86,7 +86,7 @@ class LXMLSpider(Spider):
                 root = root[0]
             for entry in root:
                 item = ItemExtractor()(entry)
-                item['category'] = self.category
+                item['category'] = self.title
                 item['crawl_date'] = datetime.now()
                 item['domain'] = urlparse(response.request.url).netloc
                 item['data_type'] = 'html'
