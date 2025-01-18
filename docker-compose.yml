@@ -1,6 +1,7 @@
 services:
         mongodb:
-                image: mongo
+                build:
+                    context: mongo/
                 container_name: mongo
                 restart: always
                 expose:
