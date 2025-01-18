@@ -9,7 +9,7 @@ npm install whatwg-fetch --save-dev
 npm install @babel/core --save-dev
 npm install @babel/preset-env --save-dev
 npm install @babel/preset-react --save-dev
-npm install @babel/plugin-proposal-class-properties --save-dev
+npm install @babel/plugin-transform-class-properties --save-dev
 npm install babel-loader --save-dev
 npm install webpack --save-dev
 npm install webpack-cli --save-dev

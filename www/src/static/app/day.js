@@ -1,5 +1,5 @@
 import React from "react";
-import {render} from "react-dom";
+import { createRoot } from 'react-dom/client';
 import {ContentDiv, DayLinkDiv} from "./day_component";
 import "whatwg-fetch";
 
@@ -74,7 +74,9 @@ class App extends React.Component {
     }
 };
 
-render(<App />, document.getElementById("content"));
+const node = document.getElementById("content");
+const root = createRoot(node);
+root.render(<App />);
 
 
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

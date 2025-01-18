@@ -1,5 +1,6 @@
 import React from "react";
-import {render, findDOMNode} from "react-dom";
+import { createRoot } from 'react-dom/client';
+import findDOMNode from "react-dom";
 import {Title, Hr, ArticleEntries} from "./entry_component";
 import "whatwg-fetch";
 
@@ -132,4 +133,6 @@ class App extends React.Component {
   }
 }
 
-render(<App />, document.getElementById("content"));
+const node = document.getElementById("content");
+const root = createRoot(node);
+root.render(<App />);
