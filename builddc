@@ -12,7 +12,7 @@ if [[ ! -d spider/protos ]]; then
   ln protos/spider.proto spider/protos/spider.proto
 fi
 
-if [[ ! -d spider/protos ]]; then
+if [[ ! -d www/protos ]]; then
   mkdir www/protos/
   ln protos/spider.proto www/protos/spider.proto
 fi
