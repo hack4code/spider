@@ -84,7 +84,8 @@ class OrginalLink extends React.Component  {
         const style = {
             margin: "0px",
             padding: "0 12px",
-            fontSize: "x-small",
+            fontSize: "small",
+            fontFamily: "Twemoji Mozilla",
         };
 
         return (
