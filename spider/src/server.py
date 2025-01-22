@@ -16,12 +16,12 @@ import spider_pb2_grpc
 from task import crawl, submit_rss_feed
 
 
-g_jobs = Queue()
+JOBS_QUEUE = Queue()
 
 
 def crawling(*args):
     while True:
-        spids = g_jobs.get()
+        spids = JOBS_QUEUE.get()
         p = Process(target=crawl, args=(spids,))
         p.start()
         p.join()
@@ -47,7 +47,7 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
 
     def CrawlArticles(self, request, context):
         spids = request.spider[:]
-        g_jobs.put(spids)
+        JOBS_QUEUE.put(spids)
         return spider_pb2.CrawlTaskResult(isrunning=True)
 
 
