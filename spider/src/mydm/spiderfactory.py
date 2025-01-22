@@ -4,11 +4,23 @@
 import importlib
 from pathlib import Path
 
-from mydm.spider import SpiderMeta
-from mydm.exceptions import SpiderFactoryException
+
+__all__ = [
+    'register_spider_meta_cls',
+    'create_spider_from_setting',
+    'SpiderFactoryException',
+]
 
 
-__all__ = ['SpiderFactory']
+SPIDER_META_CLSES = {}
+
+
+class SpiderFactoryException(Exception):
+    pass
+
+
+def register_spider_meta_cls(tyep, klass):
+    SPIDER_META_CLSES[tyep] = klass
 
 
 def import_spiders():
@@ -23,26 +35,24 @@ def import_spiders():
         importlib.import_module(spider_module, __package__)
 
 
-class SpiderFactory:
-    @classmethod
-    def from_setting(cls, setting):
-        if not all(attr in setting for attr in ('name', 'type', 'title')):
-            raise SpiderFactoryException(
-                    'miss attribute[name|type]'
-            )
-        if not SpiderMeta.CLS:
-            import_spiders()
-        try:
-            metacls = SpiderMeta.CLS[setting['type']]
-        except KeyError:
-            raise SpiderFactoryException(
-                    f'unknown spider type[{setting["type"]}]'
-            )
-        try:
-            return metacls(
-                    f'{setting["name"].capitalize()}Spider',
-                    (),
-                    setting
-            )
-        except AttributeError as e:
-            raise SpiderFactoryException(f'build spider failed[{e}]')
+def create_spider_from_setting(setting):
+    if not all(attr in setting for attr in ('name', 'type', 'title')):
+        raise SpiderFactoryException(
+                'miss attribute[name|type|title]'
+        )
+    if not SPIDER_META_CLSES:
+        import_spiders()
+    try:
+        metacls = SPIDER_META_CLSES[setting['type']]
+    except KeyError:
+        raise SpiderFactoryException(
+                f'unknown spider type[{setting["type"]}]'
+        )
+    try:
+        return metacls(
+                f'{setting["name"].capitalize()}Spider',
+                (),
+                setting
+        )
+    except AttributeError as e:
+        raise SpiderFactoryException(f'build spider failed[{e}]')

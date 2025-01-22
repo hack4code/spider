@@ -13,7 +13,7 @@ from scrapy.spiders import Spider
 from mydm.items import ArticleItem
 from .extractor import ItemExtractor
 from mydm.spider.spider import ErrbackSpider
-from mydm.spider.spidermeta import SpiderMeta
+from mydm.spidermeta import SpiderMeta
 from mydm.utils import extract_tags, extract_head
 
 

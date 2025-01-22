@@ -2,26 +2,14 @@
 
 
 __all__ = [
-    'SpiderFactoryException',
     'ImgException',
     'ContentException'
 ]
 
 
-class SpiderFactoryException(Exception):
-    """
-        exception for spider factory
-    """
+class ImgException(Exception):
     pass
 
 
-class ImgException(Exception):
-    """
-        exception for image pipeline
-    """
-
-
 class ContentException(Exception):
-    """
-        exception for content pipeline
-    """
+    pass
