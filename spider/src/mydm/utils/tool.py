@@ -2,7 +2,6 @@
 
 
 from urllib.parse import urlparse
-from collections import namedtuple
 
 
 class cache_property:

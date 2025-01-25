@@ -26,7 +26,6 @@ def crawling(*args):
         p.start()
         p.join()
 
-
 class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
     def SubmitRssFeed(self, request, context):
         feed = {
