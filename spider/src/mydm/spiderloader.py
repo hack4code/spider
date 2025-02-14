@@ -26,9 +26,9 @@ class MongoSpiderLoader:
         for setting in get_spider_settings():
             spider_id = setting['_id']
             try:
-                cls = factory.create_spider_from_setting(setting)
+                cls = factory.create_spider_class_from_setting(setting)
             except Exception:
-                logger.exception('create_spider_from_setting failed:')
+                logger.exception('create_spider_class_from_setting failed:')
             else:
                 spiders[spider_id] = cls
         self._spiders = spiders

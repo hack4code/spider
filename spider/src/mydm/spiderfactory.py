@@ -7,7 +7,7 @@ from pathlib import Path
 
 __all__ = [
     'register_spider_meta_cls',
-    'create_spider_from_setting',
+    'create_spider_class_from_setting',
     'SpiderFactoryException',
 ]
 
@@ -35,7 +35,7 @@ def import_spiders():
         importlib.import_module(spider_module, __package__)
 
 
-def create_spider_from_setting(setting):
+def create_spider_class_from_setting(setting):
     if not all(attr in setting for attr in ('name', 'type', 'title')):
         raise SpiderFactoryException(
                 'miss attribute[name|type|title]'
