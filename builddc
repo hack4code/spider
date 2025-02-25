@@ -2,9 +2,8 @@
 
 
 if [[ ! -d www/src/static/script ]]; then
-  mkdir www/src/static/script
-  docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build
-  rm -rf www/src/static/app/node_modules
+  echo "must run buildjs before build docker"
+  exit
 fi
 
 if [[ ! -d spider/protos ]]; then
