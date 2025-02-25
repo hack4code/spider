@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
 
-if docker container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build; then
-  sudo rm -rf www/src/static/app/node_modules
+if podman container run --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build; then
+  rm -rf www/src/static/app/node_modules
 fi
 
 
