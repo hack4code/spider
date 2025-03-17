@@ -10,7 +10,9 @@ from mydm.model import get_spider_settings
 import mydm.spiderfactory as factory
 
 
-__all__ = ['MongoSpiderLoader']
+__all__ = [
+    'MongoSpiderLoader'
+]
 
 
 logger = logging.getLogger(__name__)
