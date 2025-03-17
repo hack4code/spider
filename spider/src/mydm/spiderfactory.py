@@ -38,7 +38,7 @@ def import_spiders():
 def create_spider_class_from_setting(setting):
     if not all(attr in setting for attr in ('name', 'type', 'title')):
         raise SpiderFactoryException(
-                'miss attribute[name|type|title]'
+            'miss attribute[name|type|title]'
         )
     if not SPIDER_META_CLSES:
         import_spiders()
@@ -46,13 +46,13 @@ def create_spider_class_from_setting(setting):
         metacls = SPIDER_META_CLSES[setting['type']]
     except KeyError:
         raise SpiderFactoryException(
-                f'unknown spider type[{setting["type"]}]'
+            f'unknown spider type[{setting["type"]}]'
         )
     try:
         return metacls(
-                f'{setting["name"].capitalize()}Spider',
-                (),
-                setting
+            f'{setting["name"].capitalize()}Spider',
+            (),
+            setting
         )
     except AttributeError as e:
         raise SpiderFactoryException(f'build spider failed[{e}]')
