@@ -61,9 +61,9 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
     render() {
         const style = {
-            fontFamily: "Maple Mono NF, Maple Mono NF CN",
+            fontFamily: "MiSans",
             fontSize: "1em",
-            fontWeight: "500",
+            fontWeight: "400",
             lineHeight: "120%",
             margin: "0px",
             padding: "0px",
@@ -85,7 +85,7 @@ class OrginalLink extends React.Component  {
             margin: "0px",
             padding: "0 12px",
             fontSize: "small",
-            fontFamily: "Twemoji Mozilla",
+            fontFamily: "Noto Color Emoji",
         };
 
         return (
