@@ -85,7 +85,7 @@ class OrginalLink extends React.Component  {
             margin: "0px",
             padding: "0 12px",
             fontSize: "small",
-            fontFamily: "Noto Color Emoji",
+            fontFamily: "Twemoji Mozilla",
         };
 
         return (
