@@ -1,9 +1,0 @@
-#! /usr/bin/env bash
-
-
-if podman container run --userns keep-id --volume ./www/src/static/:/home/node/build/ --workdir /home/node/build/app/ node ./build; then
-  rm -rf www/src/static/app/node_modules
-fi
-
-
-# vim: ts=4 sw=4 sts=4 ft=bash et:
