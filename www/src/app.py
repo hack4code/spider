@@ -2,6 +2,7 @@
 
 
 import logging
+from zoneinfo import ZoneInfo
 from datetime import datetime
 
 from werkzeug.exceptions import NotFound, BadRequest
@@ -39,7 +40,7 @@ def error(error):
 
 @app.route('/', methods=['GET'])
 def home():
-    today = datetime.utcnow().date()
+    today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
     return render_template('day.html', day_entry=today)
 
 
@@ -64,8 +65,7 @@ def article(aid):
 
 @app.route('/p/<id:spid>', methods=['GET'])
 def entries_by_spider(spid):
-    spider = get_spider(spid)
-    if spider is None:
+    if (spider := get_spider(spid)) is None:
         raise NotFound(f'spider[{spid}] not existed')
     return render_template('entries.html', spider=spider)
 
