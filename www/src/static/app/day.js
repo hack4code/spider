@@ -41,7 +41,6 @@ class App extends React.Component {
             if ((now.getFullYear() == today.getFullYear()) && (now.getMonth() == today.getMonth()) && (now.getDate() == today.getDate())) {
                 return;
             }
-            window.history.pushState(day, day, "/d/" + day);
           }
         }
         else {
@@ -80,4 +79,3 @@ root.render(<App />);
 
 
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */
-
