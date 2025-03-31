@@ -61,9 +61,9 @@ class Rank extends React.Component  {
 class ArticleLink extends React.Component  {
     render() {
         const style = {
-            fontFamily: "MiSans",
+            fontFamily: "PingFang SC",
             fontSize: "1em",
-            fontWeight: "400",
+            fontWeight: "500",
             lineHeight: "120%",
             margin: "0px",
             padding: "0px",
