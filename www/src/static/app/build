@@ -13,9 +13,9 @@ npm install @babel/plugin-transform-class-properties --save-dev
 npm install babel-loader --save-dev
 npm install webpack --save-dev
 npm install webpack-cli --save-dev
+npm install html-webpack-plugin --save-dev
 
-node_modules/.bin/webpack --mode production --config webpack.config.js
+node_modules/.bin/webpack --mode development --config webpack.config.js
 
 
-# vim: ts=2 sw=2 sts=2 ft=bash et:
-
+# vim: ts=4 sw=4 sts=4 ft=bash et:
