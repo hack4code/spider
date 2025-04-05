@@ -260,7 +260,7 @@ class Select extends React.Component {
         <input list="options" name="options" value={this.props.value} style={style} onChange={this.handleChange} />
         <datalist id="options">
         {
-          list.map(function(val, index) {return <option value={val} />;})
+          list.map(function(val, index) {return <option value={val} key={index}/>;})
         }
         </datalist>
       </div>
