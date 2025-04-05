@@ -1,4 +1,4 @@
-import {React, createRef} from "react";
+import React, { createRef } from "react";
 import {createRoot} from 'react-dom/client';
 import {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
 import "whatwg-fetch";
