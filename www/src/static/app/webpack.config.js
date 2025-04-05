@@ -5,6 +5,7 @@ const path = require("path");
 const jspath = path.resolve(__dirname);
 
 module.exports = {
+    /* mode: 'development', */
     mode: 'production',
     entry: {
         day: jspath + "/day.js",
