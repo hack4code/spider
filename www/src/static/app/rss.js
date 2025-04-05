@@ -1,10 +1,9 @@
-import {React, useRef} from "react";
+import {React, createRef} from "react";
 import {createRoot} from 'react-dom/client';
 import {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
 import "whatwg-fetch";
 
 class SubmitForm extends React.Component {
-    const buttonRef = useRef(null);
 
     getInitialState() {
         return {
@@ -22,6 +21,7 @@ class SubmitForm extends React.Component {
         this.submit = this.submit.bind(this);
         this.updateField = this.updateField.bind(this);
         this.state = this.getInitialState();
+        this.buttonRef = createRef();
     }
 
     componentDidMount() {
@@ -127,7 +127,7 @@ class SubmitForm extends React.Component {
                     setTimeout(() => {that.err.fadeOut()}, 800);
                 })
         }
-        buttonRef.current.blur();
+        this.buttonRef.current.blur();
     }
 
     updateField(k, v) {
@@ -149,7 +149,7 @@ class SubmitForm extends React.Component {
             <EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
             <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
             <TextBox desc="CSS:(选填):" updateField={this.updateField} type="text" field="css" value={this.state.css} />
-            <Button ref={buttonRef}/>
+            <Button ref={this.buttonRef}/>
             </form>
             </div>
         )
