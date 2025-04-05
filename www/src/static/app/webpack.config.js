@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const path = require("path");
 const jspath = path.resolve(__dirname);
@@ -14,7 +13,6 @@ module.exports = {
         spiders: jspath + "/spiders.js"
     },
     /* devtool: 'inline-source-map',*/
-    /* plugins: [new HtmlWebpackPlugin({title: 'Development'})], */
     output: {
         path: jspath + "/../script/",
         filename: "[name].js",
