@@ -15,7 +15,7 @@ npm install webpack --save-dev
 npm install webpack-cli --save-dev
 npm install html-webpack-plugin --save-dev
 
-node_modules/.bin/webpack --mode development --config webpack.config.js
+node_modules/.bin/webpack --mode production --config webpack.config.js
 
 
 # vim: ts=4 sw=4 sts=4 ft=bash et:

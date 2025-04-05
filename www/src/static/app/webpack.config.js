@@ -5,15 +5,15 @@ const path = require("path");
 const jspath = path.resolve(__dirname);
 
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: {
         day: jspath + "/day.js",
         entries: jspath + "/entries.js",
         rss: jspath + "/rss.js",
         spiders: jspath + "/spiders.js"
     },
-    devtool: 'inline-source-map',
-    plugins: [new HtmlWebpackPlugin({title: 'Development'})],
+    /* devtool: 'inline-source-map',*/
+    /* plugins: [new HtmlWebpackPlugin({title: 'Development'})], */
     output: {
         path: jspath + "/../script/",
         filename: "[name].js",

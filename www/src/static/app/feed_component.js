@@ -296,7 +296,7 @@ class TextArea extends React.Component {
       border: "0.1rem solid #d1d1d1",
       borderRadius: "4px",
       boxSizing: "border-box",
-      width: "42em",
+      width: "35em",
       margin: "0em 0em 1.2em 0em"
     };
 
