@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class LXMLSpider(Spider):
     """ spider attribute:
-        start_urls
+    start_urls
         category
         name
         item_content_xpath
@@ -38,9 +38,9 @@ class LXMLSpider(Spider):
         if not tags:
             return
         logger.info(
-                'spider[%s] extract tags %s',
-                self.name,
-                tags
+            'spider[%s] extract tags %s',
+            self.name,
+            tags
         )
         item['tag'] = tags
 
@@ -59,9 +59,9 @@ class LXMLSpider(Spider):
         content = response.xpath(self.item_content_xpath).extract_first()
         if not content:
             logger.error(
-                    'spider[%s] extract content failed[%s]',
-                    self.name,
-                    response.url
+                'spider[%s] extract content failed[%s]',
+                self.name,
+                response.url
             )
             return
         item['content'] = content
@@ -73,9 +73,9 @@ class LXMLSpider(Spider):
 
     def parse(self, response):
         parser = etree.XMLParser(
-                ns_clean=True,
-                recover=True,
-                encoding=response.encoding
+            ns_clean=True,
+            recover=True,
+            encoding=response.encoding
         )
         root = etree.XML(response.body, parser)
         if root is None:
@@ -102,19 +102,19 @@ class LXMLSpider(Spider):
                     link = f'{item["link"]}?{params}'
                 if hasattr(self, 'item_content_xpath'):
                     yield Request(
-                            link,
-                            meta={'item': item},
-                            callback=self.extract_content,
-                            errback=self.errback,
-                            dont_filter=True
+                        link,
+                        meta={'item': item},
+                        callback=self.extract_content,
+                        errback=self.errback,
+                        dont_filter=True
                     )
                 elif item.get('content'):
                     yield Request(
-                            link,
-                            meta={'item': item},
-                            callback=self.extract_head,
-                            errback=self.errback,
-                            dont_filter=True
+                        link,
+                        meta={'item': item},
+                        callback=self.extract_head,
+                        errback=self.errback,
+                        dont_filter=True
                     )
 
 
@@ -132,15 +132,15 @@ class LXMLSpiderMeta(SpiderMeta, type, spider_type='xml'):
 
             bases = update_bases(bases)
             return super().__new__(
-                    cls,
-                    name,
-                    bases,
-                    attrs
+                cls,
+                name,
+                bases,
+                attrs
             )
         else:
             miss_attrs = [
-                    attr
-                    for attr in cls.SPIDER_ATTRS
-                    if attr not in attrs
+                attr
+                for attr in cls.SPIDER_ATTRS
+                if attr not in attrs
             ]
             raise AttributeError(f'miss attributes{miss_attrs}')
