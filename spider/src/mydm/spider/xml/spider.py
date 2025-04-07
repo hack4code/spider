@@ -103,7 +103,13 @@ class LXMLSpider(Spider):
                     link = item['link']
                 else:
                     link = f'{item["link"]}?{params}'
-                if hasattr(self, 'item_content_xpath'):
+                if item['link'].endswith(".pdf"):
+                    item['content'] = ("<div>"
+                                       f"<a href={item['link']}>pdf file</a>"
+                                       "</div>")
+                    item['encoding'] = "utf-8"
+                    yield ArticleItem(item)
+                elif hasattr(self, 'item_content_xpath'):
                     yield Request(
                         link,
                         meta={'item': item},
