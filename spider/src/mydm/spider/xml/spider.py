@@ -56,7 +56,10 @@ class LXMLSpider(Spider):
 
     def extract_content(self, response):
         item = response.meta['item']
-        content = response.xpath(self.item_content_xpath).extract_first()
+        if response.headers["Content-Type"].lower() == "application/pdf":
+            content = f"<div><a href={item['link']}>pdf link</a></div>"
+        else:
+            content = response.xpath(self.item_content_xpath).extract_first()
         if not content:
             logger.error(
                 'spider[%s] extract content failed[%s]',
