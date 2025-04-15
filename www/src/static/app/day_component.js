@@ -136,7 +136,7 @@ class EntryTitle extends React.Component  {
 class SpiderTag extends React.Component  {
     render() {
         const style = {
-            fontFamily: "Noto Sans",
+            fontFamily: "MiSans",
             color: "#999",
             fontSize: "x-small",
             fontWeight: "bold",
@@ -159,7 +159,7 @@ class SpiderTag extends React.Component  {
 class ArticleTag extends React.Component  {
     render() {
         const style = {
-            fontFamily: "Noto Sans",
+            fontFamily: "MiSans",
             fontWeight: "normal",
             fontSize: "xx-small",
             color: "#999",
@@ -353,4 +353,3 @@ export {ContentDiv, DayLinkDiv};
 
 
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */
-
