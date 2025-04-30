@@ -32,9 +32,9 @@ init_api(app)
 def error(error):
     code = error.code
     return render_template(
-            'error.html',
-            status_code=code,
-            message=error.description
+        'error.html',
+        status_code=code,
+        message=error.description
     ), code
 
 
@@ -57,9 +57,9 @@ def article(aid):
     spider = get_spider(spid)
     css = spider.get('css', None)
     return render_template(
-            'article.html',
-            article=a,
-            css=css
+        'article.html',
+        article=a,
+        css=css
     )
 
 

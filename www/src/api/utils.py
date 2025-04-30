@@ -9,7 +9,7 @@ def format_messages(messages):
         return messages
     if isinstance(messages, dict):
         return ','.join(
-                f'{field}:{message}'
-                for field, message in messages.items()
+            f'{field}:{message}'
+            for field, message in messages.items()
         )
     return str(messages)

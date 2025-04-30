@@ -7,17 +7,17 @@ from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
 from marshmallow import (
-        Schema, fields, validates, ValidationError
+    Schema, fields, validates, ValidationError
 )
 from flask_restful import Resource
 from flask import current_app, request
 
 from model import (
-        get_begin_day, get_before_day, get_after_day,
-        get_entries_by_day,
-        get_entries_next, get_entries_pre, get_entries_by_spider,
-        get_spider, get_spiders,
-        get_categories
+    get_begin_day, get_before_day, get_after_day,
+    get_entries_by_day,
+    get_entries_next, get_entries_pre, get_entries_by_spider,
+    get_spider, get_spiders,
+    get_categories
 )
 from .utils import format_messages
 
@@ -39,7 +39,7 @@ class Day(Resource):
             day = fields.Date(required=True)
 
             @validates('day')
-            def validate_day(self, day):
+            def validate_day(self, day, data_key):
                 day_begin = get_begin_day()
                 if not day_begin <= day <= datetime.utcnow().date():
                     raise ValidationError('invalid day value')
@@ -62,9 +62,9 @@ class Day(Resource):
             day_after = day_after.strftime('%Y-%m-%d')
         entries = get_entries_by_day(day_entry)
         return {
-                'day_before': day_before,
-                'day_after': day_after,
-                'data': entries,
+            'day_before': day_before,
+            'day_after': day_after,
+            'data': entries,
         }
 
 
@@ -102,7 +102,7 @@ class Entries(Resource):
             q = fields.String()
 
             @validates('q')
-            def validate_q(self, q):
+            def validate_q(self, q, data_key):
                 if q not in ('p', 'n'):
                     raise ValidationError('invalid q value')
 

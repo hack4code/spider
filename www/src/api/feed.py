@@ -5,7 +5,7 @@ import grpc
 from flask import request, current_app
 
 from marshmallow import (
-        Schema, fields, pre_load, ValidationError
+    Schema, fields, pre_load, ValidationError
 )
 from flask_restful import Resource
 
@@ -61,10 +61,10 @@ class RssFeed(Resource):
                         val = val.strip(' \r\t\n')
                     elif isinstance(val, (list, tuple)):
                         val = list(
-                                filter(
-                                    lambda _: _,
-                                    (item.strip(' \r\t\n') for item in val)
-                                )
+                            filter(
+                                lambda _: _,
+                                (item.strip(' \r\t\n') for item in val)
+                            )
                         )
                     if val:
                         new_data[key] = val
