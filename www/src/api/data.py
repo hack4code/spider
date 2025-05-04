@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
+from zoneinfo import ZoneInfo
 from datetime import datetime
 
 from bson.errors import InvalidId
@@ -40,8 +41,9 @@ class Day(Resource):
 
             @validates('day')
             def validate_day(self, day, data_key):
+                today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
                 day_begin = get_begin_day()
-                if not day_begin <= day <= datetime.utcnow().date():
+                if not day_begin <= day <= today:
                     raise ValidationError('invalid day value')
 
         schema = DayRequestSchema()
