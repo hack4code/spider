@@ -14,6 +14,7 @@ npm install babel-loader --save-dev
 npm install webpack --save-dev
 npm install webpack-cli --save-dev
 npm install html-webpack-plugin --save-dev
+npm install babel-preset-es2015 --save-dev
 
 node_modules/.bin/webpack --config webpack.config.js
 
