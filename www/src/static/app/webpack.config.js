@@ -12,12 +12,14 @@ module.exports = {
         rss: jspath + "/rss.js",
         spiders: jspath + "/spiders.js"
     },
+
     /* devtool: 'inline-source-map',*/
     output: {
         path: jspath + "/../script/",
         filename: "[name].js",
         clean: true,
     },
+
     module: {
         rules: [
             {
