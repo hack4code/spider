@@ -1,8 +1,9 @@
-import React from "react";
-import { createRoot } from 'react-dom/client';
-import findDOMNode from "react-dom";
-import {Title, Hr, ArticleEntries} from "./entry_component";
-import "whatwg-fetch";
+require("whatwg-fetch");
+
+var React = require("react");
+var ReactDOM = require("react-dom");
+var EntryComponent = require("./entry_component");
+
 
 class AidLink extends React.Component {
   constructor(props) {
@@ -123,10 +124,10 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title name={this.state.name} />
-        <Hr />
-        <ArticleEntries prefix="/a/" entries={this.state.entries} />
-        <Hr />
+        <EntryComponent.Title name={this.state.name} />
+        <EntryComponent.Hr />
+        <EntryComponent.ArticleEntries prefix="/a/" entries={this.state.entries} />
+        <EntryComponent.Hr />
         <AidLinkDiv onLeftClick={this.onLeftClick} onRightClick={this.onRightClick} />
       </div>
     )
@@ -134,5 +135,5 @@ class App extends React.Component {
 }
 
 const node = document.getElementById("content");
-const root = createRoot(node);
+const root = ReactDOM.createRoot(node);
 root.render(<App />);

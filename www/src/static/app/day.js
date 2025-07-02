@@ -1,7 +1,9 @@
-import React from "react";
-import { createRoot } from 'react-dom/client';
-import {ContentDiv, DayLinkDiv} from "./day_component";
-import "whatwg-fetch";
+require("whatwg-fetch");
+
+var React = require("react")
+var ReactDOM = require("react-dom")
+var DayComponent = require("./day_component")
+
 
 class App extends React.Component {
   constructor(props) {
@@ -66,15 +68,15 @@ class App extends React.Component {
   render() {
       return (
         <div>
-          <ContentDiv data={this.state.data} />
-          <DayLinkDiv day_after={this.state.day_after} day_before={this.state.day_before} onDayLinkClick={this.onDayLinkClick} />
+          <DayComponent.ContentDiv data={this.state.data} />
+          <DayComponent.DayLinkDiv day_after={this.state.day_after} day_before={this.state.day_before} onDayLinkClick={this.onDayLinkClick} />
         </div>
       )
     }
 };
 
 const node = document.getElementById("content");
-const root = createRoot(node);
+const root = ReactDOM.createRoot(node);
 root.render(<App />);
 
 

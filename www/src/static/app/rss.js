@@ -1,7 +1,10 @@
-import React, { createRef } from "react";
-import {createRoot} from 'react-dom/client';
-import {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr} from "./feed_component";
-import "whatwg-fetch";
+require("whatwg-fetch");
+
+
+var React = require("react");
+var ReactDOM = require("react-dom");
+var FeedComponent = require("./feed_component");
+
 
 class SubmitForm extends React.Component {
 
@@ -21,7 +24,7 @@ class SubmitForm extends React.Component {
         this.submit = this.submit.bind(this);
         this.updateField = this.updateField.bind(this);
         this.state = this.getInitialState();
-        this.buttonRef = createRef();
+        this.buttonRef = React.createRef();
     }
 
     componentDidMount() {
@@ -142,14 +145,14 @@ class SubmitForm extends React.Component {
 
         return (
             <div>
-            <ErrMsg ref={(com) => this.err = com} />
+            <FeedComponent.ErrMsg ref={(com) => this.err = com} />
             <form onSubmit={this.submit} style={style}>
-            <EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
-            <SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
-            <EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
-            <MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
-            <TextBox desc="CSS:(选填):" updateField={this.updateField} type="text" field="css" value={this.state.css} />
-            <Button ref={this.buttonRef}/>
+            <FeedComponent.EditBox desc="网址:" updateField={this.updateField} type="url" field="url" value={this.state.url} />
+            <FeedComponent.SelectBox desc="类别:" updateField={this.updateField} field="category" url="/api/categories" value={this.state.category} />
+            <FeedComponent.EditBox desc="内容selector[用于非全文输出的feed](选填):" updateField={this.updateField} type="text" field="item_content_xpath" value={this.state.item_content_xpath} />
+            <FeedComponent.MEditBox desc="清除xpath node 数组(选填):" updateField={this.updateField} type="text" field="removed_xpath_nodes" value={this.state.removed_xpath_nodes} />
+            <FeedComponent.TextBox desc="CSS:(选填):" updateField={this.updateField} type="text" field="css" value={this.state.css} />
+            <FeedComponent.Button ref={this.buttonRef}/>
             </form>
             </div>
         )
@@ -160,8 +163,8 @@ class App extends React.Component {
     render() {
         return (
             <div>
-            <Title title="源(rss|atom)" />
-            <Hr />
+            <FeedComponent.Title title="源(rss|atom)" />
+            <FeedComponent.Hr />
             <SubmitForm />
             </div>
         )
@@ -169,7 +172,7 @@ class App extends React.Component {
 }
 
 const node = document.getElementById("content");
-const root = createRoot(node);
+const root = ReactDOM.createRoot(node);
 root.render(<App />);
 
 

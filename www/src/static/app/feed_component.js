@@ -1,5 +1,8 @@
-import React from "react";
-import "whatwg-fetch";
+require("whatwg-fetch");
+
+
+var React = require("react");
+
 
 class Title extends React.Component {
   render() {
@@ -342,4 +345,5 @@ class Button extends React.Component {
   }
 }
 
-export {TextBox, SelectBox, EditBox, MEditBox, Button, Title, ErrMsg, Hr};
+
+/* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

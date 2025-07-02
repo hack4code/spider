@@ -1,4 +1,4 @@
-import React from "react";
+var React = require("react");
 
 
 class Hr extends React.Component {
@@ -152,4 +152,4 @@ class SpiderEntries extends React.Component {
 }
 
 
-export {Title, Hr, SpiderEntries, ArticleEntries};
+/* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

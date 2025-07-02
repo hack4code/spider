@@ -1,4 +1,4 @@
-import React from "react";
+var React = require("react");
 
 
 function decodeEntities(encodedString) {
@@ -348,8 +348,6 @@ class DayLinkDiv extends React.Component {
         )
     }
 };
-
-export {ContentDiv, DayLinkDiv};
 
 
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

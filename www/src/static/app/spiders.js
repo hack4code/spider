@@ -1,7 +1,9 @@
-import React from "react";
-import { createRoot } from 'react-dom/client';
-import {Title, Hr, SpiderEntries} from "./entry_component";
-import "whatwg-fetch";
+require("whatwg-fetch");
+
+var React = require("react");
+var ReactDOM = require("react-dom");
+var EntryComponent = require("./entry_component");
+
 
 class App extends React.Component {
   constructor(props) {
@@ -29,15 +31,15 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Title name="所有订阅" />
-        <Hr />
-        <SpiderEntries spiders={this.state.spiders} />
-        <Hr />
+        <EntryComponent.Title name="所有订阅" />
+        <EntryComponent.Hr />
+        <EntryComponent.SpiderEntries spiders={this.state.spiders} />
+        <EntryComponent.Hr />
       </div>
     )
   }
 }
 
 const node = document.getElementById("content");
-const root = createRoot(node);
+const root = ReactDOM.createRoot(node);
 root.render(<App />);
