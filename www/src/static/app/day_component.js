@@ -350,4 +350,8 @@ class DayLinkDiv extends React.Component {
 };
 
 
+exports.ContentDiv = ContentDiv;
+exports.DayLinkDiv = DayLinkDiv;
+
+
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

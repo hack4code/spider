@@ -1,7 +1,7 @@
 require("whatwg-fetch");
 
 var React = require("react");
-var ReactDOM = require("react-dom");
+var ReactDOM = require("react-dom/client");
 var EntryComponent = require("./entry_component");
 
 

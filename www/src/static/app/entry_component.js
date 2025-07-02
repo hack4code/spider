@@ -152,4 +152,10 @@ class SpiderEntries extends React.Component {
 }
 
 
+exports.Title = Title;
+exports.Hr = Hr;
+exports.ArticleEntries = ArticleEntries;
+exports.EntryComponent = EntryComponent;
+
+
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

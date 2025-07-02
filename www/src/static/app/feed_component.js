@@ -346,4 +346,14 @@ class Button extends React.Component {
 }
 
 
+exports.ErrMsg = ErrMsg;
+exports.EditBox = EditBox;
+exports.SelectBox = SelectBox;
+exports.TextBox = TextBox;
+exports.MEditBox = MEditBox;
+exports.Button = Button;
+exports.Title = Title;
+exports.Hr = Hr;
+
+
 /* vim: set ts=4 sw=4 sts=4 ft=javascript et: */

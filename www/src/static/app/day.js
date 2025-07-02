@@ -1,7 +1,7 @@
 require("whatwg-fetch");
 
 var React = require("react")
-var ReactDOM = require("react-dom")
+var ReactDOM = require("react-dom/client")
 var DayComponent = require("./day_component")
 
 
@@ -55,7 +55,7 @@ class App extends React.Component {
     })
   }
 
-  componentWillMount(){
+  componentDidMount(){
     this.setDay(document.title);
   }
 
