@@ -7,6 +7,7 @@ npm install react --save-dev
 npm install react-dom --save-dev
 npm install whatwg-fetch --save-dev
 npm install @babel/core --save-dev
+npm install @babel/cli --save-dev
 npm install @babel/preset-env --save-dev
 npm install @babel/preset-react --save-dev
 npm install @babel/plugin-transform-class-properties --save-dev
