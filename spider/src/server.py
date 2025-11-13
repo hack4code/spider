@@ -3,7 +3,7 @@
 
 import logging
 from concurrent import futures
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, set_start_method
 
 from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
@@ -16,10 +16,13 @@ import spider_pb2_grpc
 from task import crawl, submit_rss_feed
 
 
+set_start_method('fork', force=True)
 JOBS_QUEUE = Queue()
 
 
 def crawling(*args):
+    logger = logging.getLogger(__name__)
+    logger.info("crawling start running...")
     while True:
         spids = JOBS_QUEUE.get()
         p = Process(target=crawl, args=(spids,))
@@ -46,6 +49,8 @@ class SpiderRpcServicer(spider_pb2_grpc.SpiderRpcServicer):
         return spider_pb2.SubmitResult(error=False)
 
     def CrawlArticles(self, request, context):
+        logger = logging.getLogger(__name__)
+        logger.info("CrawlArticles: got request")
         spids = request.spider[:]
         JOBS_QUEUE.put(spids)
         return spider_pb2.CrawlTaskResult(isrunning=True)
@@ -63,17 +68,20 @@ def serve(grpc_uri):
 
 
 if __name__ == '__main__':
+    logger = logging.getLogger(__name__)
     settings = get_project_settings()
     configure_logging(
         settings,
         install_root_handler=True
     )
-    logger = logging.getLogger(__name__)
     p = Process(target=crawling, args=())
     logger.info('start crawl task')
     p.start()
     grpc_uri = settings['GRPC_URI']
     logger.info('grpc server start listening')
-    serve(grpc_uri)
+    try:
+        serve(grpc_uri)
+    except:
+        logger.exception("server exception:\n")
     p.terminate()
     logger.info('grpc server terminated')
