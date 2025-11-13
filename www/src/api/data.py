@@ -43,7 +43,10 @@ class Day(Resource):
             def validate_day(self, day, data_key):
                 today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
                 day_begin = get_begin_day()
-                if not day_begin <= day <= today:
+                if day_begin is None:
+                    if day > today:
+                        raise ValidationError('invalid day value')
+                elif not day_begin <= day <= today:
                     raise ValidationError('invalid day value')
 
         schema = DayRequestSchema()
